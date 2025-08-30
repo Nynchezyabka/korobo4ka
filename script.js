@@ -159,7 +159,7 @@ function displayTasks() {
         // Подзаголовок категории для мобильной версии
         if (isMobile && task.category !== lastCategory) {
             const title = document.createElement('div');
-            title.className = 'category-title';
+            title.className = `category-title category-${task.category}`;
             title.innerHTML = `<span class="category-heading">${getCategoryName(task.category)}</span>`;
             tasksContainer.appendChild(title);
             lastCategory = task.category;
@@ -198,7 +198,9 @@ function displayTasks() {
                 </button>
             </div>
         `;
-
+        if (isMobile && task.text.length > 28) {
+            taskElement.classList.add('sticker-wide');
+        }
         tasksContainer.appendChild(taskElement);
     });
 
@@ -369,7 +371,7 @@ function showTimer(task) {
     document.querySelector('.timer-controls').style.display = 'flex';
 }
 
-// Функция для скрытия таймера
+// Ф��нкция для скрытия таймера
 function hideTimer() {
     timerScreen.style.display = 'none';
     document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
@@ -505,7 +507,7 @@ window.addEventListener('load', async () => {
     }
 
     if (!navigator.vibrate) {
-        console.log("Вибрация не поддерживается на этом устройстве");
+        console.log("Вибрация не поддерживается на этом устройств��");
     }
 });
 
@@ -646,7 +648,7 @@ function startTimer() {
     }
 }
 
-// Функция для паузы таймера
+// Функция для паузы таймер��
 function pauseTimer() {
     if (!timerRunning) return;
 
