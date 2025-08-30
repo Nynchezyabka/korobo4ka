@@ -655,7 +655,7 @@ textarea {
     }
 }
 
-/* Медиа-запрос для планшетов и больших телефонов */
+/* Медиа-запрос ��ля планшетов и больших телефонов */
 @media (min-width: 481px) {
     body {
         padding: 15px;
@@ -765,7 +765,7 @@ textarea {
         gap: 12px;
     }
 
-    /* Кнопки действий выравниваем по сетке (3 колонки) */
+    /* Кнопки действий выравниваем п�� сетке (3 колонки) */
     .controls {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -963,4 +963,54 @@ textarea {
         left: 0;
     }
     .tasks.mobile-compact .sticker-wide { grid-column: 1 / -1; }
+}
+
+/* Стикерная сетка для планшетов и десктопов */
+.tasks.sticker-grid {
+    display: grid;
+    gap: 6px;
+    grid-auto-flow: dense;
+}
+.tasks.sticker-grid .category-title { grid-column: 1 / -1; }
+.tasks.sticker-grid .task {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    margin: 0;
+    border-radius: 14px;
+    width: 100%;
+}
+.tasks.sticker-grid .task-content {
+    flex-direction: row;
+    width: 100%;
+    padding-right: 0;
+    gap: 6px;
+}
+.tasks.sticker-grid .task-text {
+    padding: 0;
+    margin: 0;
+    font-size: 1rem;
+    word-break: break-word;
+}
+.tasks.sticker-grid .task-controls {
+    margin-left: auto;
+    position: static;
+    width: auto;
+    gap: 4px;
+}
+.tasks.sticker-grid .category-selector { width: auto; margin: 0; }
+.tasks.sticker-grid .category-badge { background-color: transparent; padding: 0 6px; }
+.tasks.sticker-grid .category-badge .category-name { display: none; }
+.tasks.sticker-grid .category-badge .fa-caret-down { display: none; }
+.tasks.sticker-grid .category-dropdown { right: auto; left: 0; }
+.tasks.sticker-grid .sticker-wide { grid-column: 1 / -1; }
+
+@media (min-width: 481px) and (max-width: 767px) {
+    .tasks.sticker-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+    .tasks.sticker-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+}
+@media (min-width: 1024px) {
+    .tasks.sticker-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 }
