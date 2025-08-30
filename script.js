@@ -65,6 +65,18 @@ const timerCompleteOptions = document.getElementById('timerCompleteOptions');
 const notifyBanner = document.getElementById('notifyBanner');
 const enableNotifyBtn = document.getElementById('enableNotifyBtn');
 
+function setNotifyBannerVisible(visible) {
+    if (notifyBanner) notifyBanner.style.display = visible ? 'flex' : 'none';
+}
+
+function refreshNotifyBanner() {
+    if (!('Notification' in window)) {
+        setNotifyBannerVisible(false);
+        return;
+    }
+    setNotifyBannerVisible(Notification.permission !== 'granted');
+}
+
 // Функция для получения названия категории по номеру
 function getCategoryName(category) {
     const categories = {
@@ -372,15 +384,18 @@ function createBrowserNotification() {
 }
 
 // Добавляем запрос разрешения при загрузке страницы
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
     loadTasks();
 
-    if ("Notification" in window) {
-        if (Notification.permission !== "granted") {
-            if (notifyBanner) notifyBanner.style.display = 'flex';
-        } else if (notifyBanner) {
-            notifyBanner.style.display = 'none';
-        }
+    refreshNotifyBanner();
+
+    if (navigator.permissions && navigator.permissions.query) {
+        try {
+            const status = await navigator.permissions.query({ name: 'notifications' });
+            const update = () => setNotifyBannerVisible(status.state !== 'granted');
+            update();
+            status.onchange = update;
+        } catch (e) {}
     }
 
     if (!navigator.vibrate) {
@@ -609,15 +624,28 @@ if ('serviceWorker' in navigator) {
 
 if (enableNotifyBtn) {
     enableNotifyBtn.addEventListener('click', async () => {
-        if (!('Notification' in window)) return alert('Уведомления не поддерживаются этим браузером');
+        if (!('Notification' in window)) {
+            alert('Уведомления не поддерживаются этим браузером');
+            return;
+        }
+        // Если уже выданы
+        if (Notification.permission === 'granted') {
+            setNotifyBannerVisible(false);
+            createBrowserNotification();
+            return;
+        }
         try {
             const result = await Notification.requestPermission();
             if (result === 'granted') {
-                notifyBanner.style.display = 'none';
+                setNotifyBannerVisible(false);
                 createBrowserNotification();
+            } else if (result === 'default') {
+                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройках сайта.');
             } else if (result === 'denied') {
                 alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
-        } catch (e) {}
+        } catch (e) {
+            alert('Не удалось запросить разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
+        }
     });
 }
