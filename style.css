@@ -643,8 +643,39 @@ textarea {
     }
 }
 
-/* Медиа-запрос для десктопов */
+/* Медиа-з��прос для десктопов */
 @media (min-width: 1024px) {
+    /* Выровнять элементы задачи в сетку: текст слева, справа сверху категория, снизу под ней кнопки */
+    .task {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto auto;
+        column-gap: 10px;
+        align-items: start;
+    }
+    .task-content {
+        display: contents; /* позволяет дочерним участвовать в сетке родителя */
+    }
+    .task-text {
+        grid-column: 1 / 2;
+        grid-row: 1 / 3; /* занимает обе строки слева */
+        padding-right: 0;
+        margin: 0;
+    }
+    .category-selector {
+        grid-column: 2 / 3;
+        grid-row: 1 / 2;
+        margin: 0 0 6px 0;
+        width: auto;
+    }
+    .task-controls {
+        grid-column: 2 / 3;
+        grid-row: 2 / 3;
+        justify-content: flex-end;
+        width: auto;
+        margin: 0;
+        gap: 6px;
+    }
     .container {
         max-width: 1000px;
     }
