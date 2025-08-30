@@ -332,11 +332,21 @@ function getRandomTask(categories) {
 function showTimer(task) {
     currentTask = task;
     timerTaskText.textContent = task.text;
-    timerTime = parseInt(timerMinutes.value) * 60;
+
+    // Полный сброс состояния таймера перед новым запуском
+    if (timerEndTimeoutId) {
+        clearTimeout(timerEndTimeoutId);
+        timerEndTimeoutId = null;
+    }
+    timerRunning = false;
+    timerPausedTime = 0;
+    timerEndAt = 0;
+
+    timerTime = Math.max(1, parseInt(timerMinutes.value)) * 60;
     updateTimerDisplay();
     timerScreen.style.display = 'flex';
-    document.body.style.overflow = 'hidden'; // Блокируем прокрутку основного контента
-    
+    document.body.style.overflow = 'hidden';
+
     // Скрываем опции завершения и показываем управление таймером
     timerCompleteOptions.style.display = 'none';
     document.querySelector('.timer-controls').style.display = 'flex';
@@ -600,8 +610,21 @@ function stopTimer() {
     }
 }
 
+async function cancelServerSchedule() {
+    try {
+        if (timerEndAt > 0) {
+            await fetch('/api/timer/cancel', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ endAt: timerEndAt })
+            });
+        }
+    } catch (_) {}
+}
+
 // Функция для сброса таймера
 function resetTimer() {
+    // отменяем только локальный таймер, серверный не трогаем, чтобы пауза/сброс был явным
     stopTimer();
     if (timerEndTimeoutId) {
         clearTimeout(timerEndTimeoutId);
@@ -665,7 +688,7 @@ addMultipleBtn.addEventListener('click', () => {
                     text: task.trim(),
                     category: 0, // Без категории
                     completed: false,
-                    active: true // Теперь активны по умолчанию
+                    active: true // Теперь активны по умолч��нию
                 });
             });
             
@@ -688,29 +711,33 @@ startTimerBtn.addEventListener('click', startTimer);
 pauseTimerBtn.addEventListener('click', pauseTimer);
 resetTimerBtn.addEventListener('click', resetTimer);
 
-completeTaskBtn.addEventListener('click', () => {
+completeTaskBtn.addEventListener('click', async () => {
     if (currentTask) {
-        // Помечаем задачу как выполненную и неактивную вме��то удаления
         const taskIndex = tasks.findIndex(t => t.id === currentTask.id);
         if (taskIndex !== -1) {
             tasks[taskIndex].completed = true;
             tasks[taskIndex].active = false;
             saveTasks();
         }
-        
+        await cancelServerSchedule();
         stopTimer();
+        timerEndAt = 0;
         hideTimer();
         displayTasks();
     }
 });
 
-returnTaskBtn.addEventListener('click', () => {
+returnTaskBtn.addEventListener('click', async () => {
+    await cancelServerSchedule();
     stopTimer();
+    timerEndAt = 0;
     hideTimer();
 });
 
-closeTimerBtn.addEventListener('click', () => {
+closeTimerBtn.addEventListener('click', async () => {
+    await cancelServerSchedule();
     stopTimer();
+    timerEndAt = 0;
     hideTimer();
 });
 
@@ -748,7 +775,7 @@ window.addEventListener('focus', () => {
     }
 });
 
-// Функция для показа toast-уведомления
+// Функция для показа toast-уве��омления
 function showToastNotification(title, message, duration = 5000) {
     let toast = document.getElementById('toast-notification');
     if (!toast) {
