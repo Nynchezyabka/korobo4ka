@@ -179,6 +179,55 @@ textarea, select, input {
 #taskCategory.category-4 { border-left-color: #E57373; background-color: #ffcdd2; }
 #taskCategory.category-5 { border-left-color: #9575CD; background-color: #d1c4e9; }
 
+/* Скрываем нативный select и используем кастомный цветной дропдаун */
+.task-form #taskCategory { display: none; }
+.add-category-selector { position: relative; display: inline-block; width: 100%; }
+.add-category-badge {
+    font-size: 1rem;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background-color: rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.add-category-badge:active { background-color: rgba(0,0,0,0.1); transform: scale(0.98); }
+.add-category-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    padding: 8px;
+    z-index: 1000;
+    display: none;
+}
+.add-category-dropdown.show { display: block; }
+.add-category-option {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    width: 100%;
+    text-align: left;
+    font-family: 'Caveat', cursive;
+    font-size: 1rem;
+    transition: all 0.3s;
+    color: #333;
+}
+.add-category-option:active { transform: scale(0.98); }
+.add-category-option:last-child { margin-bottom: 0; }
+
+/* Цвета для опций категорий (как в списке задач) */
+.add-category-option[data-category="0"] { background-color: #f5f5f5; border-left: 2px solid #9E9E9E; }
+.add-category-option[data-category="1"] { background-color: #fff9c4; border-left: 2px solid #FFD54F; }
+.add-category-option[data-category="2"] { background-color: #bbdefb; border-left: 2px solid #64B5F6; }
+.add-category-option[data-category="3"] { background-color: #c8e6c9; border-left: 2px solid #81C784; }
+.add-category-option[data-category="4"] { background-color: #ffcdd2; border-left: 2px solid #E57373; }
+.add-category-option[data-category="5"] { background-color: #d1c4e9; border-left: 2px solid #9575CD; }
+
 textarea {
     min-height: 80px;
     resize: vertical;
