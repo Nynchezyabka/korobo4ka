@@ -4,7 +4,7 @@
     "description": "Планировщик задач с таймером",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#f5f5f5",
+    "background_color": "#fffaf0",
     "theme_color": "#5d4037",
     "icons": [
         {
