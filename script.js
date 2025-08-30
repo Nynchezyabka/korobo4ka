@@ -365,12 +365,12 @@ function showTimer(task) {
 // Функция для скрытия таймера
 function hideTimer() {
     timerScreen.style.display = 'none';
-    document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
+    document.body.style.overflow = 'auto'; // Восстанавливаем прок��утку
     stopTimer(); // Останавливаем таймер при закрытии
     releaseWakeLock();
 }
 
-// Функция для обновления ото��ражения таймера
+// Функция для обновления ото��ражения тайме��а
 function updateTimerDisplay() {
     const minutes = Math.floor(timerTime / 60);
     const seconds = timerTime % 60;
@@ -480,6 +480,10 @@ window.addEventListener('load', async () => {
     loadTasks();
 
     setupAddCategorySelector();
+
+    if (typeof addMultipleBtn !== 'undefined' && addMultipleBtn) {
+        addMultipleBtn.style.display = 'none';
+    }
 
     applyCategoryVisualToSelect();
     refreshNotifyBanner();
