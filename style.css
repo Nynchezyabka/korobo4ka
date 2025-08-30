@@ -8,6 +8,10 @@
 body {
     font-family: 'Caveat', cursive, sans-serif;
     background-color: #fffaf0;
+    background-image:
+        linear-gradient(rgba(210, 190, 150, 0.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(210, 190, 150, 0.12) 1px, transparent 1px);
+    background-size: 20px 20px;
     color: #333;
     padding: 10px;
     line-height: 1.4;
@@ -166,7 +170,7 @@ textarea, select, input {
     width: 100%;
 }
 
-/* Цветная индикация категории ��ри добавлении задачи */
+/* Цветная индикация категории при добавлении задачи */
 #taskCategory {
     border-left-width: 4px;
     border-left-style: solid;
@@ -914,7 +918,7 @@ textarea {
 }
 .folder-before-title { color: #5d4037; }
 
-/* Компактный режим "стикеров" для мобильных */
+/* Компактный режим "сти��еров" для мобильных */
 @media (max-width: 480px) {
     .tasks.mobile-compact {
         display: grid;
