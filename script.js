@@ -33,7 +33,7 @@ let selectedTaskId = null;
 let activeDropdown = null;
 let wakeLock = null; // экраны не засыпают во время таймера (где поддерживается)
 
-// Новые пе��еменные для точ��ого таймера
+// Новые переменные для т��ч��ого таймера
 let timerStartTime = 0;
 let timerPausedTime = 0;
 let timerAnimationFrame = null;
@@ -53,6 +53,7 @@ document.addEventListener('click', function(e) {
 });
 const showTasksBtn = document.getElementById('showTasksBtn');
 const addMultipleBtn = document.getElementById('addMultipleBtn');
+const addSingleBtn = document.getElementById('addSingleBtn');
 const exportTasksBtn = document.getElementById('exportTasksBtn');
 const taskList = document.getElementById('taskList');
 const tasksContainer = document.getElementById('tasksContainer');
@@ -241,7 +242,7 @@ function changeTaskCategory(taskId, newCategory) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
     
-    // ��сли зада��а была без категории и неактивна, и выбирается новая категория, активируем ее
+    // Если зада��а была без категории и неактивна, и выбирается новая категория, активируем ее
     const updateData = { category: newCategory };
     if (tasks[taskIndex].category === 0 && !tasks[taskIndex].active && newCategory !== 0) {
         updateData.active = true;
@@ -533,7 +534,7 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
-// Звуковой сигнал по завершении
+// Звуковой сигнал по заверше��ии
 function playBeep() {
     try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -712,6 +713,17 @@ showTasksBtn.addEventListener('click', () => {
     taskList.style.display = 'block';
     displayTasks();
 });
+
+if (addSingleBtn) {
+    addSingleBtn.addEventListener('click', () => {
+        taskList.style.display = 'block';
+        displayTasks();
+        setTimeout(() => {
+            taskText.focus();
+            taskText.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 0);
+    });
+}
 
 hideTasksBtn.addEventListener('click', () => {
     taskList.style.display = 'none';
