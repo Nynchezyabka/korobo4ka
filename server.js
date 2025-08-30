@@ -84,7 +84,7 @@ webpush.setVapidDetails(
 );
 
 const subscriptions = new Map(); // endpoint -> subscription
-const scheduled = new Set(); // ids of scheduled tasks
+const scheduled = new Map(); // id -> timeout handle
 
 function toJson(res, obj, status=200) {
   send(res, status, Buffer.from(JSON.stringify(obj)), { 'Content-Type': 'application/json; charset=utf-8' });
@@ -112,10 +112,9 @@ async function handleApi(req, res, pathname) {
       const { endAt, taskText } = body || {};
       if (!endAt) return toJson(res, { error: 'endAt required' }, 400);
       const delay = Math.max(0, endAt - Date.now());
-      const id = `${endAt}:${taskText || ''}`;
+      const id = String(endAt);
       if (!scheduled.has(id)) {
-        scheduled.add(id);
-        setTimeout(() => {
+        const handle = setTimeout(() => {
           const payload = JSON.stringify({
             title: '🎁 КОРОБОЧКА',
             body: taskText ? `Задача: ${taskText}` : 'Время вышло! Задача завершена.',
@@ -127,8 +126,25 @@ async function handleApi(req, res, pathname) {
           }
           scheduled.delete(id);
         }, delay);
+        scheduled.set(id, handle);
       }
       return toJson(res, { ok: true, delay });
+    } catch (e) {
+      return toJson(res, { error: 'bad json' }, 400);
+    }
+  }
+
+  if (req.method === 'POST' && pathname === '/api/timer/cancel') {
+    try {
+      const body = await readJson(req);
+      const { endAt } = body || {};
+      const id = String(endAt || '');
+      const handle = scheduled.get(id);
+      if (handle) {
+        clearTimeout(handle);
+        scheduled.delete(id);
+      }
+      return toJson(res, { ok: true });
     } catch (e) {
       return toJson(res, { error: 'bad json' }, 400);
     }
