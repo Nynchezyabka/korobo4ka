@@ -322,14 +322,16 @@ function showNotification() {
     }
     
     // Пытаемся показать браузерное уведомление, если разрешено
-    if ("Notification" in window && Notification.permission === "granted") {
-        new Notification("Время вышло!");
-    } else if ("Notification" in window && Notification.permission !== "denied") {
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                new Notification("Время вышло!");
-            }
-        });
+    if ("Notification" in window) {
+        if (Notification.permission === "granted") {
+            createBrowserNotification();
+        } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    createBrowserNotification();
+                }
+            });
+        }
     }
     
     // Скрываем уведомление через 3 секунды
@@ -337,6 +339,40 @@ function showNotification() {
         notification.style.display = 'none';
     }, 3000);
 }
+
+// Создание браузерного уведомления
+function createBrowserNotification() {
+    const notification = new Notification("🎁 КОРОБОЧКА", {
+        body: "Время вышло! Задача завершена.",
+        icon: "https://example.com/icon.png", // Замените на URL вашей иконки
+        tag: "timer-notification"
+    });
+    
+    notification.onclick = function() {
+        window.focus();
+        this.close();
+    };
+    
+    // Автоматически закрываем уведомление через 5 секунд
+    setTimeout(() => {
+        notification.close();
+    }, 5000);
+}
+
+// Добавляем запрос разрешения при загрузке страницы
+window.addEventListener('load', () => {
+    loadTasks();
+    
+    // Запрашиваем разрешение на уведомления
+    if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+    }
+    
+    // Проверяем поддержку вибрации
+    if (!navigator.vibrate) {
+        console.log("Вибрация не поддерживается на этом устройстве");
+    }
+});
 
 // НОВАЯ РЕАЛИЗАЦИЯ ТАЙМЕРА (точный и работающий в фоне)
 

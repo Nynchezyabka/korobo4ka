@@ -165,7 +165,8 @@ textarea {
     margin-bottom: 8px;
     border-radius: 6px;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
     position: relative;
     transition: all 0.3s;
 }
@@ -173,7 +174,7 @@ textarea {
 .task-content {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     width: 100%;
 }
 
@@ -189,9 +190,25 @@ textarea {
     display: flex;
     gap: 6px;
     align-items: center;
-    margin-top: 8px;
-    justify-content: flex-end;
-    width: 100%;
+}
+
+.category-selector {
+    position: relative;
+    display: inline-block;
+    z-index: 2; /* Увеличиваем z-index для правильного отображения */
+}
+
+.category-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    padding: 8px;
+    z-index: 1000; /* Убедимся, что выпадающий список поверх других элементов */
+    display: none;
+    min-width: 130px;
 }
 
 .task-control-btn {
@@ -245,7 +262,7 @@ textarea {
 .category-selector {
     position: relative;
     display: inline-block;
-    z-index: 1;
+    z-index: 2; /* Увеличиваем z-index для правильного отображения */
 }
 
 .category-badge {
@@ -275,7 +292,7 @@ textarea {
     border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 8px;
-    z-index: 1000;
+    z-index: 1000; /* Убедимся, что выпадающий список поверх других элементов */
     display: none;
     min-width: 130px;
 }
