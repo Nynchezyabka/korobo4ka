@@ -76,6 +76,33 @@ const timerCompleteOptions = document.getElementById('timerCompleteOptions');
 const notifyBanner = document.getElementById('notifyBanner');
 const enableNotifyBtn = document.getElementById('enableNotifyBtn');
 
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
+async function ensurePushSubscribed() {
+    if (!('serviceWorker' in navigator)) return false;
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+        const keyRes = await fetch('/api/push/public-key');
+        const { publicKey } = await keyRes.json();
+        sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicKey)
+        });
+    }
+    await fetch('/api/push/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sub) });
+    return true;
+}
+
 function setNotifyBannerVisible(visible) {
     if (notifyBanner) notifyBanner.style.display = visible ? 'flex' : 'none';
 }
@@ -204,7 +231,7 @@ function changeTaskCategory(taskId, newCategory) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
     
-    // Если задача была без категории и неактивна, и выбира��тся новая категория, активируем ее
+    // Если задача была без категории и неактивна, и выбирается новая категория, активируем ее
     const updateData = { category: newCategory };
     if (tasks[taskIndex].category === 0 && !tasks[taskIndex].active && newCategory !== 0) {
         updateData.active = true;
@@ -310,7 +337,7 @@ function showTimer(task) {
     timerScreen.style.display = 'flex';
     document.body.style.overflow = 'hidden'; // Блокируем прокрутку основного контента
     
-    // Скрываем опции завершения и п��казываем управление таймером
+    // Скрываем опции завершения и показываем управление таймером
     timerCompleteOptions.style.display = 'none';
     document.querySelector('.timer-controls').style.display = 'flex';
 }
@@ -323,7 +350,7 @@ function hideTimer() {
     releaseWakeLock();
 }
 
-// Функция для обновления отображения таймера
+// Функция для обновления ото��ражения таймера
 function updateTimerDisplay() {
     const minutes = Math.floor(timerTime / 60);
     const seconds = timerTime % 60;
@@ -468,7 +495,18 @@ function startTimer() {
     }
     timerStartTime = Date.now();
 
-    // Планируем системное уведомление к точному моменту окончания
+    // Сообщаем серверу о расписании пуш-уведомления
+    try {
+        ensurePushSubscribed().then(() => {
+            fetch('/api/timer/schedule', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ endAt: timerEndAt, taskText: currentTask ? currentTask.text : '' })
+            }).catch(() => {});
+        }).catch(() => {});
+    } catch (_) {}
+
+    // Планируем локальный fallback
     if (timerEndTimeoutId) clearTimeout(timerEndTimeoutId);
     const delay = Math.max(0, timerEndAt - Date.now());
     timerEndTimeoutId = setTimeout(() => {
@@ -575,7 +613,7 @@ function resetTimer() {
     updateTimerDisplay();
 }
 
-// Обработчики событий
+// Обработчик�� событий
 sections.forEach(section => {
     section.addEventListener('click', () => {
         const categories = section.dataset.category;
@@ -765,16 +803,18 @@ if (enableNotifyBtn) {
         }
         if (Notification.permission === 'granted') {
             setNotifyBannerVisible(false);
-            createBrowserNotification();
+            await ensurePushSubscribed();
+            createBrowserNotification('Уведомления включены');
             return;
         }
         try {
             const result = await Notification.requestPermission();
             if (result === 'granted') {
                 setNotifyBannerVisible(false);
-                createBrowserNotification();
+                await ensurePushSubscribed();
+                createBrowserNotification('Уведомления включены');
             } else if (result === 'default') {
-                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройках сайта.');
+                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройках ��айта.');
             } else if (result === 'denied') {
                 alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
