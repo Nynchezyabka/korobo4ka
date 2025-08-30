@@ -1,0 +1,651 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Caveat', cursive, sans-serif;
+    background-color: #f5f5f5;
+    background-image: 
+        linear-gradient(rgba(200, 200, 200, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200, 200, 200, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    color: #333;
+    padding: 10px;
+    line-height: 1.4;
+    font-size: 16px;
+}
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 15px;
+    padding-top: 5px;
+}
+
+h1 {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+    color: #5d4037;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+}
+
+.sections {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.section {
+    width: 100%;
+    padding: 20px 12px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+.section:active {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.section h2 {
+    margin-bottom: 8px;
+    font-size: 1.3rem;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.section p {
+    text-align: center;
+    font-size: 1rem;
+}
+
+.mandatory {
+    background-color: #fff9c4; /* желтый */
+}
+
+.security {
+    background-color: #bbdefb; /* голубой */
+}
+
+.joys {
+    background-color: #c8e6c9; /* зеленый */
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+button, select, input, textarea {
+    font-family: 'Caveat', cursive;
+    font-size: 1.1rem;
+}
+
+button {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #5d4037;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    min-height: 44px;
+}
+
+button:active {
+    background-color: #7b5e57;
+    transform: scale(0.98);
+}
+
+.task-list {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.task-list h2 {
+    margin-bottom: 12px;
+    font-size: 1.4rem;
+    color: #5d4037;
+    text-align: center;
+}
+
+.task-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+textarea, select, input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 100%;
+}
+
+textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.tasks {
+    margin-top: 15px;
+}
+
+.task {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.task-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.task-text {
+    font-size: 1.1rem;
+    word-break: break-word;
+    flex: 1;
+    padding-right: 8px;
+    line-height: 1.3;
+}
+
+.task-controls {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: 8px;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.task-control-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 6px;
+    border-radius: 4px;
+    min-height: auto;
+    color: #5d4037;
+    box-shadow: none;
+    transition: all 0.3s;
+}
+
+.task-control-btn:active {
+    background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(0.95);
+}
+
+.category-0 { 
+    background-color: #f5f5f5; 
+    border-left: 4px solid #9E9E9E;
+}
+.category-1 { 
+    background-color: #fff9c4; 
+    border-left: 4px solid #FFD54F;
+}
+.category-2 { 
+    background-color: #bbdefb; 
+    border-left: 4px solid #64B5F6;
+}
+.category-3 { 
+    background-color: #c8e6c9; 
+    border-left: 4px solid #81C784;
+}
+.category-4 { 
+    background-color: #ffcdd2; 
+    border-left: 4px solid #E57373;
+}
+.category-5 { 
+    background-color: #d1c4e9; 
+    border-left: 4px solid #9575CD;
+}
+
+.inactive {
+    opacity: 0.6;
+    text-decoration: line-through;
+}
+
+.category-selector {
+    position: relative;
+    display: inline-block;
+    z-index: 1;
+}
+
+.category-badge {
+    font-size: 0.85rem;
+    padding: 3px 8px;
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.1);
+    margin: 0 3px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.category-badge:active {
+    background-color: rgba(0, 0, 0, 0.2);
+    transform: scale(0.95);
+}
+
+.category-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    padding: 8px;
+    z-index: 1000;
+    display: none;
+    min-width: 130px;
+}
+
+.category-dropdown.show {
+    display: block;
+}
+
+.category-option {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    width: 100%;
+    text-align: left;
+    font-family: 'Caveat', cursive;
+    font-size: 1rem;
+    transition: all 0.3s;
+    color: #333;
+}
+
+.category-option:active {
+    transform: scale(0.98);
+}
+
+.category-option:last-child {
+    margin-bottom: 0;
+}
+
+/* Цвета для опций категорий */
+.category-option[data-category="0"] {
+    background-color: #f5f5f5;
+    border-left: 2px solid #9E9E9E;
+}
+
+.category-option[data-category="1"] {
+    background-color: #fff9c4;
+    border-left: 2px solid #FFD54F;
+}
+
+.category-option[data-category="2"] {
+    background-color: #bbdefb;
+    border-left: 2px solid #64B5F6;
+}
+
+.category-option[data-category="3"] {
+    background-color: #c8e6c9;
+    border-left: 2px solid #81C784;
+}
+
+.category-option[data-category="4"] {
+    background-color: #ffcdd2;
+    border-left: 2px solid #E57373;
+}
+
+.category-option[data-category="5"] {
+    background-color: #d1c4e9;
+    border-left: 2px solid #9575CD;
+}
+
+.timer-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.98);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.timer-content {
+    text-align: center;
+    width: 100%;
+    max-width: 350px;
+    padding: 20px 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+}
+
+.timer-display {
+    font-size: 2.5rem;
+    margin: 15px 0;
+    font-weight: bold;
+    color: #5d4037;
+}
+
+.timer-task {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    padding: 12px;
+    border-radius: 6px;
+    background-color: #f5f5f5;
+    word-break: break-word;
+    line-height: 1.3;
+}
+
+.timer-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.timer-btn {
+    padding: 10px 15px;
+    font-size: 1.1rem;
+    min-height: 40px;
+    transition: all 0.3s;
+}
+
+/* Новые цвета для кнопок таймера */
+#startTimerBtn {
+    background-color: #9CCC65; /* желто-зеленый */
+}
+
+#startTimerBtn:active {
+    background-color: #8BC34A;
+}
+
+#pauseTimerBtn {
+    background-color: #ff9800; /* оранжевый */
+}
+
+#pauseTimerBtn:active {
+    background-color: #e68a00;
+}
+
+#resetTimerBtn {
+    background-color: #f44336; /* красный */
+}
+
+#resetTimerBtn:active {
+    background-color: #d32f2f;
+}
+
+#completeTaskBtn {
+    background-color: #388E3C; /* темно-зеленый */
+}
+
+#completeTaskBtn:active {
+    background-color: #2E7D32;
+}
+
+#returnTaskBtn {
+    background-color: #795548; /* коричневый */
+}
+
+#returnTaskBtn:active {
+    background-color: #5D4037;
+}
+
+#closeTimerBtn {
+    background-color: #9E9E9E; /* серый */
+}
+
+#closeTimerBtn:active {
+    background-color: #757575;
+}
+
+#timerMinutes {
+    text-align: center;
+    font-size: 1.1rem;
+    padding: 8px;
+}
+
+.import-export {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-label {
+    display: block;
+    padding: 10px;
+    background-color: #5d4037;
+    color: white;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.notification {
+    position: fixed;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #5d4037;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    display: none;
+    font-size: 1.1rem;
+}
+
+.timer-complete-options {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* Мобильная версия - иконки под названием категории */
+@media (max-width: 480px) {
+    .task {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .task-content {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .task-text {
+        width: 100%;
+        margin-bottom: 8px;
+        padding-right: 0;
+    }
+    
+    .category-selector {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+    
+    .category-badge {
+        width: 100%;
+        justify-content: space-between;
+        margin: 0 0 8px 0;
+    }
+    
+    .task-controls {
+        justify-content: flex-start;
+        width: 100%;
+    }
+    
+    .category-dropdown {
+        width: 100%;
+        right: auto;
+        left: 0;
+    }
+}
+
+/* Медиа-запрос для планшетов и больших телефонов */
+@media (min-width: 481px) {
+    body {
+        padding: 15px;
+        font-size: 18px;
+    }
+    
+    .section {
+        padding: 25px 15px 20px;
+    }
+    
+    .timer-controls {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .timer-btn {
+        flex: 1;
+        min-width: 100px;
+    }
+
+    .import-export {
+        flex-direction: row;
+    }
+    
+    .task {
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .task-controls {
+        margin-top: 0;
+        width: auto;
+        justify-content: flex-end;
+    }
+}
+
+/* Медиа-запрос для планшетов в альбомной ориентации и небольших ноутбуков */
+@media (min-width: 768px) {
+    .sections {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .section {
+        flex: 1;
+        min-width: 220px;
+        max-width: calc(50% - 8px);
+    }
+    
+    .controls {
+        flex-direction: row;
+    }
+    
+    button {
+        flex: 1;
+    }
+}
+
+/* Медиа-запрос для десктопов */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 1000px;
+    }
+    
+    .section {
+        max-width: calc(33.333% - 10px);
+    }
+    
+    .section:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    button:hover {
+        background-color: #7b5e57;
+    }
+    
+    .task-control-btn:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    .category-badge:hover {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+    
+    .category-option:hover {
+        transform: translateX(3px);
+    }
+    
+    #startTimerBtn:hover {
+        background-color: #8BC34A;
+    }
+    
+    #pauseTimerBtn:hover {
+        background-color: #e68a00;
+    }
+    
+    #resetTimerBtn:hover {
+        background-color: #d32f2f;
+    }
+    
+    #completeTaskBtn:hover {
+        background-color: #2E7D32;
+    }
+    
+    #returnTaskBtn:hover {
+        background-color: #5D4037;
+    }
+    
+    #closeTimerBtn:hover {
+        background-color: #757575;
+    }
+}
