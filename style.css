@@ -349,7 +349,7 @@ textarea {
 .category-selector {
     position: relative;
     display: inline-block;
-    z-index: 2; /* Увеличиваем z-index для правильного отображения */
+    z-index: 2; /* Увеличиваем z-index дл�� правильного отображения */
 }
 
 .category-badge {
@@ -908,10 +908,11 @@ textarea {
     font-size: 1.1rem;
 }
 
-/* Скрываем подзаголовки на больших экранах */
+/* Показываем подзаголовки на всех экранах */
 @media (min-width: 481px) {
-    .category-title { display: none; }
+    .category-title { display: flex; }
 }
+.folder-before-title { color: #5d4037; }
 
 /* Компактный режим "стикеров" для мобильных */
 @media (max-width: 480px) {
