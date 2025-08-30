@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Ваши существующие стили остаются без изменений */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -23,9 +22,9 @@
                 linear-gradient(90deg, rgba(200, 200, 200, 0.1) 1px, transparent 1px);
             background-size: 20px 20px;
             color: #333;
-            padding: 15px;
-            line-height: 1.6;
-            font-size: 18px;
+            padding: 10px;
+            line-height: 1.4;
+            font-size: 16px;
         }
 
         .container {
@@ -35,13 +34,13 @@
 
         header {
             text-align: center;
-            margin-bottom: 20px;
-            padding-top: 10px;
+            margin-bottom: 15px;
+            padding-top: 5px;
         }
 
         h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
             color: #5d4037;
             text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
         }
@@ -49,45 +48,45 @@
         .sections {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 15px;
         }
 
         .section {
             width: 100%;
-            padding: 25px 15px 20px;
-            border-radius: 10px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px 12px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s, box-shadow 0.3s;
             position: relative;
             overflow: hidden;
         }
 
-        /* Добавляем полоску сверху как у стикеров */
         .section::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 12px;
+            height: 10px;
             background-color: rgba(0, 0, 0, 0.15);
         }
 
         .section:active {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
         }
 
         .section h2 {
-            margin-bottom: 12px;
-            font-size: 1.5rem;
+            margin-bottom: 8px;
+            font-size: 1.3rem;
             text-align: center;
+            line-height: 1.2;
         }
 
         .section p {
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .mandatory {
@@ -105,25 +104,25 @@
         .controls {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-bottom: 25px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         button, select, input, textarea {
             font-family: 'Caveat', cursive;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         button {
-            padding: 14px 20px;
+            padding: 12px 16px;
             border: none;
-            border-radius: 50px;
+            border-radius: 8px;
             background-color: #5d4037;
             color: white;
             cursor: pointer;
             transition: background-color 0.3s;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            min-height: 50px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            min-height: 44px;
         }
 
         button:active {
@@ -133,15 +132,15 @@
 
         .task-list {
             background-color: white;
-            border-radius: 10px;
-            padding: 20px 15px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 25px;
+            border-radius: 8px;
+            padding: 15px 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
 
         .task-list h2 {
-            margin-bottom: 15px;
-            font-size: 1.6rem;
+            margin-bottom: 12px;
+            font-size: 1.4rem;
             color: #5d4037;
             text-align: center;
         }
@@ -149,57 +148,67 @@
         .task-form {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         textarea, select, input {
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1.1rem;
+            border-radius: 6px;
+            font-size: 1rem;
             width: 100%;
         }
 
         textarea {
-            min-height: 100px;
+            min-height: 80px;
             resize: vertical;
         }
 
         .tasks {
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         .task {
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
             position: relative;
             transition: all 0.3s;
         }
 
+        .task-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+        }
+
         .task-text {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             word-break: break-word;
             flex: 1;
-            padding-right: 10px;
+            padding-right: 8px;
+            line-height: 1.3;
         }
 
         .task-controls {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
+            margin-top: 8px;
+            justify-content: flex-end;
+            width: 100%;
         }
 
         .task-control-btn {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 1.3rem;
-            padding: 8px;
+            font-size: 1.1rem;
+            padding: 6px;
             border-radius: 4px;
             min-height: auto;
             color: #5d4037;
@@ -214,27 +223,27 @@
 
         .category-0 { 
             background-color: #f5f5f5; 
-            border-left: 5px solid #9E9E9E;
+            border-left: 4px solid #9E9E9E;
         }
         .category-1 { 
             background-color: #fff9c4; 
-            border-left: 5px solid #FFD54F;
+            border-left: 4px solid #FFD54F;
         }
         .category-2 { 
             background-color: #bbdefb; 
-            border-left: 5px solid #64B5F6;
+            border-left: 4px solid #64B5F6;
         }
         .category-3 { 
             background-color: #c8e6c9; 
-            border-left: 5px solid #81C784;
+            border-left: 4px solid #81C784;
         }
         .category-4 { 
             background-color: #ffcdd2; 
-            border-left: 5px solid #E57373;
+            border-left: 4px solid #E57373;
         }
         .category-5 { 
             background-color: #d1c4e9; 
-            border-left: 5px solid #9575CD;
+            border-left: 4px solid #9575CD;
         }
 
         .inactive {
@@ -249,17 +258,17 @@
         }
 
         .category-badge {
-            font-size: 0.9rem;
-            padding: 4px 10px;
-            border-radius: 15px;
+            font-size: 0.85rem;
+            padding: 3px 8px;
+            border-radius: 12px;
             background-color: rgba(0, 0, 0, 0.1);
-            margin: 0 5px;
+            margin: 0 3px;
             white-space: nowrap;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
 
         .category-badge:active {
@@ -272,12 +281,12 @@
             top: 100%;
             right: 0;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+            padding: 8px;
             z-index: 1000;
             display: none;
-            min-width: 150px;
+            min-width: 130px;
         }
 
         .category-dropdown.show {
@@ -285,15 +294,15 @@
         }
 
         .category-option {
-            padding: 8px 12px;
+            padding: 6px 10px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             width: 100%;
             text-align: left;
             font-family: 'Caveat', cursive;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: all 0.3s;
             color: #333;
         }
@@ -309,32 +318,32 @@
         /* Цвета для опций категорий */
         .category-option[data-category="0"] {
             background-color: #f5f5f5;
-            border-left: 3px solid #9E9E9E;
+            border-left: 2px solid #9E9E9E;
         }
         
         .category-option[data-category="1"] {
             background-color: #fff9c4;
-            border-left: 3px solid #FFD54F;
+            border-left: 2px solid #FFD54F;
         }
         
         .category-option[data-category="2"] {
             background-color: #bbdefb;
-            border-left: 3px solid #64B5F6;
+            border-left: 2px solid #64B5F6;
         }
         
         .category-option[data-category="3"] {
             background-color: #c8e6c9;
-            border-left: 3px solid #81C784;
+            border-left: 2px solid #81C784;
         }
         
         .category-option[data-category="4"] {
             background-color: #ffcdd2;
-            border-left: 3px solid #E57373;
+            border-left: 2px solid #E57373;
         }
         
         .category-option[data-category="5"] {
             background-color: #d1c4e9;
-            border-left: 3px solid #9575CD;
+            border-left: 2px solid #9575CD;
         }
 
         .timer-screen {
@@ -349,47 +358,48 @@
             justify-content: center;
             align-items: center;
             z-index: 100;
-            padding: 20px;
+            padding: 15px;
             overflow-y: auto;
         }
 
         .timer-content {
             text-align: center;
             width: 100%;
-            max-width: 400px;
-            padding: 25px 20px;
+            max-width: 350px;
+            padding: 20px 15px;
             background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
         }
 
         .timer-display {
-            font-size: 3rem;
-            margin: 20px 0;
+            font-size: 2.5rem;
+            margin: 15px 0;
             font-weight: bold;
             color: #5d4037;
         }
 
         .timer-task {
-            font-size: 1.5rem;
-            margin-bottom: 25px;
-            padding: 15px;
-            border-radius: 8px;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 6px;
             background-color: #f5f5f5;
             word-break: break-word;
+            line-height: 1.3;
         }
 
         .timer-controls {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .timer-btn {
-            padding: 12px 18px;
-            font-size: 1.2rem;
-            min-height: 45px;
+            padding: 10px 15px;
+            font-size: 1.1rem;
+            min-height: 40px;
             transition: all 0.3s;
         }
 
@@ -444,14 +454,15 @@
 
         #timerMinutes {
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
+            padding: 8px;
         }
 
         .import-export {
-            margin-top: 20px;
+            margin-top: 15px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .file-input {
@@ -460,45 +471,46 @@
 
         .file-label {
             display: block;
-            padding: 12px;
+            padding: 10px;
             background-color: #5d4037;
             color: white;
-            border-radius: 8px;
+            border-radius: 6px;
             text-align: center;
             cursor: pointer;
+            font-size: 1rem;
         }
 
         .notification {
             position: fixed;
-            top: 20px;
+            top: 15px;
             left: 50%;
             transform: translateX(-50%);
             background-color: #5d4037;
             color: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
             z-index: 1000;
             display: none;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .timer-complete-options {
             display: none;
             flex-direction: column;
-            gap: 12px;
-            margin-top: 20px;
+            gap: 10px;
+            margin-top: 15px;
         }
 
         /* Медиа-запрос для планшетов и больших телефонов */
         @media (min-width: 480px) {
             body {
-                padding: 20px;
-                font-size: 20px;
+                padding: 15px;
+                font-size: 18px;
             }
             
             .section {
-                padding: 30px 20px 25px;
+                padding: 25px 15px 20px;
             }
             
             .timer-controls {
@@ -509,11 +521,22 @@
             
             .timer-btn {
                 flex: 1;
-                min-width: 120px;
+                min-width: 100px;
             }
 
             .import-export {
                 flex-direction: row;
+            }
+            
+            .task {
+                flex-direction: row;
+                align-items: center;
+            }
+            
+            .task-controls {
+                margin-top: 0;
+                width: auto;
+                justify-content: flex-end;
             }
         }
 
@@ -526,8 +549,8 @@
             
             .section {
                 flex: 1;
-                min-width: 250px;
-                max-width: calc(50% - 10px);
+                min-width: 220px;
+                max-width: calc(50% - 8px);
             }
             
             .controls {
@@ -546,12 +569,12 @@
             }
             
             .section {
-                max-width: calc(33.333% - 14px);
+                max-width: calc(33.333% - 10px);
             }
             
             .section:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+                transform: translateY(-3px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
             }
             
             button:hover {
@@ -567,7 +590,7 @@
             }
             
             .category-option:hover {
-                transform: translateX(5px);
+                transform: translateX(3px);
             }
             
             #startTimerBtn:hover {
@@ -674,7 +697,7 @@
                 <button class="timer-btn" id="returnTaskBtn">Вернуть в коробочку</button>
             </div>
             
-            <button class="timer-btn" id="closeTimerBtn" style="margin-top: 20px;">Закрыть</button>
+            <button class="timer-btn" id="closeTimerBtn" style="margin-top: 15px;">Закрыть</button>
         </div>
     </div>
 
@@ -783,8 +806,8 @@
                     getCategoryName(task.category);
                 
                 taskElement.innerHTML = `
-                    <div class="task-text">${task.text}</div>
-                    <div class="task-controls">
+                    <div class="task-content">
+                        <div class="task-text">${task.text}</div>
                         <div class="category-selector">
                             <div class="category-badge" data-id="${task.id}">
                                 ${categoryDisplay}
@@ -799,6 +822,8 @@
                                 <button class="category-option" data-category="4">Эго радости</button>
                             </div>
                         </div>
+                    </div>
+                    <div class="task-controls">
                         <button class="task-control-btn toggle-active-btn" data-id="${task.id}">
                             <i class="fas ${task.active ? 'fa-eye-slash' : 'fa-eye'}"></i>
                         </button>
