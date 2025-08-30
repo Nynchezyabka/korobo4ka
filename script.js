@@ -151,16 +151,17 @@ function displayTasks() {
     tasksContainer.innerHTML = '';
 
     const isMobile = window.matchMedia('(max-width: 480px)').matches;
+    tasksContainer.classList.add('sticker-grid');
     tasksContainer.classList.toggle('mobile-compact', isMobile);
 
     let lastCategory = null;
 
     tasks.forEach(task => {
-        // Подзаголовок категории для мобильной версии
-        if (isMobile && task.category !== lastCategory) {
+        // Подзаголовок категории для всех режимов
+        if (task.category !== lastCategory) {
             const title = document.createElement('div');
             title.className = `category-title category-${task.category}`;
-            title.innerHTML = `<span class="category-heading">${getCategoryName(task.category)}</span>`;
+            title.innerHTML = `<i class="fas fa-folder folder-before-title"></i><span class="category-heading">${getCategoryName(task.category)}</span>`;
             tasksContainer.appendChild(title);
             lastCategory = task.category;
         }
@@ -180,7 +181,7 @@ function displayTasks() {
                         <i class="fas fa-caret-down"></i>
                     </div>
                     <div class="category-dropdown" id="dropdown-${task.id}">
-                        <button class="category-option" data-category="0">Без категории</button>
+                        <button class="category-option" data-category="0">Без катег��рии</button>
                         <button class="category-option" data-category="1">Обязательные</button>
                         <button class="category-option" data-category="2">Безопасность</button>
                         <button class="category-option" data-category="5">Доступность радостей</button>
@@ -198,7 +199,7 @@ function displayTasks() {
                 </button>
             </div>
         `;
-        if (isMobile && task.text.length > 28) {
+        if (task.text.length > 28) {
             taskElement.classList.add('sticker-wide');
         }
         tasksContainer.appendChild(taskElement);
@@ -306,10 +307,10 @@ function importTasks(file) {
                 return;
             }
             
-            // Проверяем структуру задач
+            // П��оверяем структуру задач
             for (const task of importedTasks) {
                 if (!task.text || typeof task.category === 'undefined') {
-                    alert('��шибка: неправильный формат файла');
+                    alert('��ши��ка: неправильный формат файла');
                     return;
                 }
             }
@@ -379,7 +380,7 @@ function hideTimer() {
     releaseWakeLock();
 }
 
-// Функция для обновления ото��ражения таймера
+// Функция для обновления ото��ражения та��мера
 function updateTimerDisplay() {
     const minutes = Math.floor(timerTime / 60);
     const seconds = timerTime % 60;
