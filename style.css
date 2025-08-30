@@ -286,7 +286,7 @@ textarea {
 .category-selector {
     position: relative;
     display: inline-block;
-    z-index: 2; /* Увеличиваем z-index для правильного отображения */
+    z-index: 3000; /* Увеличиваем z-index для правильного отображения */
 }
 
 .category-dropdown {
@@ -297,7 +297,7 @@ textarea {
     border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 8px;
-    z-index: 1000; /* Убедимся, что выпадающий список поверх других элементов */
+    z-index: 3100; /* Убедимся, что выпадающий список поверх других элементов */
     display: none;
     min-width: 130px;
 }
@@ -353,7 +353,7 @@ textarea {
 .category-selector {
     position: relative;
     display: inline-block;
-    z-index: 2; /* Увеличиваем z-index для правильного отображения */
+    z-index: 3000; /* Увеличиваем z-index для правильного отображения */
 }
 
 .category-badge {
@@ -383,7 +383,7 @@ textarea {
     border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 8px;
-    z-index: 1000; /* Убедимся, что выпадающий список поверх других элементов */
+    z-index: 3100; /* Убедимся, что выпадающий список поверх других элементов */
     display: none;
     min-width: 130px;
 }
@@ -653,9 +653,14 @@ textarea {
     }
 
     .category-dropdown {
+        position: absolute;
         width: 100%;
         right: auto;
         left: 0;
+        top: 100%;
+        bottom: auto;
+        max-height: 50vh;
+        overflow: auto;
     }
 }
 
@@ -900,7 +905,7 @@ textarea {
     }
 }
 
-/* По��заголовки категорий для мобильной группировки */
+/* По��заголов��и категорий для мобильной группировки */
 .category-title {
     margin: 10px 0 6px;
     color: #5d4037;
