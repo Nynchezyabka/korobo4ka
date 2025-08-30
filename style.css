@@ -525,40 +525,57 @@ textarea {
     margin-top: 15px;
 }
 
-/* Мобильная версия - иконки под названием категории */
+/* Мобильная версия — компактное отображение */
 @media (max-width: 480px) {
     .task {
+        position: relative;
         flex-direction: column;
         align-items: flex-start;
+        padding: 8px 10px;
+        margin-bottom: 6px;
     }
-    
+
     .task-content {
         flex-direction: column;
         width: 100%;
+        padding-right: 72px; /* место под иконки */
+        gap: 4px;
     }
-    
+
     .task-text {
         width: 100%;
-        margin-bottom: 8px;
+        margin: 0;
         padding-right: 0;
+        line-height: 1.25;
     }
-    
+
     .category-selector {
         width: 100%;
-        margin-bottom: 8px;
+        margin: 4px 0 0;
     }
-    
+
     .category-badge {
-        width: 100%;
-        justify-content: space-between;
-        margin: 0 0 8px 0;
-    }
-    
-    .task-controls {
+        width: auto;
         justify-content: flex-start;
-        width: 100%;
+        margin: 0;
+        font-size: 0.9rem;
+        padding: 2px 8px;
     }
-    
+
+    .task-controls {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: auto;
+        justify-content: flex-end;
+        gap: 4px;
+    }
+
+    .task-control-btn {
+        padding: 4px;
+        font-size: 1rem;
+    }
+
     .category-dropdown {
         width: 100%;
         right: auto;
