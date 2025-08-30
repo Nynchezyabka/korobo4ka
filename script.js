@@ -158,7 +158,7 @@ function displayTasks() {
     let currentGrid = null;
 
     tasks.forEach(task => {
-        // Начало новой кате��ории — создаем группу
+        // Начало новой категории — создаем группу
         if (task.category !== lastCategory) {
             const group = document.createElement('div');
             group.className = `category-group category-${task.category}`;
@@ -189,7 +189,7 @@ function displayTasks() {
                         <i class="fas fa-caret-down"></i>
                     </div>
                     <div class="category-dropdown" id="dropdown-${task.id}">
-                        <button class="category-option" data-category="0">Без катег��рии</button>
+                        <button class="category-option" data-category="0">Без категории</button>
                         <button class="category-option" data-category="1">Обязательные</button>
                         <button class="category-option" data-category="2">Безопасность</button>
                         <button class="category-option" data-category="5">Доступность радостей</button>
@@ -337,7 +337,7 @@ function importTasks(file) {
                 }
             }
             
-            // Добавляем задачи в ба��у данных
+            // Добавляем задачи в базу данных
             tasks = importedTasks;
             saveTasks();
             alert(`Успешно импортировано ${importedTasks.length} задач`);
@@ -394,7 +394,7 @@ function showTimer(task) {
     document.querySelector('.timer-controls').style.display = 'flex';
 }
 
-// Ф��нкция для скрытия таймера
+// Ф��нк��ия для скрытия таймера
 function hideTimer() {
     timerScreen.style.display = 'none';
     document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
@@ -671,7 +671,7 @@ function startTimer() {
     }
 }
 
-// Функция для паузы таймер��
+// Функция для паузы тайме����
 function pauseTimer() {
     if (!timerRunning) return;
 
@@ -719,7 +719,7 @@ async function cancelServerSchedule() {
 
 // Функция для сброса таймера
 function resetTimer() {
-    // отменяем только локальный таймер, серверный не трогаем, чтобы пауза/сброс был явным
+    // отменяем только локальный таймер, серверный не трогаем, чт��бы пауза/сброс был явным
     stopTimer();
     if (timerEndTimeoutId) {
         clearTimeout(timerEndTimeoutId);
@@ -797,7 +797,7 @@ exportTasksBtn.addEventListener('click', exportTasks);
 importFile.addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
         importTasks(e.target.files[0]);
-        e.target.value = ''; // Сбрасыв���ем значение input
+        e.target.value = ''; // Сбрасыв��ем значение input
     }
 });
 
