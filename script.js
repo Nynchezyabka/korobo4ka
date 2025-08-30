@@ -192,7 +192,7 @@ function displayTasks() {
                         <button class="category-option" data-category="0">Без категории</button>
                         <button class="category-option" data-category="1">Обязательные</button>
                         <button class="category-option" data-category="2">Безопасность</button>
-                        <button class="category-option" data-category="5">Доступность радостей</button>
+                        <button class="category-option" data-category="5">До��тупность радостей</button>
                         <button class="category-option" data-category="3">Простые радости</button>
                         <button class="category-option" data-category="4">Эго радости</button>
                     </div>
@@ -233,11 +233,13 @@ function displayTasks() {
             e.stopPropagation();
             if (activeDropdown && activeDropdown !== this.nextElementSibling) {
                 activeDropdown.classList.remove('show');
+                if (activeDropdown.parentElement) activeDropdown.parentElement.style.zIndex = '';
             }
             const dropdown = this.nextElementSibling;
             dropdown.classList.toggle('show');
             activeDropdown = dropdown;
             if (dropdown.classList.contains('show')) {
+                if (dropdown.parentElement) dropdown.parentElement.style.zIndex = '4000';
                 dropdown.style.top = '100%';
                 dropdown.style.bottom = 'auto';
                 dropdown.style.left = '';
@@ -257,6 +259,8 @@ function displayTasks() {
                     dropdown.style.left = '0';
                     dropdown.style.right = 'auto';
                 }
+            } else {
+                if (dropdown.parentElement) dropdown.parentElement.style.zIndex = '';
             }
         });
     });
@@ -394,7 +398,7 @@ function showTimer(task) {
     currentTask = task;
     timerTaskText.textContent = task.text;
 
-    // Полный сброс состо��ния таймера перед новым запуском
+    // Полный сброс состояния таймера перед новым запуском
     if (timerEndTimeoutId) {
         clearTimeout(timerEndTimeoutId);
         timerEndTimeoutId = null;
@@ -555,7 +559,7 @@ window.addEventListener('load', async () => {
 
 // НОВАЯ РЕАЛИЗАЦИЯ ТАЙМЕРА (точный и работающий в фоне)
 
-// Поддержка Wake Lock API, чтобы экран не засыпал в�� время таймера
+// Поддержка Wake Lock API, чтобы экран не за��ыпал в�� время таймера
 async function requestWakeLock() {
     try {
         if ('wakeLock' in navigator && !wakeLock) {
@@ -612,7 +616,7 @@ function startTimer() {
         timerEndAt = Date.now() + (timerPausedTime * 1000);
         timerPausedTime = 0;
     }
-    // пр�� первом запуске
+    // при первом запуске
     if (!timerEndAt) {
         const total = Math.max(1, parseInt(timerMinutes.value)) * 60;
         timerEndAt = Date.now() + total * 1000;
@@ -643,7 +647,7 @@ function startTimer() {
         if (controls) controls.style.display = 'none';
     }, delay);
     
-    // Используем Web Worker для то��ного отсчета времени в фоне
+    // Используем Web Worker для точного отсчета времени в фоне
     if (typeof(Worker) !== "undefined") {
         if (timerWorker === null) {
             timerWorker = new Worker(URL.createObjectURL(new Blob([`
@@ -816,7 +820,7 @@ exportTasksBtn.addEventListener('click', exportTasks);
 importFile.addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
         importTasks(e.target.files[0]);
-        e.target.value = ''; // Сбрас��в��ем значение input
+        e.target.value = ''; // Сбрасыв��ем значение input
     }
 });
 
@@ -954,7 +958,7 @@ if (enableNotifyBtn) {
                 await ensurePushSubscribed();
                 createBrowserNotification('Уведомления включены');
             } else if (result === 'default') {
-                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройка�� ��айта.');
+                alert('Уведомления не включены. Подтвердите запрос браузера или разреши��е их в настройка�� ��айта.');
             } else if (result === 'denied') {
                 alert('Уведомления заблокированы в настр��йках браузера. Разрешите их вручную.');
             }
