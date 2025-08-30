@@ -31,7 +31,7 @@ let timerTime = 15 * 60; // 15 ��инут в секундах
 let timerRunning = false;
 let selectedTaskId = null;
 let activeDropdown = null;
-let wakeLock = null; // экраны не засыпают во время таймера (где подде��живается)
+let wakeLock = null; // экраны не засыпают во время таймера (где поддерживается)
 
 // Новые переменные для т��ч��ого таймера
 let timerStartTime = 0;
@@ -158,7 +158,7 @@ function displayTasks() {
     let currentGrid = null;
 
     tasks.forEach(task => {
-        // Начало новой категории — создаем группу
+        // Начало новой кате��ории — создаем группу
         if (task.category !== lastCategory) {
             const group = document.createElement('div');
             group.className = `category-group category-${task.category}`;
@@ -207,7 +207,7 @@ function displayTasks() {
                 </button>
             </div>
         `;
-        if (task.text.length > 28) {
+        if (isMobile && task.text.length > 44) {
             taskElement.classList.add('sticker-wide');
         }
         if (!currentGrid) {
@@ -337,7 +337,7 @@ function importTasks(file) {
                 }
             }
             
-            // Добавляем задачи в базу данных
+            // Добавляем задачи в ба��у данных
             tasks = importedTasks;
             saveTasks();
             alert(`Успешно импортировано ${importedTasks.length} задач`);
@@ -797,7 +797,7 @@ exportTasksBtn.addEventListener('click', exportTasks);
 importFile.addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
         importTasks(e.target.files[0]);
-        e.target.value = ''; // Сбрасыв��ем значение input
+        e.target.value = ''; // Сбрасыв���ем значение input
     }
 });
 
@@ -940,7 +940,7 @@ if (enableNotifyBtn) {
                 alert('Уведомления заблокированы в настр��йках браузера. Разрешите их вручную.');
             }
         } catch (e) {
-            alert('Не удалось запросить разрешение на уведомления. Откр��йте сайт напрямую и попробуйте снова.');
+            alert('Не удалось запросить разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
         }
     });
 }
