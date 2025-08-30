@@ -48,6 +48,7 @@ const sections = document.querySelectorAll('.section');
 document.addEventListener('click', function(e) {
     if (activeDropdown && !e.target.closest('.category-selector') && !e.target.closest('.add-category-selector')) {
         activeDropdown.classList.remove('show');
+        if (activeDropdown.parentElement) activeDropdown.parentElement.style.zIndex = '';
         activeDropdown = null;
     }
 });
@@ -331,7 +332,7 @@ function exportTasks() {
     const dataStr = JSON.stringify(tasks, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
     
-    const exportFileDefaultName = 'коробочка-задачи.json';
+    const exportFileDefaultName = 'коробоч��а-задачи.json';
     
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
