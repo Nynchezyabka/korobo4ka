@@ -624,14 +624,14 @@ textarea {
 /* Медиа-запрос для планшетов в альбомной ориентации и небольших ноутбуков */
 @media (min-width: 768px) {
     .sections {
-        flex-direction: row;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+        gap: 12px;
     }
-    
+
     .section {
-        flex: 1;
-        min-width: 220px;
-        max-width: calc(50% - 8px);
+        min-width: 0;
+        max-width: none;
     }
     
     .controls {
@@ -684,7 +684,13 @@ textarea {
     }
     
     .section {
-        max-width: calc(33.333% - 10px);
+        max-width: none;
+    }
+
+    .sections {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
     }
 
     /* Кнопки действий выравниваем по сетке (3 колонки) */
