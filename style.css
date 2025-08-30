@@ -286,7 +286,7 @@ textarea {
 .category-selector {
     position: relative;
     display: inline-block;
-    z-index: 2; /* Увеличиваем z-index для правильного отображения */
+    z-index: 3000;
 }
 
 .category-dropdown {
@@ -297,7 +297,7 @@ textarea {
     border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 8px;
-    z-index: 1000; /* Убедимся, что выпадающий список поверх других элементов */
+    z-index: 3100;
     display: none;
     min-width: 130px;
 }
@@ -353,7 +353,7 @@ textarea {
 .category-selector {
     position: relative;
     display: inline-block;
-    z-index: 2; /* Увеличиваем z-index для правильного отображения */
+    z-index: 3000;
 }
 
 .category-badge {
@@ -383,7 +383,7 @@ textarea {
     border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 8px;
-    z-index: 1000; /* Убедимся, что выпадающий список поверх других элементов */
+    z-index: 3100;
     display: none;
     min-width: 130px;
 }
@@ -653,9 +653,14 @@ textarea {
     }
 
     .category-dropdown {
+        position: absolute;
         width: 100%;
         right: auto;
         left: 0;
+        top: 100%;
+        bottom: auto;
+        max-height: 50vh;
+        overflow: auto;
     }
 }
 
@@ -1040,6 +1045,7 @@ textarea {
     background: transparent;
     margin: 2px 0 6px;
     padding: 0;
+    cursor: pointer;
 }
 
 /* Сетка стикеров внутри группы */
@@ -1075,3 +1081,6 @@ textarea {
     .group-grid .category-selector { grid-column: auto; grid-row: auto; margin: 0; }
     .group-grid .task-controls { grid-column: auto; grid-row: auto; margin: 0; }
 }
+
+/* Скрытие задач при свёрнутой группе */
+.category-group.collapsed .group-grid { display: none; }
