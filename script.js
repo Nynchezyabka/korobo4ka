@@ -78,7 +78,7 @@ function getCategoryName(category) {
 
 // Функция отображения всех задач
 function displayTasks() {
-    // Сортируем задачи: сначала без категории (0), затем остальные по категории
+    // Сортируем задачи: сначала без катег��рии (0), затем остальные по категории
     tasks.sort((a, b) => {
         if (a.category === 0 && b.category !== 0) return -1;
         if (a.category !== 0 && b.category === 0) return 1;
@@ -269,7 +269,7 @@ function getRandomTask(categories) {
     // Преобразуем строку категорий в массив чисел
     const categoryArray = categories.split(',').map(Number);
     
-    // Получаем все активные задачи из указанных категорий
+    // Получаем все активные задачи из указанных ка��егорий
     const filteredTasks = tasks.filter(task => 
         categoryArray.includes(task.category) && task.active
     );
@@ -342,21 +342,31 @@ function showNotification() {
 
 // Создание браузерного уведомления
 function createBrowserNotification() {
-    const notification = new Notification("🎁 КОРОБОЧКА", {
+    const title = "🎁 КОРОБОЧКА";
+    const options = {
         body: "Время вышло! Задача завершена.",
-        icon: "https://example.com/icon.png", // Замените на URL вашей иконки
-        tag: "timer-notification"
-    });
-    
-    notification.onclick = function() {
-        window.focus();
-        this.close();
+        icon: "/icon-192.png",
+        badge: "/icon-192.png",
+        vibrate: [500, 300, 500],
+        tag: "timer-notification",
+        renotify: true,
+        requireInteraction: true,
+        data: { url: "/" }
     };
-    
-    // Автоматически закрываем уведомление через 5 секунд
-    setTimeout(() => {
-        notification.close();
-    }, 5000);
+
+    if (!("Notification" in window)) return;
+
+    if (navigator.serviceWorker && Notification.permission === "granted") {
+        navigator.serviceWorker.getRegistration().then(reg => {
+            if (reg && reg.showNotification) {
+                reg.showNotification(title, options);
+            } else {
+                new Notification(title, options);
+            }
+        });
+    } else if (Notification.permission === "granted") {
+        new Notification(title, options);
+    }
 }
 
 // Добавляем запрос разрешения при загрузке страницы
