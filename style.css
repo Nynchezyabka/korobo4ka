@@ -498,7 +498,7 @@ textarea {
     transition: all 0.3s;
 }
 
-/* Новые цвета для кнопок таймера */
+/* ��овые цвета для кнопок таймера */
 #startTimerBtn {
     background-color: #9CCC65; /* желто-зеленый */
 }
@@ -896,11 +896,13 @@ textarea {
     }
 }
 
-/* Подзаголовки категорий для мобильной группировки */
+/* По��заголовки категорий для мобильной группировки */
 .category-title {
     margin: 10px 0 6px;
     color: #5d4037;
     font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 8px;
 }
 .category-heading {
     font-size: 1.1rem;
@@ -913,18 +915,24 @@ textarea {
 
 /* Компактный режим "стикеров" для мобильных */
 @media (max-width: 480px) {
-    .tasks.mobile-compact { }
-    .tasks.mobile-compact .category-title { display: block; }
+    .tasks.mobile-compact {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 6px;
+        grid-auto-flow: dense;
+    }
+    .tasks.mobile-compact .category-title { display: block; grid-column: 1 / -1; }
     .tasks.mobile-compact .task {
-        display: inline-flex;
+        display: flex;
         align-items: center;
         padding: 6px 8px;
-        margin: 4px 6px 0 0;
+        margin: 0;
         border-radius: 14px;
+        width: 100%;
     }
     .tasks.mobile-compact .task-content {
         flex-direction: row;
-        width: auto;
+        width: 100%;
         padding-right: 0;
         gap: 6px;
     }
@@ -932,10 +940,13 @@ textarea {
         padding: 0;
         margin: 0;
         font-size: 1rem;
+        word-break: break-word;
     }
     .tasks.mobile-compact .task-controls {
+        margin-left: auto;
         position: static;
         width: auto;
+        gap: 4px;
     }
     .tasks.mobile-compact .category-selector {
         width: auto;
@@ -951,4 +962,5 @@ textarea {
         right: auto;
         left: 0;
     }
+    .tasks.mobile-compact .sticker-wide { grid-column: 1 / -1; }
 }
