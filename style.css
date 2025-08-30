@@ -77,6 +77,10 @@ h1 {
     height: 10px;
     background-color: rgba(0, 0, 0, 0.15);
 }
+/* Цвет полоски секций в соответствии с цветами категорий */
+.mandatory::before { background-color: #FFD54F; }
+.security::before { background-color: #64B5F6; }
+.joys::before { background-color: #81C784; }
 
 .section:active {
     transform: translateY(-2px);
@@ -100,7 +104,7 @@ h1 {
 }
 
 .security {
-    background-color: #bbdefb; /* голубой */
+    background-color: #bbdefb; /* г��лубой */
 }
 
 .joys {
@@ -179,7 +183,7 @@ textarea, select, input {
 #taskCategory.category-4 { border-left-color: #E57373; background-color: #ffcdd2; }
 #taskCategory.category-5 { border-left-color: #9575CD; background-color: #d1c4e9; }
 
-/* Скрываем на��ивный select и используем каст��мный цветной дропдаун */
+/* Скрываем на��ивный select и используем кастомный цветной дропдаун */
 .task-form #taskCategory { display: none; }
 .add-category-selector { position: relative; display: inline-block; width: 100%; }
 .add-category-badge {
@@ -293,7 +297,7 @@ textarea {
     border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 8px;
-    z-index: 1000; /* Убедимся, что выпадающий список поверх других элементов */
+    z-index: 1000; /* Убедимся, что выпадающий список ��оверх других элементов */
     display: none;
     min-width: 130px;
 }
@@ -980,7 +984,6 @@ textarea {
     margin: 0;
     border-radius: 14px;
     width: 100%;
-    border-left: none;
 }
 .tasks.sticker-grid .task-content {
     flex-direction: row;
@@ -1060,7 +1063,7 @@ textarea {
 
 /* Стикер на всю строку для длинных задач */
 .group-grid .sticker-wide { grid-column: 1 / -1; }
-.group-grid .task { border-left: none; padding: 6px 8px; border-radius: 12px; }
+.group-grid .task { padding: 6px 8px; border-radius: 12px; }
 .group-grid .category-badge { background-color: transparent; padding: 0 6px; }
 .group-grid .category-badge .category-name, .group-grid .category-badge .fa-caret-down { display: none; }
 
