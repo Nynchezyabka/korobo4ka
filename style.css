@@ -166,6 +166,19 @@ textarea, select, input {
     width: 100%;
 }
 
+/* Цветная индикация категории при добавлении задачи */
+#taskCategory {
+    border-left-width: 4px;
+    border-left-style: solid;
+    background-image: linear-gradient(rgba(0,0,0,0.03), rgba(0,0,0,0.03));
+}
+#taskCategory.category-0 { border-left-color: #9E9E9E; background-color: #f5f5f5; }
+#taskCategory.category-1 { border-left-color: #FFD54F; background-color: #fff9c4; }
+#taskCategory.category-2 { border-left-color: #64B5F6; background-color: #bbdefb; }
+#taskCategory.category-3 { border-left-color: #81C784; background-color: #c8e6c9; }
+#taskCategory.category-4 { border-left-color: #E57373; background-color: #ffcdd2; }
+#taskCategory.category-5 { border-left-color: #9575CD; background-color: #d1c4e9; }
+
 textarea {
     min-height: 80px;
     resize: vertical;
@@ -173,6 +186,16 @@ textarea {
 
 .tasks {
     margin-top: 15px;
+}
+
+/* Компактный превью-список в несколько столбцов на широких экранах */
+@media (min-width: 768px) {
+    .tasks {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 8px;
+    }
+    .task { margin-bottom: 0; }
 }
 
 .task {
