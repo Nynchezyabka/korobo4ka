@@ -597,3 +597,80 @@ if ('serviceWorker' in navigator) {
         });
     });
 }
+
+// Функция для показа toast-уведомления
+function showToastNotification(title, message, duration = 5000) {
+    // Создаем элемент уведомления, если его еще нет
+    let toast = document.getElementById('toast-notification');
+    
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-notification';
+        toast.className = 'toast-notification';
+        toast.innerHTML = `
+            <div class="toast-icon">🎁</div>
+            <div class="toast-content">
+                <div class="toast-title"></div>
+                <div class="toast-message"></div>
+            </div>
+            <button class="toast-close">&times;</button>
+        `;
+        document.body.appendChild(toast);
+        
+        // Добавляем обработчик для кнопки закрытия
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            hideToastNotification();
+        });
+    }
+    
+    // Заполняем содержимое
+    toast.querySelector('.toast-title').textContent = title;
+    toast.querySelector('.toast-message').textContent = message;
+    
+    // Показываем уведомление
+    toast.classList.remove('hide');
+    toast.classList.add('show');
+    
+    // Автоматически скрываем через указанное время
+    if (duration > 0) {
+        setTimeout(() => {
+            hideToastNotification();
+        }, duration);
+    }
+    
+    // Вибрация для мобильных устройств
+    if (navigator.vibrate) {
+        navigator.vibrate([200, 100, 200]);
+    }
+}
+
+// Функция для скрытия toast-уведомления
+function hideToastNotification() {
+    const toast = document.getElementById('toast-notification');
+    if (toast) {
+        toast.classList.remove('show');
+        toast.classList.add('hide');
+        
+        // Удаляем элемент после завершения анимации
+        setTimeout(() => {
+            if (toast && toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }
+}
+
+// Обновляем функцию showNotification для использования toast-уведомлений
+function showNotification() {
+    showToastNotification("🎁 КОРОБОЧКА", "Время вышло! Задача завершена.", 5000);
+    
+    // Также пытаемся показать браузерное уведомление, если разрешено
+    if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("🎁 КОРОБОЧКА", {
+            body: "Время вышло! Задача завершена.",
+            icon: "/icon-192.png"
+        });
+    } else if ("Notification" in window && Notification.permission !== "denied") {
+        Notification.requestPermission();
+    }
+}
