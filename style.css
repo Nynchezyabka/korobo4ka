@@ -241,7 +241,7 @@ textarea {
     margin-top: 15px;
 }
 
-/* Компактный превью-список в несколько столбцов на широких экранах */
+/* Компактный превью-список в несколько столбцов на широ��их экранах */
 @media (min-width: 768px) {
     .tasks {
         display: grid;
@@ -697,7 +697,7 @@ textarea {
     }
 }
 
-/* Медиа-запрос для планшетов в ��льбомной ориентации и небольших ноутбуков */
+/* Медиа-запрос для планшетов в альбомной ориентации и небольших ноутбуков */
 @media (min-width: 768px) {
     .sections {
         display: grid;
@@ -922,44 +922,47 @@ textarea {
 @media (max-width: 480px) {
     .tasks.mobile-compact {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 6px;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 4px;
         grid-auto-flow: dense;
     }
+    .tasks.mobile-compact .category-group { grid-column: 1 / -1; }
     .tasks.mobile-compact .category-title { display: block; grid-column: 1 / -1; }
     .tasks.mobile-compact .task {
         display: flex;
         align-items: center;
-        padding: 6px 8px;
+        padding: 4px 6px;
         margin: 0;
-        border-radius: 14px;
+        border-radius: 12px;
         width: 100%;
     }
     .tasks.mobile-compact .task-content {
         flex-direction: row;
         width: 100%;
         padding-right: 0;
-        gap: 6px;
+        gap: 4px;
     }
     .tasks.mobile-compact .task-text {
         padding: 0;
         margin: 0;
-        font-size: 1rem;
+        font-size: 0.95rem;
+        line-height: 1.2;
         word-break: break-word;
     }
     .tasks.mobile-compact .task-controls {
         margin-left: auto;
         position: static;
         width: auto;
-        gap: 4px;
+        gap: 2px;
     }
+    .tasks.mobile-compact .task-control-btn { font-size: 0.95rem; padding: 2px; }
     .tasks.mobile-compact .category-selector {
         width: auto;
         margin: 0;
     }
     .tasks.mobile-compact .category-badge {
         background-color: transparent;
-        padding: 0 6px;
+        padding: 0 4px;
     }
     .tasks.mobile-compact .category-badge .category-name { display: none; }
     .tasks.mobile-compact .category-badge .fa-caret-down { display: none; }
@@ -1020,7 +1023,7 @@ textarea {
     .tasks.sticker-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 }
 
-/* Группы задач по категории с фоновым блоком */
+/* Группы зад��ч по категории с фоновым блоком */
 .category-group {
     border-radius: 10px;
     padding: 8px;
@@ -1046,7 +1049,7 @@ textarea {
     grid-auto-flow: dense;
 }
 @media (max-width: 480px) {
-    .group-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    .group-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 4px; }
 }
 @media (min-width: 481px) and (max-width: 767px) {
     .group-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
