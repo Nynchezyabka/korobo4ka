@@ -62,6 +62,8 @@ const closeTimerBtn = document.getElementById('closeTimerBtn');
 const importFile = document.getElementById('importFile');
 const notification = document.getElementById('notification');
 const timerCompleteOptions = document.getElementById('timerCompleteOptions');
+const notifyBanner = document.getElementById('notifyBanner');
+const enableNotifyBtn = document.getElementById('enableNotifyBtn');
 
 // Функция для получения названия категории по номеру
 function getCategoryName(category) {
@@ -78,7 +80,7 @@ function getCategoryName(category) {
 
 // Функция отображения всех задач
 function displayTasks() {
-    // Сортируем задачи: сначала без катег��рии (0), затем остальные по категории
+    // Сортируем задачи: сначала без категории (0), затем остальные по категории
     tasks.sort((a, b) => {
         if (a.category === 0 && b.category !== 0) return -1;
         if (a.category !== 0 && b.category === 0) return 1;
@@ -269,7 +271,7 @@ function getRandomTask(categories) {
     // Преобразуем строку категорий в массив чисел
     const categoryArray = categories.split(',').map(Number);
     
-    // Получаем все активные задачи из указанных ка��егорий
+    // Получаем все активные задачи из указанных категорий
     const filteredTasks = tasks.filter(task => 
         categoryArray.includes(task.category) && task.active
     );
@@ -372,13 +374,15 @@ function createBrowserNotification() {
 // Добавляем запрос разрешения при загрузке страницы
 window.addEventListener('load', () => {
     loadTasks();
-    
-    // Запрашиваем разрешение на уведомления
-    if ("Notification" in window && Notification.permission === "default") {
-        Notification.requestPermission();
+
+    if ("Notification" in window) {
+        if (Notification.permission !== "granted") {
+            if (notifyBanner) notifyBanner.style.display = 'flex';
+        } else if (notifyBanner) {
+            notifyBanner.style.display = 'none';
+        }
     }
-    
-    // Проверяем поддержку вибрации
+
     if (!navigator.vibrate) {
         console.log("Вибрация не поддерживается на этом устройстве");
     }
@@ -587,14 +591,9 @@ timerMinutes.addEventListener('change', () => {
     }
 });
 
-// Инициализация при загрузке
+// Инициализация при загрузке (доп.)
 window.addEventListener('load', () => {
     loadTasks();
-    
-    // Запрашиваем разрешение на уведомления
-    if ("Notification" in window && Notification.permission === "default") {
-        Notification.requestPermission();
-    }
 });
 
 // Service Worker для push-уведомлений
@@ -605,5 +604,20 @@ if ('serviceWorker' in navigator) {
         }, function(err) {
             console.log('ServiceWorker registration failed: ', err);
         });
+    });
+}
+
+if (enableNotifyBtn) {
+    enableNotifyBtn.addEventListener('click', async () => {
+        if (!('Notification' in window)) return alert('Уведомления не поддерживаются этим браузером');
+        try {
+            const result = await Notification.requestPermission();
+            if (result === 'granted') {
+                notifyBanner.style.display = 'none';
+                createBrowserNotification();
+            } else if (result === 'denied') {
+                alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
+            }
+        } catch (e) {}
     });
 }
