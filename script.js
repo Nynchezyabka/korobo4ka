@@ -39,6 +39,7 @@ let timerPausedTime = 0;
 let timerAnimationFrame = null;
 let timerWorker = null;
 let timerEndAt = 0;
+let timerEndTimeoutId = null;
 
 // Элементы DOM
 const sections = document.querySelectorAll('.section');
@@ -465,6 +466,18 @@ function startTimer() {
         timerEndAt = Date.now() + total * 1000;
     }
     timerStartTime = Date.now();
+
+    // Планируем системное уведомление к точному моменту окончания
+    if (timerEndTimeoutId) clearTimeout(timerEndTimeoutId);
+    const delay = Math.max(0, timerEndAt - Date.now());
+    timerEndTimeoutId = setTimeout(() => {
+        if (!timerRunning) return;
+        stopTimer();
+        showNotification();
+        timerCompleteOptions.style.display = 'flex';
+        const controls = document.querySelector('.timer-controls');
+        if (controls) controls.style.display = 'none';
+    }, delay);
     
     // Используем Web Worker для точного отсчета времени в фоне
     if (typeof(Worker) !== "undefined") {
@@ -518,6 +531,10 @@ function pauseTimer() {
     if (!timerRunning) return;
 
     stopTimer();
+    if (timerEndTimeoutId) {
+        clearTimeout(timerEndTimeoutId);
+        timerEndTimeoutId = null;
+    }
     timerPausedTime = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
 }
 
@@ -525,7 +542,12 @@ function pauseTimer() {
 function stopTimer() {
     timerRunning = false;
     releaseWakeLock();
-    
+
+    if (timerEndTimeoutId) {
+        clearTimeout(timerEndTimeoutId);
+        timerEndTimeoutId = null;
+    }
+
     if (timerWorker) {
         timerWorker.postMessage('stop');
     } else {
@@ -541,6 +563,10 @@ function stopTimer() {
 // Функция для сброса таймера
 function resetTimer() {
     stopTimer();
+    if (timerEndTimeoutId) {
+        clearTimeout(timerEndTimeoutId);
+        timerEndTimeoutId = null;
+    }
     timerEndAt = 0;
     timerTime = Math.max(1, parseInt(timerMinutes.value)) * 60;
     timerPausedTime = 0;
