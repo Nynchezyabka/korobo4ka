@@ -7,10 +7,10 @@
 
 body {
     font-family: 'Caveat', cursive, sans-serif;
-    background-color: #f5f5f5;
-    background-image: 
-        linear-gradient(rgba(200, 200, 200, 0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(200, 200, 200, 0.1) 1px, transparent 1px);
+    background-color: #fffaf0;
+    background-image:
+        linear-gradient(rgba(210, 190, 150, 0.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(210, 190, 150, 0.12) 1px, transparent 1px);
     background-size: 20px 20px;
     color: #333;
     padding: 10px;
@@ -77,6 +77,10 @@ h1 {
     height: 10px;
     background-color: rgba(0, 0, 0, 0.15);
 }
+/* Цвет полоски секций в соответствии с цветами категорий */
+.mandatory::before { background-color: #FFD54F; }
+.security::before { background-color: #64B5F6; }
+.joys::before { background-color: #81C784; }
 
 .section:active {
     transform: translateY(-2px);
@@ -166,6 +170,68 @@ textarea, select, input {
     width: 100%;
 }
 
+/* Цветная индикация категории при добавлении задачи */
+#taskCategory {
+    border-left-width: 4px;
+    border-left-style: solid;
+    background-image: linear-gradient(rgba(0,0,0,0.03), rgba(0,0,0,0.03));
+}
+#taskCategory.category-0 { border-left-color: #9E9E9E; background-color: #f5f5f5; }
+#taskCategory.category-1 { border-left-color: #FFD54F; background-color: #fff9c4; }
+#taskCategory.category-2 { border-left-color: #64B5F6; background-color: #bbdefb; }
+#taskCategory.category-3 { border-left-color: #81C784; background-color: #c8e6c9; }
+#taskCategory.category-4 { border-left-color: #E57373; background-color: #ffcdd2; }
+#taskCategory.category-5 { border-left-color: #9575CD; background-color: #d1c4e9; }
+
+/* Скрываем на��ивный select и используем кастомный цветной дропдаун */
+.task-form #taskCategory { display: none; }
+.add-category-selector { position: relative; display: inline-block; width: 100%; }
+.add-category-badge {
+    font-size: 1rem;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background-color: rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.add-category-badge:active { background-color: rgba(0,0,0,0.1); transform: scale(0.98); }
+.add-category-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    padding: 8px;
+    z-index: 1000;
+    display: none;
+}
+.add-category-dropdown.show { display: block; }
+.add-category-option {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    width: 100%;
+    text-align: left;
+    font-family: 'Caveat', cursive;
+    font-size: 1rem;
+    transition: all 0.3s;
+    color: #333;
+}
+.add-category-option:active { transform: scale(0.98); }
+.add-category-option:last-child { margin-bottom: 0; }
+
+/* Цвета для опций категорий (как в списке задач) */
+.add-category-option[data-category="0"] { background-color: #f5f5f5; border-left: 2px solid #9E9E9E; }
+.add-category-option[data-category="1"] { background-color: #fff9c4; border-left: 2px solid #FFD54F; }
+.add-category-option[data-category="2"] { background-color: #bbdefb; border-left: 2px solid #64B5F6; }
+.add-category-option[data-category="3"] { background-color: #c8e6c9; border-left: 2px solid #81C784; }
+.add-category-option[data-category="4"] { background-color: #ffcdd2; border-left: 2px solid #E57373; }
+.add-category-option[data-category="5"] { background-color: #d1c4e9; border-left: 2px solid #9575CD; }
+
 textarea {
     min-height: 80px;
     resize: vertical;
@@ -173,6 +239,16 @@ textarea {
 
 .tasks {
     margin-top: 15px;
+}
+
+/* Компактный превью-список в несколько столбцов на широ��их экранах */
+@media (min-width: 768px) {
+    .tasks {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 8px;
+    }
+    .task { margin-bottom: 0; }
 }
 
 .task {
@@ -426,7 +502,7 @@ textarea {
     transition: all 0.3s;
 }
 
-/* Новые цвета для кнопок таймера */
+/* ��овые цвета для кнопок таймера */
 #startTimerBtn {
     background-color: #9CCC65; /* желто-зеленый */
 }
@@ -583,7 +659,7 @@ textarea {
     }
 }
 
-/* Медиа-запрос для планшетов и больших телефонов */
+/* Медиа-запрос ��ля планшетов и больших телефонов */
 @media (min-width: 481px) {
     body {
         padding: 15px;
@@ -693,7 +769,7 @@ textarea {
         gap: 12px;
     }
 
-    /* Кнопки действий выравниваем по сетке (3 колонки) */
+    /* Кнопки действий выравниваем п�� сетке (3 колонки) */
     .controls {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -822,4 +898,180 @@ textarea {
         left: 10px;
         max-width: none;
     }
+}
+
+/* По��заголовки категорий для мобильной группировки */
+.category-title {
+    margin: 10px 0 6px;
+    color: #5d4037;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 8px;
+}
+.category-heading {
+    font-size: 1.1rem;
+}
+
+/* Показываем подзаголовки на всех экранах */
+@media (min-width: 481px) {
+    .category-title { display: flex; }
+}
+.folder-before-title { color: #5d4037; }
+
+/* Компактный режим "сти��еров" для мобильных */
+@media (max-width: 480px) {
+    .tasks.mobile-compact {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 4px;
+        grid-auto-flow: dense;
+    }
+    .tasks.mobile-compact .category-group { grid-column: 1 / -1; }
+    .tasks.mobile-compact .category-title { display: block; grid-column: 1 / -1; }
+    .tasks.mobile-compact .task {
+        display: flex;
+        align-items: center;
+        padding: 4px 6px;
+        margin: 0;
+        border-radius: 12px;
+        width: 100%;
+    }
+    .tasks.mobile-compact .task-content {
+        flex-direction: row;
+        width: 100%;
+        padding-right: 0;
+        gap: 4px;
+    }
+    .tasks.mobile-compact .task-text {
+        padding: 0;
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.2;
+        word-break: break-word;
+    }
+    .tasks.mobile-compact .task-controls {
+        margin-left: auto;
+        position: static;
+        width: auto;
+        gap: 2px;
+    }
+    .tasks.mobile-compact .task-control-btn { font-size: 0.95rem; padding: 2px; }
+    .tasks.mobile-compact .category-selector {
+        width: auto;
+        margin: 0;
+    }
+    .tasks.mobile-compact .category-badge {
+        background-color: transparent;
+        padding: 0 4px;
+    }
+    .tasks.mobile-compact .category-badge .category-name { display: none; }
+    .tasks.mobile-compact .category-badge .fa-caret-down { display: none; }
+    .tasks.mobile-compact .category-dropdown {
+        right: auto;
+        left: 0;
+    }
+    .tasks.mobile-compact .sticker-wide { grid-column: 1 / -1; }
+}
+
+/* Стикерная сетка для планшетов и десктопов */
+.tasks.sticker-grid {
+    display: grid;
+    gap: 6px;
+    grid-auto-flow: dense;
+}
+.tasks.sticker-grid .category-title { grid-column: 1 / -1; }
+.tasks.sticker-grid .task {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    margin: 0;
+    border-radius: 14px;
+    width: 100%;
+}
+.tasks.sticker-grid .task-content {
+    flex-direction: row;
+    width: 100%;
+    padding-right: 0;
+    gap: 6px;
+}
+.tasks.sticker-grid .task-text {
+    padding: 0;
+    margin: 0;
+    font-size: 1rem;
+    word-break: break-word;
+}
+.tasks.sticker-grid .task-controls {
+    margin-left: auto;
+    position: static;
+    width: auto;
+    gap: 4px;
+}
+.tasks.sticker-grid .category-selector { width: auto; margin: 0; }
+.tasks.sticker-grid .category-badge { background-color: transparent; padding: 0 6px; }
+.tasks.sticker-grid .category-badge .category-name { display: none; }
+.tasks.sticker-grid .category-badge .fa-caret-down { display: none; }
+.tasks.sticker-grid .category-dropdown { right: auto; left: 0; }
+.tasks.sticker-grid .sticker-wide { grid-column: 1 / -1; }
+
+@media (min-width: 481px) and (max-width: 767px) {
+    .tasks.sticker-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+    .tasks.sticker-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+}
+@media (min-width: 1024px) {
+    .tasks.sticker-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+}
+
+/* Группы зад��ч по категории с фоновым блоком */
+.category-group {
+    border-radius: 10px;
+    padding: 8px;
+    margin: 10px 0;
+}
+.category-group.category-0 { background-color: #fafafa; border-left: none; }
+.category-group.category-1 { background-color: #fffde7; border-left: none; }
+.category-group.category-2 { background-color: #e3f2fd; border-left: none; }
+.category-group.category-3 { background-color: #e8f5e9; border-left: none; }
+.category-group.category-4 { background-color: #ffebee; border-left: none; }
+.category-group.category-5 { background-color: #ede7f6; border-left: none; }
+
+.category-group .category-title {
+    background: transparent;
+    margin: 2px 0 6px;
+    padding: 0;
+}
+
+/* Сетка стикеров внутри группы */
+.group-grid {
+    display: grid;
+    gap: 6px;
+    grid-auto-flow: dense;
+}
+@media (max-width: 480px) {
+    .group-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 4px; }
+}
+@media (min-width: 481px) and (max-width: 767px) {
+    .group-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+    .group-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+}
+@media (min-width: 1024px) {
+    .group-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+}
+
+/* Стикер на всю строку для длинных задач */
+.group-grid .sticker-wide { grid-column: 1 / -1; }
+.group-grid .task { padding: 6px 8px; border-radius: 12px; }
+.group-grid .category-badge { background-color: transparent; padding: 0 6px; }
+.group-grid .category-badge .category-name, .group-grid .category-badge .fa-caret-down { display: none; }
+
+/* Переопределяем старую десктопную раскладку внутри групп */
+@media (min-width: 1024px) {
+    .group-grid .task { display: flex; grid-template-columns: initial; grid-template-rows: initial; align-items: center; }
+    .group-grid .task-content { display: flex; }
+    .group-grid .task-text { grid-column: auto; grid-row: auto; }
+    .group-grid .category-selector { grid-column: auto; grid-row: auto; margin: 0; }
+    .group-grid .task-controls { grid-column: auto; grid-row: auto; margin: 0; }
 }
