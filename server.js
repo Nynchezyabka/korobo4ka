@@ -2,6 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
+const webpush = require('web-push');
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const root = process.cwd();
@@ -23,6 +24,20 @@ function send(res, statusCode, data, headers = {}) {
   res.writeHead(statusCode, headers);
   if (data) res.end(data);
   else res.end();
+}
+
+function readJson(req) {
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk;
+      if (body.length > 1e6) req.connection.destroy();
+    });
+    req.on('end', () => {
+      try { resolve(body ? JSON.parse(body) : {}); } catch (e) { reject(e); }
+    });
+    req.on('error', reject);
+  });
 }
 
 function serveFile(filePath, res) {
@@ -50,9 +65,86 @@ function serveFile(filePath, res) {
   });
 }
 
-const server = http.createServer((req, res) => {
+// Web Push setup
+let VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || '';
+let VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || '';
+
+if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
+  const keys = webpush.generateVAPIDKeys();
+  VAPID_PUBLIC_KEY = keys.publicKey;
+  VAPID_PRIVATE_KEY = keys.privateKey;
+  console.log('\nGenerated ephemeral VAPID keys for dev. Public key:');
+  console.log(VAPID_PUBLIC_KEY);
+}
+
+webpush.setVapidDetails(
+  'mailto:admin@example.com',
+  VAPID_PUBLIC_KEY,
+  VAPID_PRIVATE_KEY
+);
+
+const subscriptions = new Map(); // endpoint -> subscription
+const scheduled = new Set(); // ids of scheduled tasks
+
+function toJson(res, obj, status=200) {
+  send(res, status, Buffer.from(JSON.stringify(obj)), { 'Content-Type': 'application/json; charset=utf-8' });
+}
+
+async function handleApi(req, res, pathname) {
+  if (req.method === 'GET' && pathname === '/api/push/public-key') {
+    return toJson(res, { publicKey: VAPID_PUBLIC_KEY });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/push/subscribe') {
+    try {
+      const sub = await readJson(req);
+      if (!sub || !sub.endpoint) return toJson(res, { error: 'invalid subscription' }, 400);
+      subscriptions.set(sub.endpoint, sub);
+      return toJson(res, { ok: true });
+    } catch (e) {
+      return toJson(res, { error: 'bad json' }, 400);
+    }
+  }
+
+  if (req.method === 'POST' && pathname === '/api/timer/schedule') {
+    try {
+      const body = await readJson(req);
+      const { endAt, taskText } = body || {};
+      if (!endAt) return toJson(res, { error: 'endAt required' }, 400);
+      const delay = Math.max(0, endAt - Date.now());
+      const id = `${endAt}:${taskText || ''}`;
+      if (!scheduled.has(id)) {
+        scheduled.add(id);
+        setTimeout(() => {
+          const payload = JSON.stringify({
+            title: '🎁 КОРОБОЧКА',
+            body: taskText ? `Задача: ${taskText}` : 'Время вышло! Задача завершена.',
+            vibrate: [500,300,500],
+            data: { url: '/' }
+          });
+          for (const sub of subscriptions.values()) {
+            webpush.sendNotification(sub, payload).catch(() => {});
+          }
+          scheduled.delete(id);
+        }, delay);
+      }
+      return toJson(res, { ok: true, delay });
+    } catch (e) {
+      return toJson(res, { error: 'bad json' }, 400);
+    }
+  }
+
+  return null;
+}
+
+const server = http.createServer(async (req, res) => {
   const parsed = url.parse(req.url);
   let pathname = decodeURIComponent(parsed.pathname || '/');
+
+  if (pathname.startsWith('/api/')) {
+    const handled = await handleApi(req, res, pathname);
+    if (handled !== null) return; // already responded
+  }
 
   // Normalize and prevent path traversal
   pathname = path.normalize(pathname).replace(/^\/+/, '/');
