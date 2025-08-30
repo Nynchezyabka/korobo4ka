@@ -7,11 +7,7 @@
 
 body {
     font-family: 'Caveat', cursive, sans-serif;
-    background-color: #f5f5dc;
-    background-image:
-        linear-gradient(rgba(210, 190, 150, 0.12) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(210, 190, 150, 0.12) 1px, transparent 1px);
-    background-size: 20px 20px;
+    background-color: #fffaf0;
     color: #333;
     padding: 10px;
     line-height: 1.4;
@@ -170,7 +166,7 @@ textarea, select, input {
     width: 100%;
 }
 
-/* Цветная индикация категории при добавлении задачи */
+/* Цветная индикация категории ��ри добавлении задачи */
 #taskCategory {
     border-left-width: 4px;
     border-left-style: solid;
