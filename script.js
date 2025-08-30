@@ -33,7 +33,7 @@ let selectedTaskId = null;
 let activeDropdown = null;
 let wakeLock = null; // экраны не засыпают во время таймера (где поддерживается)
 
-// Новые переменные для точ��ого таймера
+// Новые пе��еменные для точ��ого таймера
 let timerStartTime = 0;
 let timerPausedTime = 0;
 let timerAnimationFrame = null;
@@ -241,7 +241,7 @@ function changeTaskCategory(taskId, newCategory) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
     
-    // Если зада��а была без категории и неактивна, и выбирается новая категория, активируем ее
+    // ��сли зада��а была без категории и неактивна, и выбирается новая категория, активируем ее
     const updateData = { category: newCategory };
     if (tasks[taskIndex].category === 0 && !tasks[taskIndex].active && newCategory !== 0) {
         updateData.active = true;
@@ -745,27 +745,9 @@ addTaskBtn.addEventListener('click', () => {
     displayTasks();
 });
 
-addMultipleBtn.addEventListener('click', () => {
-    const tasksText = prompt('Введите задачи, разделяя их переносом строки:');
-    if (tasksText) {
-        const tasksArray = tasksText.split('\n').filter(task => task.trim());
-        
-        if (confirm(`Добавить ${tasksArray.length} задач?`)) {
-            tasksArray.forEach(task => {
-                tasks.push({
-                    id: getNextId(),
-                    text: task.trim(),
-                    category: 0, // Без категории
-                    completed: false,
-                    active: true // Теперь активны по умолчанию
-                });
-            });
-            
-            saveTasks();
-            displayTasks();
-        }
-    }
-});
+if (typeof addMultipleBtn !== 'undefined' && addMultipleBtn) {
+    addMultipleBtn.style.display = 'none';
+}
 
 exportTasksBtn.addEventListener('click', exportTasks);
 
