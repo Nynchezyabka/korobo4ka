@@ -31,6 +31,7 @@ let timerTime = 15 * 60; // 15 минут в секундах
 let timerRunning = false;
 let selectedTaskId = null;
 let activeDropdown = null;
+let wakeLock = null; // экраны не засыпают во время таймера (где поддерживается)
 
 // Новые переменные для точного таймера
 let timerStartTime = 0;
@@ -40,6 +41,14 @@ let timerWorker = null;
 
 // Элементы DOM
 const sections = document.querySelectorAll('.section');
+
+// Глобальный обработчик для закрытия открытого выпадающего меню категорий
+document.addEventListener('click', function(e) {
+    if (activeDropdown && !e.target.closest('.category-selector')) {
+        activeDropdown.classList.remove('show');
+        activeDropdown = null;
+    }
+});
 const showTasksBtn = document.getElementById('showTasksBtn');
 const addMultipleBtn = document.getElementById('addMultipleBtn');
 const exportTasksBtn = document.getElementById('exportTasksBtn');
@@ -186,13 +195,6 @@ function displayTasks() {
         });
     });
     
-    // Закрываем dropdown при клике вне его
-    document.addEventListener('click', function(e) {
-        if (activeDropdown && !e.target.closest('.category-selector')) {
-            activeDropdown.classList.remove('show');
-            activeDropdown = null;
-        }
-    });
 }
 
 // Функция для изменения категории задачи
@@ -259,12 +261,12 @@ function importTasks(file) {
             // Проверяем структуру задач
             for (const task of importedTasks) {
                 if (!task.text || typeof task.category === 'undefined') {
-                    alert('Ошибка: неправильный формат файла');
+                    alert('��шибка: неправильный формат файла');
                     return;
                 }
             }
             
-            // Добавляем задачи в ��азу данных
+            // Добавляем задачи в базу данных
             tasks = importedTasks;
             saveTasks();
             alert(`Успешно импортировано ${importedTasks.length} задач`);
@@ -316,6 +318,7 @@ function hideTimer() {
     timerScreen.style.display = 'none';
     document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
     stopTimer(); // Останавливаем таймер при закрытии
+    releaseWakeLock();
 }
 
 // Функция для обновления отображения таймера
@@ -327,10 +330,9 @@ function updateTimerDisplay() {
 
 // Функция для показа уведомления
 function showNotification() {
-    // Показ всплывающего toast в углу экрана
     showToastNotification("🎁 КОРОБОЧКА", "Время вышло! Задача завершена.", 5000);
+    playBeep();
 
-    // Системное уведомление через Service Worker (покажется даже в свернутом окне)
     if ("Notification" in window) {
         if (Notification.permission === "granted") {
             createBrowserNotification();
@@ -361,13 +363,17 @@ function createBrowserNotification() {
     if (!("Notification" in window)) return;
 
     if (navigator.serviceWorker && Notification.permission === "granted") {
-        navigator.serviceWorker.getRegistration().then(reg => {
-            if (reg && reg.showNotification) {
-                reg.showNotification(title, options);
-            } else {
+        navigator.serviceWorker.ready
+            .then(reg => {
+                if (reg && reg.showNotification) {
+                    reg.showNotification(title, options);
+                } else {
+                    new Notification(title, options);
+                }
+            })
+            .catch(() => {
                 new Notification(title, options);
-            }
-        });
+            });
     } else if (Notification.permission === "granted") {
         new Notification(title, options);
     }
@@ -395,9 +401,56 @@ window.addEventListener('load', async () => {
 
 // НОВАЯ РЕАЛИЗАЦИЯ ТАЙМЕРА (точный и работающий в фоне)
 
+// Поддержка Wake Lock API, чтобы экран не засыпал в�� время таймера
+async function requestWakeLock() {
+    try {
+        if ('wakeLock' in navigator && !wakeLock) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release', () => {
+                wakeLock = null;
+            });
+        }
+    } catch (_) {
+        // игнорируем ошибки
+    }
+}
+
+async function releaseWakeLock() {
+    try {
+        if (wakeLock) {
+            await wakeLock.release();
+            wakeLock = null;
+        }
+    } catch (_) {}
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && timerRunning) {
+        requestWakeLock();
+    }
+});
+
+// Звуковой сигнал по завершении
+function playBeep() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.setValueAtTime(880, ctx.currentTime);
+        g.gain.setValueAtTime(0.001, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+        o.connect(g).connect(ctx.destination);
+        o.start();
+        o.stop(ctx.currentTime + 0.6);
+    } catch (_) {}
+}
+
 // Функция для запуска таймера
 function startTimer() {
     if (timerRunning) return;
+    requestWakeLock();
     
     timerRunning = true;
     timerStartTime = Date.now() - (timerPausedTime * 1000);
@@ -467,6 +520,7 @@ function pauseTimer() {
 // Функция для остановки таймера
 function stopTimer() {
     timerRunning = false;
+    releaseWakeLock();
     
     if (timerWorker) {
         timerWorker.postMessage('stop');
@@ -596,10 +650,6 @@ timerMinutes.addEventListener('change', () => {
     }
 });
 
-// Инициализация при загрузке (доп.)
-window.addEventListener('load', () => {
-    loadTasks();
-});
 
 // Service Worker для push-уведомлений
 if ('serviceWorker' in navigator) {
@@ -612,7 +662,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// Функция для показа toast-��ведомления
+// Функция для показа toast-уведомления
 function showToastNotification(title, message, duration = 5000) {
     let toast = document.getElementById('toast-notification');
     if (!toast) {
