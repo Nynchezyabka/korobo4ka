@@ -264,7 +264,7 @@ function importTasks(file) {
                 }
             }
             
-            // Добавляем задачи в базу данных
+            // Добавляем задачи в ��азу данных
             tasks = importedTasks;
             saveTasks();
             alert(`Успешно импортировано ${importedTasks.length} задач`);
@@ -327,15 +327,10 @@ function updateTimerDisplay() {
 
 // Функция для показа уведомления
 function showNotification() {
-    notification.textContent = "Время вышло!";
-    notification.style.display = 'block';
-    
-    // Вибрация (если поддерживается)
-    if (navigator.vibrate) {
-        navigator.vibrate([500, 300, 500]);
-    }
-    
-    // Пытаемся показать браузерное уведомление, если разрешено
+    // Показ всплывающего toast в углу экрана
+    showToastNotification("🎁 КОРОБОЧКА", "Время вышло! Задача завершена.", 5000);
+
+    // Системное уведомление через Service Worker (покажется даже в свернутом окне)
     if ("Notification" in window) {
         if (Notification.permission === "granted") {
             createBrowserNotification();
@@ -347,11 +342,6 @@ function showNotification() {
             });
         }
     }
-    
-    // Скрываем уведомление через 3 секунды
-    setTimeout(() => {
-        notification.style.display = 'none';
-    }, 3000);
 }
 
 // Создание браузерного уведомления
@@ -622,13 +612,59 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+// Функция для показа toast-��ведомления
+function showToastNotification(title, message, duration = 5000) {
+    let toast = document.getElementById('toast-notification');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-notification';
+        toast.className = 'toast-notification';
+        toast.innerHTML = `
+            <div class="toast-icon">🎁</div>
+            <div class="toast-content">
+                <div class="toast-title"></div>
+                <div class="toast-message"></div>
+            </div>
+            <button class="toast-close">&times;</button>
+        `;
+        document.body.appendChild(toast);
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            hideToastNotification();
+        });
+    }
+    toast.querySelector('.toast-title').textContent = title;
+    toast.querySelector('.toast-message').textContent = message;
+    toast.classList.remove('hide');
+    toast.classList.add('show');
+    if (duration > 0) {
+        setTimeout(() => {
+            hideToastNotification();
+        }, duration);
+    }
+    if (navigator.vibrate) {
+        navigator.vibrate([200, 100, 200]);
+    }
+}
+
+function hideToastNotification() {
+    const toast = document.getElementById('toast-notification');
+    if (toast) {
+        toast.classList.remove('show');
+        toast.classList.add('hide');
+        setTimeout(() => {
+            if (toast && toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }
+}
+
 if (enableNotifyBtn) {
     enableNotifyBtn.addEventListener('click', async () => {
         if (!('Notification' in window)) {
             alert('Уведомления не поддерживаются этим браузером');
             return;
         }
-        // Если уже выданы
         if (Notification.permission === 'granted') {
             setNotifyBannerVisible(false);
             createBrowserNotification();
