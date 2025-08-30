@@ -635,11 +635,14 @@ textarea {
     }
     
     .controls {
-        flex-direction: row;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+        gap: 12px;
     }
-    
-    button {
-        flex: 1;
+
+    .controls button {
+        width: 100%;
+        flex: initial;
     }
 }
 
@@ -683,7 +686,19 @@ textarea {
     .section {
         max-width: calc(33.333% - 10px);
     }
-    
+
+    /* Кнопки действий выравниваем по сетке (3 колонки) */
+    .controls {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .controls button {
+        width: 100%;
+        flex: initial;
+    }
+
     .section:hover {
         transform: translateY(-3px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
