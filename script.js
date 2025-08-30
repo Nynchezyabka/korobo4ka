@@ -142,90 +142,105 @@ function getCategoryName(category) {
 
 // Функция отображения всех задач
 function displayTasks() {
-    // Сортируем задачи: сначала без категории (0), затем остальные по категории
-    tasks.sort((a, b) => {
-        if (a.category === 0 && b.category !== 0) return -1;
-        if (a.category !== 0 && b.category === 0) return 1;
-        return a.category - b.category;
-    });
-
     tasksContainer.innerHTML = '';
 
     const isMobile = window.matchMedia('(max-width: 480px)').matches;
     tasksContainer.classList.remove('sticker-grid');
     tasksContainer.classList.toggle('mobile-compact', isMobile);
 
-    let lastCategory = null;
-    let currentGrid = null;
+    const groups = new Map();
+    tasks.forEach(t => {
+        const arr = groups.get(t.category) || [];
+        arr.push(t);
+        groups.set(t.category, arr);
+    });
 
-    tasks.forEach(task => {
-        // Начало новой категории — создаем группу
-        if (task.category !== lastCategory) {
-            const group = document.createElement('div');
-            group.className = `category-group category-${task.category}`;
-            const title = document.createElement('div');
-            title.className = 'category-title';
-            title.innerHTML = `<i class="fas fa-folder folder-before-title"></i><span class="category-heading">${getCategoryName(task.category)}</span>`;
-            const grid = document.createElement('div');
-            grid.className = 'group-grid';
-            group.appendChild(title);
-            group.appendChild(grid);
-            tasksContainer.appendChild(group);
-            currentGrid = grid;
-            lastCategory = task.category;
+    const categories = Array.from(groups.keys()).sort((a, b) => a - b);
+
+    const collapsedRaw = localStorage.getItem('collapsedCategories');
+    const collapsedCategories = new Set(collapsedRaw ? JSON.parse(collapsedRaw) : []);
+
+    categories.forEach(cat => {
+        const group = document.createElement('div');
+        group.className = `category-group category-${cat}`;
+        group.dataset.category = String(cat);
+
+        const title = document.createElement('div');
+        title.className = 'category-title';
+        title.innerHTML = `<i class=\"fas fa-folder folder-before-title\"></i><span class=\"category-heading\">${getCategoryName(cat)}</span>`;
+
+        const grid = document.createElement('div');
+        grid.className = 'group-grid';
+
+        if (collapsedCategories.has(cat)) {
+            group.classList.add('collapsed');
         }
 
-        const taskElement = document.createElement('div');
-        taskElement.className = `task category-${task.category} ${task.active ? '' : 'inactive'}`;
-        taskElement.dataset.id = task.id;
+        group.appendChild(title);
+        group.appendChild(grid);
+        tasksContainer.appendChild(group);
 
-        const categoryDisplay = `<i class="fas fa-folder"></i><span class="category-name">${getCategoryName(task.category)}</span>`;
+        const list = groups.get(cat) || [];
+        list.sort((a, b) => {
+            if (a.active !== b.active) return a.active ? 1 : -1;
+            const ta = a.statusChangedAt || 0;
+            const tb = b.statusChangedAt || 0;
+            if (!a.active && !b.active) return tb - ta;
+            if (ta !== tb) return ta - tb;
+            return a.id - b.id;
+        });
 
-        taskElement.innerHTML = `
-            <div class="task-content">
-                <div class="task-text">${task.text}</div>
-                <div class="category-selector">
-                    <div class="category-badge" data-id="${task.id}">
-                        ${categoryDisplay}
-                        <i class="fas fa-caret-down"></i>
-                    </div>
-                    <div class="category-dropdown" id="dropdown-${task.id}">
-                        <button class="category-option" data-category="0">Без категории</button>
-                        <button class="category-option" data-category="1">Обязательные</button>
-                        <button class="category-option" data-category="2">Безопасность</button>
-                        <button class="category-option" data-category="5">До��тупность радостей</button>
-                        <button class="category-option" data-category="3">Простые радости</button>
-                        <button class="category-option" data-category="4">Эго радости</button>
+        list.forEach(task => {
+            const taskElement = document.createElement('div');
+            taskElement.className = `task category-${task.category} ${task.active ? '' : 'inactive'}`;
+            taskElement.dataset.id = task.id;
+
+            const categoryDisplay = `<i class=\"fas fa-folder\"></i><span class=\"category-name\">${getCategoryName(task.category)}</span>`;
+
+            taskElement.innerHTML = `
+                <div class=\"task-content\">
+                    <div class=\"task-text\">${task.text}</div>
+                    <div class=\"category-selector\">
+                        <div class=\"category-badge\" data-id=\"${task.id}\">
+                            ${categoryDisplay}
+                            <i class=\"fas fa-caret-down\"></i>
+                        </div>
+                        <div class=\"category-dropdown\" id=\"dropdown-${task.id}\">
+                            <button class=\"category-option\" data-category=\"0\">Без категории</button>
+                            <button class=\"category-option\" data-category=\"1\">Обязательные</button>
+                            <button class=\"category-option\" data-category=\"2\">Безопасность</button>
+                            <button class=\"category-option\" data-category=\"5\">Доступность радостей</button>
+                            <button class=\"category-option\" data-category=\"3\">Простые радости</button>
+                            <button class=\"category-option\" data-category=\"4\">Эго радости</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="task-controls">
-                <button class="task-control-btn toggle-active-btn" data-id="${task.id}">
-                    <i class="fas ${task.active ? 'fa-eye-slash' : 'fa-eye'}"></i>
-                </button>
-                <button class="task-control-btn delete-task-btn" data-id="${task.id}">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        `;
-        if (isMobile && task.text.length > 44) {
-            taskElement.classList.add('sticker-wide');
-        }
-        if (!currentGrid) {
-            const group = document.createElement('div');
-            group.className = `category-group category-${task.category}`;
-            const title = document.createElement('div');
-            title.className = 'category-title';
-            title.innerHTML = `<i class=\"fas fa-folder folder-before-title\"></i><span class=\"category-heading\">${getCategoryName(task.category)}</span>`;
-            const grid = document.createElement('div');
-            grid.className = 'group-grid';
-            group.appendChild(title);
-            group.appendChild(grid);
-            tasksContainer.appendChild(group);
-            currentGrid = grid;
-            lastCategory = task.category;
-        }
-        currentGrid.appendChild(taskElement);
+                <div class=\"task-controls\">
+                    <button class=\"task-control-btn toggle-active-btn\" data-id=\"${task.id}\">
+                        <i class=\"fas ${task.active ? 'fa-eye-slash' : 'fa-eye'}\"></i>
+                    </button>
+                    <button class=\"task-control-btn delete-task-btn\" data-id=\"${task.id}\">
+                        <i class=\"fas fa-trash\"></i>
+                    </button>
+                </div>
+            `;
+            if (isMobile && task.text.length > 44) {
+                taskElement.classList.add('sticker-wide');
+            }
+            grid.appendChild(taskElement);
+        });
+
+        title.addEventListener('click', () => {
+            const c = parseInt(group.dataset.category);
+            if (group.classList.contains('collapsed')) {
+                group.classList.remove('collapsed');
+                collapsedCategories.delete(c);
+            } else {
+                group.classList.add('collapsed');
+                collapsedCategories.add(c);
+            }
+            localStorage.setItem('collapsedCategories', JSON.stringify(Array.from(collapsedCategories)));
+        });
     });
 
     // Добавляем обработчики событий для новых элементов
@@ -296,13 +311,16 @@ function displayTasks() {
 function changeTaskCategory(taskId, newCategory) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
-    
-    // Если зада��а была без категории и неактивна, и выбирается новая категория, активируем ее
+    const wasActive = !!tasks[taskIndex].active;
+
     const updateData = { category: newCategory };
     if (tasks[taskIndex].category === 0 && !tasks[taskIndex].active && newCategory !== 0) {
         updateData.active = true;
     }
-    
+    if (!wasActive && updateData.active === true) {
+        updateData.statusChangedAt = Date.now();
+    }
+
     tasks[taskIndex] = { ...tasks[taskIndex], ...updateData };
     saveTasks();
     displayTasks();
@@ -312,8 +330,11 @@ function changeTaskCategory(taskId, newCategory) {
 function toggleTaskActive(taskId) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
-    
-    tasks[taskIndex].active = !tasks[taskIndex].active;
+
+    const newActive = !tasks[taskIndex].active;
+    tasks[taskIndex].active = newActive;
+    tasks[taskIndex].statusChangedAt = Date.now();
+
     saveTasks();
     displayTasks();
 }
@@ -803,7 +824,8 @@ addTaskBtn.addEventListener('click', () => {
             text,
             category,
             completed: false,
-            active
+            active,
+            statusChangedAt: Date.now()
         });
     });
 
