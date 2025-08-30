@@ -231,14 +231,33 @@ function displayTasks() {
     document.querySelectorAll('.category-badge').forEach(badge => {
         badge.addEventListener('click', function(e) {
             e.stopPropagation();
-            // Закрываем предыдущий открытый dropdown
             if (activeDropdown && activeDropdown !== this.nextElementSibling) {
                 activeDropdown.classList.remove('show');
             }
-            // Открываем/закрываем dropdown
             const dropdown = this.nextElementSibling;
             dropdown.classList.toggle('show');
             activeDropdown = dropdown;
+            if (dropdown.classList.contains('show')) {
+                dropdown.style.top = '100%';
+                dropdown.style.bottom = 'auto';
+                dropdown.style.left = '';
+                dropdown.style.right = '';
+                const rect = dropdown.getBoundingClientRect();
+                const vw = window.innerWidth || document.documentElement.clientWidth;
+                const vh = window.innerHeight || document.documentElement.clientHeight;
+                if (rect.bottom > vh - 8) {
+                    dropdown.style.top = 'auto';
+                    dropdown.style.bottom = '100%';
+                }
+                if (rect.right > vw - 8) {
+                    dropdown.style.left = 'auto';
+                    dropdown.style.right = '0';
+                }
+                if (rect.left < 8) {
+                    dropdown.style.left = '0';
+                    dropdown.style.right = 'auto';
+                }
+            }
         });
     });
 
@@ -375,7 +394,7 @@ function showTimer(task) {
     currentTask = task;
     timerTaskText.textContent = task.text;
 
-    // Полный сброс состояния таймера перед новым запуском
+    // Полный сброс состо��ния таймера перед новым запуском
     if (timerEndTimeoutId) {
         clearTimeout(timerEndTimeoutId);
         timerEndTimeoutId = null;
@@ -593,7 +612,7 @@ function startTimer() {
         timerEndAt = Date.now() + (timerPausedTime * 1000);
         timerPausedTime = 0;
     }
-    // при первом запуске
+    // пр�� первом запуске
     if (!timerEndAt) {
         const total = Math.max(1, parseInt(timerMinutes.value)) * 60;
         timerEndAt = Date.now() + total * 1000;
@@ -624,7 +643,7 @@ function startTimer() {
         if (controls) controls.style.display = 'none';
     }, delay);
     
-    // Используем Web Worker для точного отсчета времени в фоне
+    // Используем Web Worker для то��ного отсчета времени в фоне
     if (typeof(Worker) !== "undefined") {
         if (timerWorker === null) {
             timerWorker = new Worker(URL.createObjectURL(new Blob([`
@@ -772,7 +791,7 @@ addTaskBtn.addEventListener('click', () => {
         if (!confirm(`Добавить ${lines.length} задач?`)) return;
     }
 
-    const active = category !== 0;
+    const active = true;
     lines.forEach(text => {
         tasks.push({
             id: getNextId(),
@@ -797,7 +816,7 @@ exportTasksBtn.addEventListener('click', exportTasks);
 importFile.addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
         importTasks(e.target.files[0]);
-        e.target.value = ''; // Сбрасыв��ем значение input
+        e.target.value = ''; // Сбрас��в��ем значение input
     }
 });
 
