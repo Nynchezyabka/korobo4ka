@@ -46,7 +46,7 @@ const sections = document.querySelectorAll('.section');
 
 // Глобальный обработчик для закрытия открытого выпадающего меню категорий
 document.addEventListener('click', function(e) {
-    if (activeDropdown && !e.target.closest('.category-selector')) {
+    if (activeDropdown && !e.target.closest('.category-selector') && !e.target.closest('.add-category-selector')) {
         activeDropdown.classList.remove('show');
         activeDropdown = null;
     }
@@ -78,14 +78,12 @@ const enableNotifyBtn = document.getElementById('enableNotifyBtn');
 
 function applyCategoryVisualToSelect() {
     if (!taskCategory) return;
-    // remove previous category-* classes
-    taskCategory.className = taskCategory.className
-        .split(' ')
-        .filter(c => !/^category-\d+$/.test(c))
-        .join(' ')
-        .trim();
-    const val = parseInt(taskCategory.value);
-    taskCategory.classList.add(`category-${isNaN(val) ? 0 : val}`);
+    const val = parseInt(taskCategory.value) || 0;
+    const badge = document.querySelector('.add-category-badge');
+    if (badge) {
+        badge.textContent = getCategoryName(val);
+        badge.setAttribute('data-category', String(val));
+    }
 }
 
 function urlBase64ToUint8Array(base64String) {
@@ -432,8 +430,56 @@ function createBrowserNotification(message) {
 }
 
 // Добавляем запрос разрешения при загрузке страницы
+function setupAddCategorySelector() {
+    if (!taskCategory) return;
+    let container = document.querySelector('.add-category-selector');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'add-category-selector';
+        const badge = document.createElement('div');
+        badge.className = 'add-category-badge';
+        const dropdown = document.createElement('div');
+        dropdown.className = 'add-category-dropdown';
+        const cats = [
+            { v: 0, n: 'Без категории' },
+            { v: 1, n: 'Обязательные' },
+            { v: 2, n: 'Безопасность' },
+            { v: 5, n: 'Доступность радостей' },
+            { v: 3, n: 'Простые радости' },
+            { v: 4, n: 'Эго радости' },
+        ];
+        cats.forEach(c => {
+            const btn = document.createElement('button');
+            btn.className = 'add-category-option';
+            btn.setAttribute('data-category', String(c.v));
+            btn.textContent = c.n;
+            btn.addEventListener('click', () => {
+                taskCategory.value = String(c.v);
+                applyCategoryVisualToSelect();
+                dropdown.classList.remove('show');
+                activeDropdown = null;
+            });
+            dropdown.appendChild(btn);
+        });
+        badge.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (activeDropdown && activeDropdown !== dropdown) {
+                activeDropdown.classList.remove('show');
+            }
+            dropdown.classList.toggle('show');
+            activeDropdown = dropdown;
+        });
+        container.appendChild(badge);
+        container.appendChild(dropdown);
+        taskCategory.insertAdjacentElement('afterend', container);
+    }
+    applyCategoryVisualToSelect();
+}
+
 window.addEventListener('load', async () => {
     loadTasks();
+
+    setupAddCategorySelector();
 
     applyCategoryVisualToSelect();
     refreshNotifyBanner();
@@ -718,7 +764,7 @@ exportTasksBtn.addEventListener('click', exportTasks);
 importFile.addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
         importTasks(e.target.files[0]);
-        e.target.value = ''; // Сбрасываем значение input
+        e.target.value = ''; // Сбрасыв��ем значение input
     }
 });
 
