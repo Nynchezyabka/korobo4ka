@@ -204,7 +204,7 @@ function changeTaskCategory(taskId, newCategory) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
     
-    // Если задача была без категории и неактивна, и выбирается новая категория, активируем ее
+    // Если задача была без категории и неактивна, и выбира��тся новая категория, активируем ее
     const updateData = { category: newCategory };
     if (tasks[taskIndex].category === 0 && !tasks[taskIndex].active && newCategory !== 0) {
         updateData.active = true;
@@ -310,7 +310,7 @@ function showTimer(task) {
     timerScreen.style.display = 'flex';
     document.body.style.overflow = 'hidden'; // Блокируем прокрутку основного контента
     
-    // Скрываем опции завершения и показываем управление таймером
+    // Скрываем опции завершения и п��казываем управление таймером
     timerCompleteOptions.style.display = 'none';
     document.querySelector('.timer-controls').style.display = 'flex';
 }
@@ -331,17 +331,18 @@ function updateTimerDisplay() {
 }
 
 // Функция для показа уведомления
-function showNotification() {
-    showToastNotification("🎁 КОРОБОЧКА", "Время вышло! Задача завершена.", 5000);
+function showNotification(message) {
+    const body = message || (currentTask ? `Задача: ${currentTask.text}` : "Время вышло! Задача завершена.");
+    showToastNotification("🎁 КОРОБОЧКА", body, 5000);
     playBeep();
 
     if ("Notification" in window) {
         if (Notification.permission === "granted") {
-            createBrowserNotification();
+            createBrowserNotification(body);
         } else if (Notification.permission !== "denied") {
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
-                    createBrowserNotification();
+                    createBrowserNotification(body);
                 }
             });
         }
@@ -349,10 +350,10 @@ function showNotification() {
 }
 
 // Создание браузерного уведомления
-function createBrowserNotification() {
+function createBrowserNotification(message) {
     const title = "🎁 КОРОБОЧКА";
     const options = {
-        body: "Время вышло! Задача завершена.",
+        body: message || "Время вышло! Задача завершена.",
         icon: "/icon-192.png",
         badge: "/icon-192.png",
         vibrate: [500, 300, 500],
@@ -472,8 +473,9 @@ function startTimer() {
     const delay = Math.max(0, timerEndAt - Date.now());
     timerEndTimeoutId = setTimeout(() => {
         if (!timerRunning) return;
+        const msg = currentTask ? `Задача: ${currentTask.text}` : undefined;
         stopTimer();
-        showNotification();
+        showNotification(msg);
         timerCompleteOptions.style.display = 'flex';
         const controls = document.querySelector('.timer-controls');
         if (controls) controls.style.display = 'none';
@@ -502,7 +504,7 @@ function startTimer() {
 
                     if (timerTime <= 0) {
                         stopTimer();
-                        showNotification();
+                        showNotification(currentTask ? `Задача: ${currentTask.text}` : undefined);
                         timerCompleteOptions.style.display = 'flex';
                         document.querySelector('.timer-controls').style.display = 'none';
                     }
@@ -518,7 +520,7 @@ function startTimer() {
 
             if (timerTime <= 0) {
                 stopTimer();
-                showNotification();
+                showNotification(currentTask ? `Задача: ${currentTask.text}` : undefined);
                 timerCompleteOptions.style.display = 'flex';
                 document.querySelector('.timer-controls').style.display = 'none';
             }
@@ -700,7 +702,7 @@ window.addEventListener('focus', () => {
         updateTimerDisplay();
         if (timerTime <= 0) {
             stopTimer();
-            showNotification();
+            showNotification(currentTask ? `Задача: ${currentTask.text}` : undefined);
             timerCompleteOptions.style.display = 'flex';
             const controls = document.querySelector('.timer-controls');
             if (controls) controls.style.display = 'none';
