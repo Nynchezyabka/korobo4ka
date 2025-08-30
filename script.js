@@ -365,12 +365,12 @@ function showTimer(task) {
 // Функция для скрытия таймера
 function hideTimer() {
     timerScreen.style.display = 'none';
-    document.body.style.overflow = 'auto'; // Восстанавливаем прок��утку
+    document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
     stopTimer(); // Останавливаем таймер при закрытии
     releaseWakeLock();
 }
 
-// Функция для обновления ото��ражения тайме��а
+// Функция для обновления ото��ражения таймера
 function updateTimerDisplay() {
     const minutes = Math.floor(timerTime / 60);
     const seconds = timerTime % 60;
@@ -720,13 +720,17 @@ hideTasksBtn.addEventListener('click', () => {
 taskCategory.addEventListener('change', applyCategoryVisualToSelect);
 
 addTaskBtn.addEventListener('click', () => {
-    const text = taskText.value.trim();
+    const raw = taskText.value;
+    const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
     const category = parseInt(taskCategory.value);
-    
-    if (text) {
-        // Задачи без категории по умолчанию неактивны
-        const active = category !== 0;
-        
+    if (lines.length === 0) return;
+
+    if (lines.length > 1) {
+        if (!confirm(`Добавить ${lines.length} задач?`)) return;
+    }
+
+    const active = category !== 0;
+    lines.forEach(text => {
         tasks.push({
             id: getNextId(),
             text,
@@ -734,11 +738,11 @@ addTaskBtn.addEventListener('click', () => {
             completed: false,
             active
         });
-        
-        saveTasks();
-        taskText.value = '';
-        displayTasks();
-    }
+    });
+
+    saveTasks();
+    taskText.value = '';
+    displayTasks();
 });
 
 addMultipleBtn.addEventListener('click', () => {
