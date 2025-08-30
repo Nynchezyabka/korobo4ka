@@ -27,7 +27,7 @@ function getNextId() {
 // Переменные состояния
 let currentTask = null;
 let timerInterval = null;
-let timerTime = 15 * 60; // 15 минут в секундах
+let timerTime = 15 * 60; // 15 ��инут в секундах
 let timerRunning = false;
 let selectedTaskId = null;
 let activeDropdown = null;
@@ -147,19 +147,30 @@ function displayTasks() {
         if (a.category !== 0 && b.category === 0) return 1;
         return a.category - b.category;
     });
-    
+
     tasksContainer.innerHTML = '';
-    
+
+    const isMobile = window.matchMedia('(max-width: 480px)').matches;
+    tasksContainer.classList.toggle('mobile-compact', isMobile);
+
+    let lastCategory = null;
+
     tasks.forEach(task => {
+        // Подзаголовок категории для мобильной версии
+        if (isMobile && task.category !== lastCategory) {
+            const title = document.createElement('div');
+            title.className = 'category-title';
+            title.innerHTML = `<span class="category-heading">${getCategoryName(task.category)}</span>`;
+            tasksContainer.appendChild(title);
+            lastCategory = task.category;
+        }
+
         const taskElement = document.createElement('div');
         taskElement.className = `task category-${task.category} ${task.active ? '' : 'inactive'}`;
         taskElement.dataset.id = task.id;
-        
-        // Для задач без категории показываем иконку папки
-        const categoryDisplay = task.category === 0 ? 
-            '<i class="fas fa-folder"></i>' : 
-            getCategoryName(task.category);
-        
+
+        const categoryDisplay = `<i class="fas fa-folder"></i><span class="category-name">${getCategoryName(task.category)}</span>`;
+
         taskElement.innerHTML = `
             <div class="task-content">
                 <div class="task-text">${task.text}</div>
@@ -187,54 +198,49 @@ function displayTasks() {
                 </button>
             </div>
         `;
-        
+
         tasksContainer.appendChild(taskElement);
     });
-    
+
     // Добавляем обработчики событий для новых элементов
     document.querySelectorAll('.category-badge').forEach(badge => {
         badge.addEventListener('click', function(e) {
             e.stopPropagation();
-            const taskId = parseInt(this.dataset.id);
-            
             // Закрываем предыдущий открытый dropdown
             if (activeDropdown && activeDropdown !== this.nextElementSibling) {
                 activeDropdown.classList.remove('show');
             }
-            
             // Открываем/закрываем dropdown
             const dropdown = this.nextElementSibling;
             dropdown.classList.toggle('show');
             activeDropdown = dropdown;
         });
     });
-    
+
     document.querySelectorAll('.category-option').forEach(option => {
         option.addEventListener('click', function() {
             const taskId = parseInt(this.closest('.category-selector').querySelector('.category-badge').dataset.id);
             const newCategory = parseInt(this.dataset.category);
             changeTaskCategory(taskId, newCategory);
-            
             // Закрываем dropdown
             this.closest('.category-dropdown').classList.remove('show');
             activeDropdown = null;
         });
     });
-    
+
     document.querySelectorAll('.toggle-active-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const id = parseInt(e.target.closest('.toggle-active-btn').dataset.id);
             toggleTaskActive(id);
         });
     });
-    
+
     document.querySelectorAll('.delete-task-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const id = parseInt(e.target.closest('.delete-task-btn').dataset.id);
             deleteTask(id);
         });
     });
-    
 }
 
 // Функция для изменения категории задачи
@@ -397,7 +403,7 @@ function showNotification(message) {
     }
 }
 
-// Создание браузерного уведомления
+// Создание браузерног�� уведомления
 function createBrowserNotification(message) {
     const title = "🎁 КОРОБОЧКА";
     const options = {
@@ -652,7 +658,7 @@ function pauseTimer() {
     timerPausedTime = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
 }
 
-// Функция для остановки таймера
+// Функция для останов��и таймера
 function stopTimer() {
     timerRunning = false;
     releaseWakeLock();
@@ -906,7 +912,7 @@ if (enableNotifyBtn) {
             } else if (result === 'default') {
                 alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройка�� ��айта.');
             } else if (result === 'denied') {
-                alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
+                alert('Уведомления заблокированы в настр��йках браузера. Разрешите их вручную.');
             }
         } catch (e) {
             alert('Не удалось запросить разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
