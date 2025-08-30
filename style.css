@@ -29,6 +29,21 @@ header {
     padding-top: 5px;
 }
 
+.notify-banner {
+    background: #ffffff;
+    border-left: 4px solid #5d4037;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.notify-text {
+    flex: 1;
+}
+
 h1 {
     font-size: 1.8rem;
     margin-bottom: 8px;
@@ -510,40 +525,57 @@ textarea {
     margin-top: 15px;
 }
 
-/* Мобильная версия - иконки под названием категории */
+/* Мобильная версия — компактное отображение */
 @media (max-width: 480px) {
     .task {
+        position: relative;
         flex-direction: column;
         align-items: flex-start;
+        padding: 8px 10px;
+        margin-bottom: 6px;
     }
-    
+
     .task-content {
         flex-direction: column;
         width: 100%;
+        padding-right: 72px; /* место под иконки */
+        gap: 4px;
     }
-    
+
     .task-text {
         width: 100%;
-        margin-bottom: 8px;
+        margin: 0;
         padding-right: 0;
+        line-height: 1.25;
     }
-    
+
     .category-selector {
         width: 100%;
-        margin-bottom: 8px;
+        margin: 4px 0 0;
     }
-    
+
     .category-badge {
-        width: 100%;
-        justify-content: space-between;
-        margin: 0 0 8px 0;
-    }
-    
-    .task-controls {
+        width: auto;
         justify-content: flex-start;
-        width: 100%;
+        margin: 0;
+        font-size: 0.9rem;
+        padding: 2px 8px;
     }
-    
+
+    .task-controls {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: auto;
+        justify-content: flex-end;
+        gap: 4px;
+    }
+
+    .task-control-btn {
+        padding: 4px;
+        font-size: 1rem;
+    }
+
     .category-dropdown {
         width: 100%;
         right: auto;
@@ -592,35 +624,87 @@ textarea {
 /* Медиа-запрос для планшетов в альбомной ориентации и небольших ноутбуков */
 @media (min-width: 768px) {
     .sections {
-        flex-direction: row;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+        gap: 12px;
     }
-    
+
     .section {
-        flex: 1;
-        min-width: 220px;
-        max-width: calc(50% - 8px);
+        min-width: 0;
+        max-width: none;
     }
     
     .controls {
-        flex-direction: row;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+        gap: 12px;
     }
-    
-    button {
-        flex: 1;
+
+    .controls button {
+        width: 100%;
+        flex: initial;
     }
 }
 
-/* Медиа-запрос для десктопов */
+/* Медиа-з��прос для десктопов */
 @media (min-width: 1024px) {
+    /* Выровнять элементы задачи в сетку: текст слева, справа сверху категория, снизу под ней кнопки */
+    .task {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto auto;
+        column-gap: 10px;
+        align-items: start;
+    }
+    .task-content {
+        display: contents; /* позволяет дочерним участвовать в сетке родителя */
+    }
+    .task-text {
+        grid-column: 1 / 2;
+        grid-row: 1 / 3; /* занимает обе строки слева */
+        padding-right: 0;
+        margin: 0;
+    }
+    .category-selector {
+        grid-column: 2 / 3;
+        grid-row: 1 / 2;
+        margin: 0 0 6px 0;
+        width: auto;
+    }
+    .task-controls {
+        grid-column: 2 / 3;
+        grid-row: 2 / 3;
+        justify-content: flex-end;
+        width: auto;
+        margin: 0;
+        gap: 6px;
+    }
     .container {
         max-width: 1000px;
     }
     
     .section {
-        max-width: calc(33.333% - 10px);
+        max-width: none;
     }
-    
+
+    .sections {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    /* Кнопки действий выравниваем по сетке (3 колонки) */
+    .controls {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .controls button {
+        width: 100%;
+        flex: initial;
+    }
+
     .section:hover {
         transform: translateY(-3px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -666,7 +750,6 @@ textarea {
         background-color: #757575;
     }
 }
-
 /* Стили для toast-уведомлений */
 .toast-notification {
     position: fixed;

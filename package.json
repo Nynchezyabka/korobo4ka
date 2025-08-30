@@ -1,0 +1,11 @@
+{
+  "name": "korobochka",
+  "version": "3.2.0",
+  "private": true,
+  "description": "PWA task planner with timer",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "license": "MIT"
+}
