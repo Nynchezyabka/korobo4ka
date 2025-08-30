@@ -104,7 +104,7 @@ h1 {
 }
 
 .security {
-    background-color: #bbdefb; /* г��лубой */
+    background-color: #bbdefb; /* голубой */
 }
 
 .joys {
@@ -297,7 +297,7 @@ textarea {
     border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 8px;
-    z-index: 1000; /* Убедимся, что выпадающий список ��оверх других элементов */
+    z-index: 1000; /* Убедимся, что выпадающий список поверх других элементов */
     display: none;
     min-width: 130px;
 }
@@ -697,7 +697,7 @@ textarea {
     }
 }
 
-/* Медиа-запрос для планшетов в альбомной ориентации и небольших ноутбуков */
+/* Медиа-запрос для планшетов в ��льбомной ориентации и небольших ноутбуков */
 @media (min-width: 768px) {
     .sections {
         display: grid;
@@ -1025,16 +1025,13 @@ textarea {
     border-radius: 10px;
     padding: 8px;
     margin: 10px 0;
-    background-image: repeating-linear-gradient(to bottom, rgba(0,0,0,0.04) 0, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 20px);
-    background-size: 100% 20px;
-    background-position: 0 0;
 }
-.category-group.category-0 { background-color: #fafafa; }
-.category-group.category-1 { background-color: #fffde7; }
-.category-group.category-2 { background-color: #e3f2fd; }
-.category-group.category-3 { background-color: #e8f5e9; }
-.category-group.category-4 { background-color: #ffebee; }
-.category-group.category-5 { background-color: #ede7f6; }
+.category-group.category-0 { background-color: #fafafa; border-left: none; }
+.category-group.category-1 { background-color: #fffde7; border-left: none; }
+.category-group.category-2 { background-color: #e3f2fd; border-left: none; }
+.category-group.category-3 { background-color: #e8f5e9; border-left: none; }
+.category-group.category-4 { background-color: #ffebee; border-left: none; }
+.category-group.category-5 { background-color: #ede7f6; border-left: none; }
 
 .category-group .category-title {
     background: transparent;
