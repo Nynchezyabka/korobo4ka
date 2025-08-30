@@ -33,7 +33,7 @@ let selectedTaskId = null;
 let activeDropdown = null;
 let wakeLock = null; // экраны не засыпают во время таймера (где поддерживается)
 
-// Новые переменные для точного таймера
+// Новые переменные для точ��ого таймера
 let timerStartTime = 0;
 let timerPausedTime = 0;
 let timerAnimationFrame = null;
@@ -76,6 +76,18 @@ const timerCompleteOptions = document.getElementById('timerCompleteOptions');
 const notifyBanner = document.getElementById('notifyBanner');
 const enableNotifyBtn = document.getElementById('enableNotifyBtn');
 
+function applyCategoryVisualToSelect() {
+    if (!taskCategory) return;
+    // remove previous category-* classes
+    taskCategory.className = taskCategory.className
+        .split(' ')
+        .filter(c => !/^category-\d+$/.test(c))
+        .join(' ')
+        .trim();
+    const val = parseInt(taskCategory.value);
+    taskCategory.classList.add(`category-${isNaN(val) ? 0 : val}`);
+}
+
 function urlBase64ToUint8Array(base64String) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -115,7 +127,7 @@ function refreshNotifyBanner() {
     setNotifyBannerVisible(Notification.permission !== 'granted');
 }
 
-// Функция для получения названия категории по номеру
+// Функция для получе��ия названия категории по номеру
 function getCategoryName(category) {
     const categories = {
         0: "Без категории",
@@ -231,7 +243,7 @@ function changeTaskCategory(taskId, newCategory) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
     
-    // Если задача была без категории и неактивна, и выбирается новая категория, активируем ее
+    // Если зада��а была без категории и неактивна, и выбирается новая категория, активируем ее
     const updateData = { category: newCategory };
     if (tasks[taskIndex].category === 0 && !tasks[taskIndex].active && newCategory !== 0) {
         updateData.active = true;
@@ -423,6 +435,7 @@ function createBrowserNotification(message) {
 window.addEventListener('load', async () => {
     loadTasks();
 
+    applyCategoryVisualToSelect();
     refreshNotifyBanner();
 
     if (navigator.permissions && navigator.permissions.query) {
@@ -654,6 +667,8 @@ hideTasksBtn.addEventListener('click', () => {
     taskList.style.display = 'none';
 });
 
+taskCategory.addEventListener('change', applyCategoryVisualToSelect);
+
 addTaskBtn.addEventListener('click', () => {
     const text = taskText.value.trim();
     const category = parseInt(taskCategory.value);
@@ -688,7 +703,7 @@ addMultipleBtn.addEventListener('click', () => {
                     text: task.trim(),
                     category: 0, // Без категории
                     completed: false,
-                    active: true // Теперь активны по умолч��нию
+                    active: true // Теперь активны по умолчанию
                 });
             });
             
@@ -775,7 +790,7 @@ window.addEventListener('focus', () => {
     }
 });
 
-// Функция для показа toast-уве��омления
+// Функция для показа toast-уведомления
 function showToastNotification(title, message, duration = 5000) {
     let toast = document.getElementById('toast-notification');
     if (!toast) {
@@ -841,7 +856,7 @@ if (enableNotifyBtn) {
                 await ensurePushSubscribed();
                 createBrowserNotification('Уведомления включены');
             } else if (result === 'default') {
-                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройках ��айта.');
+                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройка�� ��айта.');
             } else if (result === 'denied') {
                 alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
