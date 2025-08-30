@@ -31,7 +31,7 @@ let timerTime = 15 * 60; // 15 ��инут в секундах
 let timerRunning = false;
 let selectedTaskId = null;
 let activeDropdown = null;
-let wakeLock = null; // экраны не засыпают во время таймера (где поддерживается)
+let wakeLock = null; // экраны не засыпают во время таймера (где подде��живается)
 
 // Новые переменные для т��ч��ого таймера
 let timerStartTime = 0;
@@ -151,18 +151,26 @@ function displayTasks() {
     tasksContainer.innerHTML = '';
 
     const isMobile = window.matchMedia('(max-width: 480px)').matches;
-    tasksContainer.classList.add('sticker-grid');
+    tasksContainer.classList.remove('sticker-grid');
     tasksContainer.classList.toggle('mobile-compact', isMobile);
 
     let lastCategory = null;
+    let currentGrid = null;
 
     tasks.forEach(task => {
-        // Подзаголовок категории для всех режимов
+        // Начало новой категории — создаем группу
         if (task.category !== lastCategory) {
+            const group = document.createElement('div');
+            group.className = `category-group category-${task.category}`;
             const title = document.createElement('div');
-            title.className = `category-title category-${task.category}`;
+            title.className = 'category-title';
             title.innerHTML = `<i class="fas fa-folder folder-before-title"></i><span class="category-heading">${getCategoryName(task.category)}</span>`;
-            tasksContainer.appendChild(title);
+            const grid = document.createElement('div');
+            grid.className = 'group-grid';
+            group.appendChild(title);
+            group.appendChild(grid);
+            tasksContainer.appendChild(group);
+            currentGrid = grid;
             lastCategory = task.category;
         }
 
@@ -202,7 +210,21 @@ function displayTasks() {
         if (task.text.length > 28) {
             taskElement.classList.add('sticker-wide');
         }
-        tasksContainer.appendChild(taskElement);
+        if (!currentGrid) {
+            const group = document.createElement('div');
+            group.className = `category-group category-${task.category}`;
+            const title = document.createElement('div');
+            title.className = 'category-title';
+            title.innerHTML = `<i class=\"fas fa-folder folder-before-title\"></i><span class=\"category-heading\">${getCategoryName(task.category)}</span>`;
+            const grid = document.createElement('div');
+            grid.className = 'group-grid';
+            group.appendChild(title);
+            group.appendChild(grid);
+            tasksContainer.appendChild(group);
+            currentGrid = grid;
+            lastCategory = task.category;
+        }
+        currentGrid.appendChild(taskElement);
     });
 
     // Добавляем обработчики событий для новых элементов
@@ -918,7 +940,7 @@ if (enableNotifyBtn) {
                 alert('Уведомления заблокированы в настр��йках браузера. Разрешите их вручную.');
             }
         } catch (e) {
-            alert('Не удалось запросить разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
+            alert('Не удалось запросить разрешение на уведомления. Откр��йте сайт напрямую и попробуйте снова.');
         }
     });
 }
