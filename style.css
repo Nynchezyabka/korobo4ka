@@ -29,6 +29,21 @@ header {
     padding-top: 5px;
 }
 
+.notify-banner {
+    background: #ffffff;
+    border-left: 4px solid #5d4037;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.notify-text {
+    flex: 1;
+}
+
 h1 {
     font-size: 1.8rem;
     margin-bottom: 8px;
