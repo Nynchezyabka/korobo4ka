@@ -719,7 +719,7 @@ textarea {
     .group-grid .category-dropdown { right: 0; left: auto; }
 }
 
-/* Медиа-запрос для планшетов в альбомной ориент��ции и небольших ноутбуков */
+/* Медиа-запрос для планшетов в альбомной ориентации и небольших ноутбуков */
 @media (min-width: 768px) {
     .sections {
         display: grid;
@@ -1126,10 +1126,12 @@ textarea {
 
 /* Группировка опций в выпадающих списках категорий */
 .category-option-group { padding-top: 6px; }
-.category-subrow { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; gap: 6px; margin-top: 6px; }
-.category-divider { width: 1px; background: rgba(0,0,0,0.1); display: block; }
+.category-option-group { margin-top: 6px; position: relative; }
+.category-option-group > .category-option { width: 100%; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.category-subrow { display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; gap: 6px; margin-top: -4px; }
+.category-divider { display: none; }
 .add-category-dropdown .category-subrow .add-category-option,
-.category-dropdown .category-subrow .category-option { width: 100%; }
+.category-dropdown .category-subrow .category-option { width: 100%; border-top-left-radius: 0; border-top-right-radius: 0; padding: 4px 8px; font-size: 0.95rem; line-height: 1.1; }
 
 /* Редактор текста задачи */
 .task-edit { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Caveat', cursive; font-size: 1.1rem; }
