@@ -41,7 +41,7 @@ let timerWorker = null;
 let timerEndAt = 0;
 let timerEndTimeoutId = null;
 
-// Элементы DOM
+// Элем��нты DOM
 const sections = document.querySelectorAll('.section');
 
 // Глобальный обработчик для закрытия открытого выпадающего меню категорий
@@ -355,7 +355,7 @@ function displayTasks() {
     });
 }
 
-// Функция для изменения категории задачи
+// Функция для из��енения категории задачи
 function changeTaskCategory(taskId, newCategory, newSubcategory = null) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
@@ -393,7 +393,7 @@ function toggleTaskActive(taskId) {
     displayTasks();
 }
 
-// Переключение активности всех задач внутри категории
+// Пе��еключение активности всех задач внутри категории
 function toggleCategoryActive(category) {
     const hasActive = tasks.some(t => t.category === category && t.active);
     const newActive = !hasActive;
@@ -424,7 +424,7 @@ function exportTasks() {
     linkElement.click();
 }
 
-// Функция д��я импорта задач из файла
+// Функция для импорта задач из файла
 function importTasks(file) {
     const reader = new FileReader();
     
@@ -814,7 +814,7 @@ function pauseTimer() {
     timerPausedTime = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
 }
 
-// Функция для остановки таймера
+// Функция для остановки тайм��ра
 function stopTimer() {
     timerRunning = false;
     releaseWakeLock();
@@ -862,7 +862,7 @@ function resetTimer() {
     updateTimerDisplay();
 }
 
-// Обработчики событий
+// Обработч��ки событий
 sections.forEach(section => {
     section.addEventListener('click', () => {
         const categories = section.dataset.category;
