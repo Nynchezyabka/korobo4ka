@@ -130,7 +130,7 @@ function refreshNotifyBanner() {
 // Функция для получения названия категории по номеру
 function getCategoryName(category) {
     const categories = {
-        0: "Без категории",
+        0: "��ез категории",
         1: "Обязательные",
         2: "Безопасность",
         3: "Простые радости",
@@ -194,6 +194,7 @@ function displayTasks() {
             const taskElement = document.createElement('div');
             taskElement.className = `task category-${task.category} ${task.active ? '' : 'inactive'}`;
             taskElement.dataset.id = task.id;
+            taskElement.dataset.subcategory = task.subcategory || "work";
 
             const categoryDisplay = `<i class=\"fas fa-folder\"></i><span class=\"category-name\">${getCategoryName(task.category)}</span>`;
 
@@ -243,7 +244,7 @@ function displayTasks() {
         });
     });
 
-    // Добавляем обработчики событий для новых элементов
+    // Добавляем обработчики со��ытий для новых элементов
     document.querySelectorAll('.category-badge').forEach(badge => {
         badge.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -348,7 +349,7 @@ function deleteTask(taskId) {
     }
 }
 
-// Функция для экспорта задач в файл
+// Функция для эк��порта задач в файл
 function exportTasks() {
     const dataStr = JSON.stringify(tasks, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
@@ -442,7 +443,7 @@ function showTimer(task) {
 // Функция для скрытия таймера
 function hideTimer() {
     timerScreen.style.display = 'none';
-    document.body.style.overflow = 'auto'; // Восстана��ливаем прокрутку
+    document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
     stopTimer(); // Останавливаем таймер при закрытии
     releaseWakeLock();
 }
