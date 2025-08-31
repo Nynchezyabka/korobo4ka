@@ -921,7 +921,7 @@ textarea {
 @media (min-width: 481px) {
     .category-title { display: flex; }
 }
-.folder-before-title { color: #5d4037; }
+.folder-before-title { color: #5d4037; margin-right: 6px; }
 
 /* Компактный режим "сти��еров" для мобильных */
 @media (max-width: 480px) {
@@ -970,7 +970,7 @@ textarea {
         padding: 0 4px;
     }
     .tasks.mobile-compact .category-badge .category-name { display: none; }
-    .tasks.mobile-compact .category-badge .fa-caret-down { display: none; }
+    .tasks.mobile-compact .category-badge .fa-caret-down { display: inline-block; }
     .tasks.mobile-compact .category-dropdown {
         right: auto;
         left: 0;
@@ -1014,7 +1014,7 @@ textarea {
 .tasks.sticker-grid .category-selector { width: auto; margin: 0; }
 .tasks.sticker-grid .category-badge { background-color: transparent; padding: 0 6px; }
 .tasks.sticker-grid .category-badge .category-name { display: none; }
-.tasks.sticker-grid .category-badge .fa-caret-down { display: none; }
+.tasks.sticker-grid .category-badge .fa-caret-down { display: inline-block; }
 .tasks.sticker-grid .category-dropdown { right: auto; left: 0; }
 .tasks.sticker-grid .sticker-wide { grid-column: 1 / -1; }
 
@@ -1071,7 +1071,7 @@ textarea {
 .group-grid .sticker-wide { grid-column: 1 / -1; }
 .group-grid .task { padding: 6px 8px; border-radius: 12px; }
 .group-grid .category-badge { background-color: transparent; padding: 0 6px; }
-.group-grid .category-badge .category-name, .group-grid .category-badge .fa-caret-down { display: none; }
+.group-grid .category-badge .category-name { display: none; }
 
 /* Переопределяем старую десктопную раскладку внутри групп */
 @media (min-width: 1024px) {
@@ -1084,3 +1084,23 @@ textarea {
 
 /* Скрытие задач при свёрнутой группе */
 .category-group.collapsed .group-grid { display: none; }
+
+/* Цвет и иконка caret на бейдже категории задач */
+.category-badge i { color: #5d4037; }
+
+/* Цветизация выбранной категории при добавлении задачи */
+.add-category-badge[data-category="0"] { background-color: #f5f5f5; border-left: 2px solid #9E9E9E; }
+.add-category-badge[data-category="1"] { background-color: #fff9c4; border-left: 2px solid #FFD54F; }
+.add-category-badge[data-category="2"] { background-color: #bbdefb; border-left: 2px solid #64B5F6; }
+.add-category-badge[data-category="3"] { background-color: #c8e6c9; border-left: 2px solid #81C784; }
+.add-category-badge[data-category="4"] { background-color: #ffcdd2; border-left: 2px solid #E57373; }
+.add-category-badge[data-category="5"] { background-color: #d1c4e9; border-left: 2px solid #9575CD; }
+
+/* Кнопка актива��ии/деактивации всей категории в заголовке группы */
+.category-title .category-toggle-all { margin-left: auto; }
+
+/* Контролы подкатегорий при добавлении задачи (для "Обязательные") */
+.add-subcategory-controls { display: none; margin-top: 6px; gap: 6px; }
+.add-subcategory-controls.show { display: flex; }
+.add-subcategory-btn { padding: 6px 10px; border-radius: 6px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; font-family: 'Caveat', cursive; font-size: 1rem; }
+.add-subcategory-btn.selected { background: #5d4037; color: #fff; }
