@@ -942,11 +942,11 @@ textarea {
         width: 100%;
     }
     .tasks.mobile-compact .task-content {
-        flex-direction: row;
+        display: block;
         width: 100%;
         padding-right: 0;
-        gap: 4px;
     }
+    .tasks.mobile-compact .task-content::after { content: ""; display: block; clear: both; }
     .tasks.mobile-compact .task-text {
         padding: 0;
         margin: 0;
@@ -955,25 +955,33 @@ textarea {
         word-break: break-word;
     }
     .tasks.mobile-compact .task-controls {
-        margin-left: auto;
-        position: static;
-        width: auto;
+        float: right;
+        clear: right;
+        width: 48px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         gap: 2px;
+        margin-left: 6px;
+        position: static;
     }
-    .tasks.mobile-compact .task-control-btn { font-size: 0.95rem; padding: 2px; }
+    .tasks.mobile-compact .task-control-btn { font-size: 0.95rem; padding: 2px; line-height: 1; }
     .tasks.mobile-compact .category-selector {
-        width: auto;
-        margin: 0;
+        float: right;
+        width: 48px;
+        margin: 0 0 2px 6px;
     }
     .tasks.mobile-compact .category-badge {
         background-color: transparent;
-        padding: 0 4px;
+        padding: 0;
+        justify-content: center;
+        gap: 2px;
     }
     .tasks.mobile-compact .category-badge .category-name { display: none; }
     .tasks.mobile-compact .category-badge .fa-caret-down { display: inline-block; }
     .tasks.mobile-compact .category-dropdown {
-        right: auto;
-        left: 0;
+        right: 0;
+        left: auto;
     }
     .tasks.mobile-compact .sticker-wide { grid-column: 1 / -1; }
 }
