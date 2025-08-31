@@ -24,14 +24,13 @@ function getNextId() {
     return maxId + 1;
 }
 
-// Переменные ��остояния
+// Переменные состояния
 let currentTask = null;
 let timerInterval = null;
 let timerTime = 15 * 60; // 15 минут в секундах
 let timerRunning = false;
 let selectedTaskId = null;
 let activeDropdown = null;
-let elevatedTaskEl = null;
 let wakeLock = null; // экраны не засыпают во время таймера (где поддерж��вается)
 
 // Новые переменные для точного таймера
@@ -50,10 +49,6 @@ document.addEventListener('click', function(e) {
     if (activeDropdown && !e.target.closest('.category-selector') && !e.target.closest('.add-category-selector')) {
         activeDropdown.classList.remove('show');
         if (activeDropdown.parentElement) activeDropdown.parentElement.style.zIndex = '';
-        if (typeof elevatedTaskEl !== 'undefined' && elevatedTaskEl) {
-            elevatedTaskEl.style.zIndex = '';
-            elevatedTaskEl = null;
-        }
         activeDropdown = null;
     }
 });
@@ -87,17 +82,11 @@ function applyCategoryVisualToSelect() {
     if (!taskCategory) return;
     const val = parseInt(taskCategory.value) || 0;
     const badge = document.querySelector('.add-category-badge');
-    const subControls = document.querySelector('.add-subcategory-controls');
-    let subLabel = '';
-    if (val === 1 && subControls) {
-        const selected = subControls.querySelector('.add-subcategory-btn.selected');
-        if (selected && selected.dataset.sub === 'work') subLabel = ' - работа';
-        else if (selected && selected.dataset.sub === 'home') subLabel = ' - Дом';
-    }
     if (badge) {
-        badge.textContent = getCategoryName(val) + (subLabel || (val === 1 ? '' : ''));
+        badge.textContent = getCategoryName(val);
         badge.setAttribute('data-category', String(val));
     }
+    const subControls = document.querySelector('.add-subcategory-controls');
     if (subControls) {
         subControls.style.display = (val === 1 ? 'flex' : 'none');
     }
@@ -306,7 +295,7 @@ function displayTasks() {
                 }
             });
 
-            // Оставшиеся ��ез подкатегории остаются сверху, затем блоки подкатегорий
+            // Оставшиеся без подкатегории остаются сверху, затем блоки подкатегорий
             grid.appendChild(workBlock);
             grid.appendChild(homeBlock);
         }
@@ -331,15 +320,12 @@ function displayTasks() {
             if (activeDropdown && activeDropdown !== this.nextElementSibling) {
                 activeDropdown.classList.remove('show');
                 if (activeDropdown.parentElement) activeDropdown.parentElement.style.zIndex = '';
-                if (elevatedTaskEl) { elevatedTaskEl.style.zIndex = ''; elevatedTaskEl = null; }
             }
             const dropdown = this.nextElementSibling;
             dropdown.classList.toggle('show');
             activeDropdown = dropdown;
             if (dropdown.classList.contains('show')) {
-                if (dropdown.parentElement) dropdown.parentElement.style.zIndex = '12000';
-                elevatedTaskEl = this.closest('.task');
-                if (elevatedTaskEl) elevatedTaskEl.style.zIndex = '11000';
+                if (dropdown.parentElement) dropdown.parentElement.style.zIndex = '9000';
                 dropdown.style.top = '100%';
                 dropdown.style.bottom = 'auto';
                 dropdown.style.left = '';
@@ -361,7 +347,6 @@ function displayTasks() {
                 }
             } else {
                 if (dropdown.parentElement) dropdown.parentElement.style.zIndex = '';
-                if (elevatedTaskEl) { elevatedTaskEl.style.zIndex = ''; elevatedTaskEl = null; }
             }
         });
     });
@@ -376,7 +361,6 @@ function displayTasks() {
             const dd = this.closest('.category-dropdown');
             dd.classList.remove('show');
             if (dd && dd.parentElement) dd.parentElement.style.zIndex = '';
-            if (elevatedTaskEl) { elevatedTaskEl.style.zIndex = ''; elevatedTaskEl = null; }
             activeDropdown = null;
         });
     });
@@ -447,7 +431,7 @@ function displayTasks() {
     });
 }
 
-// Функция для из��енения категори�� задач��
+// Функция для из��енения категории задачи
 function changeTaskCategory(taskId, newCategory, newSubcategory = null) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
@@ -551,7 +535,7 @@ function importTasks(file) {
             // Проверяем структуру задач
             for (const task of importedTasks) {
                 if (!task.text || typeof task.category === 'undefined') {
-                    alert('О��ибка: неправильный формат файла');
+                    alert('Ошибка: неправильный формат файла');
                     return;
                 }
             }
@@ -621,7 +605,7 @@ function hideTimer() {
     releaseWakeLock();
 }
 
-// Функция для обновления от��бражения таймера
+// Функция для обновления отображения таймера
 function updateTimerDisplay() {
     const minutes = Math.floor(timerTime / 60);
     const seconds = timerTime % 60;
@@ -720,14 +704,10 @@ function setupAddCategorySelector() {
                         [workBtn, homeBtn].forEach(b => b && b.classList.remove('selected'));
                         const target = sub === 'work' ? workBtn : homeBtn;
                         if (target) target.classList.add('selected');
-                    } else {
-                        [workBtn, homeBtn].forEach(b => b && b.classList.remove('selected'));
                     }
                 }
-                applyCategoryVisualToSelect();
                 dropdown.classList.remove('show');
                 activeDropdown = null;
-                container.style.zIndex = '';
             });
         });
         badge.addEventListener('click', (e) => {
@@ -737,7 +717,6 @@ function setupAddCategorySelector() {
             }
             dropdown.classList.toggle('show');
             activeDropdown = dropdown;
-            container.style.zIndex = dropdown.classList.contains('show') ? '12000' : '';
         });
         container.appendChild(badge);
         container.appendChild(dropdown);
@@ -761,7 +740,6 @@ function setupAddCategorySelector() {
                 btn.addEventListener('click', () => {
                     sub.querySelectorAll('.add-subcategory-btn').forEach(b => b.classList.remove('selected'));
                     btn.classList.add('selected');
-                    applyCategoryVisualToSelect();
                 });
             });
             container.insertAdjacentElement('afterend', sub);
@@ -918,7 +896,7 @@ function startTimer() {
         }
         timerWorker.postMessage('start');
     } else {
-        // Fallback для браузеров бе�� подде��жки Web Workers
+        // Fallback для браузеров без подде��жки Web Workers
         timerInterval = setInterval(() => {
             timerTime = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
             updateTimerDisplay();
@@ -1139,7 +1117,7 @@ window.addEventListener('focus', () => {
     }
 });
 
-// Функция дл�� показа toast-уведомления
+// Функция для показа toast-уведомления
 function showToastNotification(title, message, duration = 5000) {
     let toast = document.getElementById('toast-notification');
     if (!toast) {
@@ -1205,9 +1183,9 @@ if (enableNotifyBtn) {
                 await ensurePushSubscribed();
                 createBrowserNotification('Уведомления включены');
             } else if (result === 'default') {
-                alert('Уведомления не включены. Подтвердит�� запрос браузера или разрешите их в настройках са��та.');
+                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройках са��та.');
             } else if (result === 'denied') {
-                alert('Уведомления заблокированы �� настройках браузера. Разрешите их вручную.');
+                alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
         } catch (e) {
             alert('Не удалось запросить разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
