@@ -215,8 +215,14 @@ function displayTasks() {
                         </div>
                         <div class=\"category-dropdown\" id=\"dropdown-${task.id}\">
                             <button class=\"category-option\" data-category=\"0\">Без категории</button>
-                            <button class=\"category-option\" data-category=\"1\" data-subcategory=\"work\">Обязательные �� Работа</button>
-                            <button class=\"category-option\" data-category=\"1\" data-subcategory=\"home\">Обязательные — Дом</button>
+                            <div class=\"category-option-group\">
+                                <button class=\"category-option\" data-category=\"1\">Обязательные</button>
+                                <div class=\"category-subrow\">
+                                    <button class=\"category-option\" data-category=\"1\" data-subcategory=\"work\">Работа</button>
+                                    <span class=\"category-divider\"></span>
+                                    <button class=\"category-option\" data-category=\"1\" data-subcategory=\"home\">Дом</button>
+                                </div>
+                            </div>
                             <button class=\"category-option\" data-category=\"2\">Безопасность</button>
                             <button class=\"category-option\" data-category=\"5\">Доступность радостей</button>
                             <button class=\"category-option\" data-category=\"3\">Простые радости</button>
@@ -531,7 +537,7 @@ function showTimer(task) {
     document.querySelector('.timer-controls').style.display = 'flex';
 }
 
-// Функция для скрытия таймера
+// Функция для скрытия т��ймера
 function hideTimer() {
     timerScreen.style.display = 'none';
     document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
@@ -696,7 +702,7 @@ window.addEventListener('load', async () => {
 
 // НОВАЯ РЕАЛИЗАЦИЯ ТАЙМЕРА (точный и работающий в фоне)
 
-// Поддержка Wake Lock API, чтобы экран не засыпал во время таймера
+// Поддержка Wake Lock API, чтобы экран не засыпал во время та��мера
 async function requestWakeLock() {
     try {
         if ('wakeLock' in navigator && !wakeLock) {
@@ -1020,7 +1026,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// Пересчет при возврате на вкладку/разворачивании окна
+// Пересчет при возврате на вкладку/разворачивании ��кна
 window.addEventListener('focus', () => {
     if (timerRunning) {
         timerTime = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
