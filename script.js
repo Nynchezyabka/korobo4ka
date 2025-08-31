@@ -27,13 +27,13 @@ function getNextId() {
 // Переменные состояния
 let currentTask = null;
 let timerInterval = null;
-let timerTime = 15 * 60; // 15 ��инут в секундах
+let timerTime = 15 * 60; // 15 минут в секундах
 let timerRunning = false;
 let selectedTaskId = null;
 let activeDropdown = null;
 let wakeLock = null; // экраны не засыпают во время таймера (где поддерживается)
 
-// Новые переменные для т��ч��ого таймера
+// Новые переменные для точного таймера
 let timerStartTime = 0;
 let timerPausedTime = 0;
 let timerAnimationFrame = null;
@@ -127,7 +127,7 @@ function refreshNotifyBanner() {
     setNotifyBannerVisible(Notification.permission !== 'granted');
 }
 
-// Функция для получе��ия названия категории по номеру
+// Функция для получения названия категории по номеру
 function getCategoryName(category) {
     const categories = {
         0: "Без категории",
@@ -353,7 +353,7 @@ function exportTasks() {
     const dataStr = JSON.stringify(tasks, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
     
-    const exportFileDefaultName = 'коробоч��а-задачи.json';
+    const exportFileDefaultName = 'коробочка-задачи.json';
     
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
@@ -374,10 +374,10 @@ function importTasks(file) {
                 return;
             }
             
-            // П��оверяем структуру задач
+            // Проверяем структуру задач
             for (const task of importedTasks) {
                 if (!task.text || typeof task.category === 'undefined') {
-                    alert('��ши��ка: неправильный формат файла');
+                    alert('Ошибка: неправильный формат файла');
                     return;
                 }
             }
@@ -439,15 +439,15 @@ function showTimer(task) {
     document.querySelector('.timer-controls').style.display = 'flex';
 }
 
-// Ф��нк��ия для скрытия таймера
+// Функция для скрытия таймера
 function hideTimer() {
     timerScreen.style.display = 'none';
-    document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
+    document.body.style.overflow = 'auto'; // Восстана��ливаем прокрутку
     stopTimer(); // Останавливаем таймер при закрытии
     releaseWakeLock();
 }
 
-// Функция для обновления ото��ражения та��мера
+// Функция для обновления отображения таймера
 function updateTimerDisplay() {
     const minutes = Math.floor(timerTime / 60);
     const seconds = timerTime % 60;
@@ -473,7 +473,7 @@ function showNotification(message) {
     }
 }
 
-// Создание браузерног�� уведомления
+// Создание браузерного уведомления
 function createBrowserNotification(message) {
     const title = "🎁 КОРОБОЧКА";
     const options = {
@@ -575,13 +575,13 @@ window.addEventListener('load', async () => {
     }
 
     if (!navigator.vibrate) {
-        console.log("Вибрация не поддерживается на этом устройств��");
+        console.log("Вибрация не поддерживается на этом устройстве");
     }
 });
 
 // НОВАЯ РЕАЛИЗАЦИЯ ТАЙМЕРА (точный и работающий в фоне)
 
-// Поддержка Wake Lock API, чтобы экран не за��ыпал в�� время таймера
+// Поддержка Wake Lock API, чтобы экран не засыпал во время таймера
 async function requestWakeLock() {
     try {
         if ('wakeLock' in navigator && !wakeLock) {
@@ -610,7 +610,7 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
-// Звуковой сигнал по заверше��ии
+// Звуковой сигнал по завершении
 function playBeep() {
     try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -716,7 +716,7 @@ function startTimer() {
     }
 }
 
-// Функция для паузы тайме����
+// Функция для паузы таймера
 function pauseTimer() {
     if (!timerRunning) return;
 
@@ -728,7 +728,7 @@ function pauseTimer() {
     timerPausedTime = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
 }
 
-// Функция для останов��и таймера
+// Функция для остановки таймера
 function stopTimer() {
     timerRunning = false;
     releaseWakeLock();
@@ -764,7 +764,7 @@ async function cancelServerSchedule() {
 
 // Функция для сброса таймера
 function resetTimer() {
-    // отменяем только локальный таймер, серверный не трогаем, чт��бы пауза/сброс был явным
+    // отменяем только локальный таймер, серверный не трогаем, чтобы пауза/сброс был явным
     stopTimer();
     if (timerEndTimeoutId) {
         clearTimeout(timerEndTimeoutId);
@@ -776,7 +776,7 @@ function resetTimer() {
     updateTimerDisplay();
 }
 
-// Обработчик�� событий
+// Обработчики событий
 sections.forEach(section => {
     section.addEventListener('click', () => {
         const categories = section.dataset.category;
@@ -843,7 +843,7 @@ exportTasksBtn.addEventListener('click', exportTasks);
 importFile.addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
         importTasks(e.target.files[0]);
-        e.target.value = ''; // Сбрасыв��ем значение input
+        e.target.value = ''; // Сбрасываем значение input
     }
 });
 
@@ -981,9 +981,9 @@ if (enableNotifyBtn) {
                 await ensurePushSubscribed();
                 createBrowserNotification('Уведомления включены');
             } else if (result === 'default') {
-                alert('Уведомления не включены. Подтвердите запрос браузера или разреши��е их в настройка�� ��айта.');
+                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройках сайта.');
             } else if (result === 'denied') {
-                alert('Уведомления заблокированы в настр��йках браузера. Разрешите их вручную.');
+                alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
         } catch (e) {
             alert('Не удалось запросить разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
