@@ -358,7 +358,9 @@ function displayTasks() {
             const newSub = this.dataset.subcategory || null;
             changeTaskCategory(taskId, newCategory, newSub);
             // Закрываем dropdown
-            this.closest('.category-dropdown').classList.remove('show');
+            const dd = this.closest('.category-dropdown');
+            dd.classList.remove('show');
+            if (dd && dd.parentElement) dd.parentElement.style.zIndex = '';
             activeDropdown = null;
         });
     });
@@ -576,7 +578,7 @@ function showTimer(task) {
     currentTask = task;
     timerTaskText.textContent = task.text;
 
-    // Полный сброс состояния таймера перед новым запуском
+    // Полный сб��ос состояния таймера перед новым запуском
     if (timerEndTimeoutId) {
         clearTimeout(timerEndTimeoutId);
         timerEndTimeoutId = null;
@@ -901,7 +903,7 @@ function startTimer() {
 
             if (timerTime <= 0) {
                 stopTimer();
-                showNotification(currentTask ? `Задача: ${currentTask.text}` : undefined);
+                showNotification(currentTask ? `За��ача: ${currentTask.text}` : undefined);
                 timerCompleteOptions.style.display = 'flex';
                 document.querySelector('.timer-controls').style.display = 'none';
             }
