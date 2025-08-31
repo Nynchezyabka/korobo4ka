@@ -232,6 +232,36 @@ function displayTasks() {
             grid.appendChild(taskElement);
         });
 
+        // Группировка задач по подкатегориям для категории "Обязательные"
+        if (cat === 1) {
+            const workBlock = document.createElement('div');
+            const homeBlock = document.createElement('div');
+            const workTitle = document.createElement('div');
+            const homeTitle = document.createElement('div');
+            workTitle.className = 'category-title';
+            homeTitle.className = 'category-title';
+            workTitle.innerHTML = '<span class="category-heading">Работа</span>';
+            homeTitle.innerHTML = '<span class="category-heading">Дом</span>';
+            const workGrid = document.createElement('div');
+            const homeGrid = document.createElement('div');
+            workGrid.className = 'group-grid';
+            homeGrid.className = 'group-grid';
+            workBlock.appendChild(workTitle);
+            workBlock.appendChild(workGrid);
+            homeBlock.appendChild(homeTitle);
+            homeBlock.appendChild(homeGrid);
+
+            // Перемещаем задачи из общего grid в подгруппы
+            [...grid.querySelectorAll(':scope > .task')].forEach(el => {
+                const sub = el.dataset.subcategory === 'home' ? 'home' : 'work';
+                (sub === 'home' ? homeGrid : workGrid).appendChild(el);
+            });
+
+            grid.innerHTML = '';
+            grid.appendChild(workBlock);
+            grid.appendChild(homeBlock);
+        }
+
         title.addEventListener('click', () => {
             const c = parseInt(group.dataset.category);
             if (group.classList.contains('collapsed')) {
@@ -366,7 +396,7 @@ function deleteTask(taskId) {
     }
 }
 
-// ��ункция для экспорта задач в файл
+// Функция для экспорта задач в файл
 function exportTasks() {
     const dataStr = JSON.stringify(tasks, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
@@ -1004,7 +1034,7 @@ if (enableNotifyBtn) {
                 alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
         } catch (e) {
-            alert('Не удалось запросить разрешение на уведомления. ��ткройте сайт напрямую и попробуйте снова.');
+            alert('Не удалось запросить разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
         }
     });
 }
