@@ -190,6 +190,17 @@ function displayTasks() {
             return a.id - b.id;
         });
 
+        // Кнопка для активации/деактивации всей категории
+        const hasActiveInCategory = list.some(t => t.active);
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'task-control-btn category-toggle-all';
+        toggleBtn.innerHTML = `<i class=\"fas ${hasActiveInCategory ? 'fa-eye-slash' : 'fa-eye'}\"></i>`;
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleCategoryActive(cat);
+        });
+        title.appendChild(toggleBtn);
+
         list.forEach(task => {
             const taskElement = document.createElement('div');
             taskElement.className = `task category-${task.category} ${task.active ? '' : 'inactive'}`;
@@ -365,7 +376,7 @@ function changeTaskCategory(taskId, newCategory, newSubcategory = null) {
     displayTasks();
 }
 
-// Функция для переключения активности задачи
+// Функция для переключения ак��ивности задачи
 function toggleTaskActive(taskId) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
@@ -504,7 +515,7 @@ function updateTimerDisplay() {
 
 // Функция для показа уведомления
 function showNotification(message) {
-    const body = message || (currentTask ? `Задача: ${currentTask.text}` : "Время вышло! Задача завершена.");
+    const body = message || (currentTask ? `Задача: ${currentTask.text}` : "Время вышл��! Задача завершена.");
     showToastNotification("🎁 КОРОБОЧКА", body, 5000);
     playBeep();
 
