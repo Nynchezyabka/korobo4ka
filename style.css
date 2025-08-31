@@ -306,7 +306,7 @@ textarea {
     border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 8px;
-    z-index: 9000;
+    z-index: 12000;
     display: none;
     min-width: 130px;
 }
@@ -396,7 +396,7 @@ textarea {
     border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 8px;
-    z-index: 9000;
+    z-index: 12000;
     display: none;
     min-width: 130px;
 }
@@ -710,7 +710,7 @@ textarea {
         justify-content: flex-end;
     }
 
-    /* Десктоп/планшет: тот же компактный макет с двумя рядами иконок справа */
+    /* Десктоп/планшет: тот же компактн��й макет с двумя рядами иконок справа */
     .group-grid .task-content { display: contents; }
     .group-grid .task-content::after { content: ""; display: block; clear: both; }
     .group-grid .category-selector { float: none; width: auto; margin: 0 0 6px 0; grid-column: 2 / 3; grid-row: 1 / 2; }
@@ -912,7 +912,7 @@ textarea {
     transform: scale(0.9);
 }
 
-/* Адаптивнос��ь для мобильных устройств */
+/* Адаптивность для мобильных устройств */
 @media (max-width: 480px) {
     .toast-notification {
         bottom: 10px;
@@ -922,7 +922,7 @@ textarea {
     }
 }
 
-/* По��заголовки категорий для мобильной группировки */
+/* По��заголовки категорий для мобильно�� группировки */
 .category-title {
     margin: 10px 0 6px;
     color: #5d4037;
