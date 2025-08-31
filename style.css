@@ -77,7 +77,7 @@ h1 {
     height: 10px;
     background-color: rgba(0, 0, 0, 0.15);
 }
-/* Цвет полоски секций в соответ��твии с цветами категорий */
+/* Цвет полоски секций в соответствии с цветами категорий */
 .mandatory::before { background-color: #FFD54F; }
 .security::before { background-color: #64B5F6; }
 .joys::before { background-color: #81C784; }
@@ -183,7 +183,7 @@ textarea, select, input {
 #taskCategory.category-4 { border-left-color: #E57373; background-color: #ffcdd2; }
 #taskCategory.category-5 { border-left-color: #9575CD; background-color: #d1c4e9; }
 
-/* Скрываем на��ивный select и используем кастомный цветной дропдаун */
+/* С��рываем на��ивный select и используем кастомный цветной дропдаун */
 .task-form #taskCategory { display: none; }
 .add-category-selector { position: relative; display: inline-block; width: 100%; z-index: 2000; }
 .add-category-badge {
@@ -1126,8 +1126,8 @@ textarea {
 
 /* Группировка опций в выпадающих списках категорий */
 .category-option-group { padding-top: 6px; }
-.category-option-group { margin-top: 4px; position: relative; }
-.category-option-group > .category-option { width: 100%; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.category-option-group { margin-top: 4px; margin-bottom: 4px; position: relative; }
+.category-option-group > .category-option { width: 100%; border-bottom-left-radius: 0; border-bottom-right-radius: 0; padding: 3px 8px; font-size: 0.9rem; line-height: 1.1; min-height: 28px; display: flex; align-items: center; justify-content: center; }
 .category-subrow { display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; gap: 4px; margin-top: -2px; }
 .category-divider { display: none; }
 .add-category-dropdown .category-subrow .add-category-option,
