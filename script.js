@@ -130,7 +130,7 @@ function refreshNotifyBanner() {
 // Функция для получения названия категории по номеру
 function getCategoryName(category) {
     const categories = {
-        0: "��ез категории",
+        0: "Без категории",
         1: "Обязательные",
         2: "Безопасность",
         3: "Простые радости",
@@ -208,7 +208,8 @@ function displayTasks() {
                         </div>
                         <div class=\"category-dropdown\" id=\"dropdown-${task.id}\">
                             <button class=\"category-option\" data-category=\"0\">Без категории</button>
-                            <button class=\"category-option\" data-category=\"1\">Обязательные</button>
+                            <button class=\"category-option\" data-category=\"1\" data-subcategory=\"work\">Обязательные — Работа</button>
+                            <button class=\"category-option\" data-category=\"1\" data-subcategory=\"home\">Обязательные — Дом</button>
                             <button class=\"category-option\" data-category=\"2\">Безопасность</button>
                             <button class=\"category-option\" data-category=\"5\">Доступность радостей</button>
                             <button class=\"category-option\" data-category=\"3\">Простые радости</button>
@@ -244,7 +245,7 @@ function displayTasks() {
         });
     });
 
-    // Добавляем обработчики со��ытий для новых элементов
+    // Добавляем обработчики событий дл�� новых элементов
     document.querySelectorAll('.category-badge').forEach(badge => {
         badge.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -308,7 +309,7 @@ function displayTasks() {
     });
 }
 
-// Функция для изменения категории задачи
+// Функция для изменения кат��гории задачи
 function changeTaskCategory(taskId, newCategory) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
@@ -349,7 +350,7 @@ function deleteTask(taskId) {
     }
 }
 
-// Функция для эк��порта задач в файл
+// Функция для экспорта задач в файл
 function exportTasks() {
     const dataStr = JSON.stringify(tasks, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
@@ -383,7 +384,7 @@ function importTasks(file) {
                 }
             }
             
-            // Добавляем задачи в базу данных
+            // Доба��ляем задачи в базу данных
             tasks = importedTasks;
             saveTasks();
             alert(`Успешно импортировано ${importedTasks.length} задач`);
@@ -520,7 +521,7 @@ function setupAddCategorySelector() {
         dropdown.className = 'add-category-dropdown';
         const cats = [
             { v: 0, n: 'Без категории' },
-            { v: 1, n: 'Обязательные' },
+            { v: 1, n: 'Обязател��ные' },
             { v: 2, n: 'Безопасность' },
             { v: 5, n: 'Доступность радостей' },
             { v: 3, n: 'Простые радости' },
