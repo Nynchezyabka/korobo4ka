@@ -265,8 +265,8 @@ function displayTasks() {
             homeBlock.appendChild(homeGrid);
 
             // Кнопки включения/выключения подкатегорий
-            const workHasActive = list.some(t => (t.subcategory || 'work') === 'work' && t.active);
-            const homeHasActive = list.some(t => (t.subcategory || 'work') === 'home' && t.active);
+            const workHasActive = list.some(t => t.subcategory === 'work' && t.active);
+    const homeHasActive = list.some(t => t.subcategory === 'home' && t.active);
             const workToggle = document.createElement('button');
             workToggle.className = 'task-control-btn subcategory-toggle-all';
             workToggle.innerHTML = `<i class=\"fas ${workHasActive ? 'fa-eye-slash' : 'fa-eye'}\"></i>`;
@@ -325,7 +325,7 @@ function displayTasks() {
             dropdown.classList.toggle('show');
             activeDropdown = dropdown;
             if (dropdown.classList.contains('show')) {
-                if (dropdown.parentElement) dropdown.parentElement.style.zIndex = '4000';
+                if (dropdown.parentElement) dropdown.parentElement.style.zIndex = '9000';
                 dropdown.style.top = '100%';
                 dropdown.style.bottom = 'auto';
                 dropdown.style.left = '';
@@ -376,6 +376,57 @@ function displayTasks() {
             deleteTask(id);
         });
     });
+
+    document.querySelectorAll('.task-text').forEach(el => {
+        el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const taskEl = el.closest('.task');
+            if (!taskEl) return;
+            const id = parseInt(taskEl.dataset.id);
+            const orig = el.textContent || '';
+            const input = document.createElement('textarea');
+            input.className = 'task-edit';
+            input.value = orig;
+            el.style.display = 'none';
+            el.insertAdjacentElement('afterend', input);
+            input.focus();
+            input.setSelectionRange(input.value.length, input.value.length);
+            const commit = () => {
+                const val = input.value.trim();
+                input.removeEventListener('keydown', onKey);
+                input.removeEventListener('blur', onBlur);
+                if (val && val !== orig) {
+                    const idx = tasks.findIndex(t => t.id === id);
+                    if (idx !== -1) {
+                        tasks[idx].text = val;
+                        saveTasks();
+                        displayTasks();
+                        return;
+                    }
+                }
+                input.remove();
+                el.style.display = '';
+            };
+            const cancel = () => {
+                input.removeEventListener('keydown', onKey);
+                input.removeEventListener('blur', onBlur);
+                input.remove();
+                el.style.display = '';
+            };
+            const onKey = (ev) => {
+                if (ev.key === 'Enter' && !ev.shiftKey) {
+                    ev.preventDefault();
+                    commit();
+                } else if (ev.key === 'Escape') {
+                    ev.preventDefault();
+                    cancel();
+                }
+            };
+            const onBlur = () => commit();
+            input.addEventListener('keydown', onKey);
+            input.addEventListener('blur', onBlur);
+        });
+    });
 }
 
 // Функция для из��енения категории задачи
@@ -386,7 +437,11 @@ function changeTaskCategory(taskId, newCategory, newSubcategory = null) {
 
     const updateData = { category: newCategory };
     if (newCategory === 1) {
-        updateData.subcategory = newSubcategory || (tasks[taskIndex].subcategory || 'work');
+        if (newSubcategory) {
+            updateData.subcategory = newSubcategory;
+        } else if ('subcategory' in tasks[taskIndex]) {
+            updateData.subcategory = null;
+        }
     }
     if (tasks[taskIndex].category === 0 && !tasks[taskIndex].active && newCategory !== 0) {
         updateData.active = true;
@@ -397,6 +452,9 @@ function changeTaskCategory(taskId, newCategory, newSubcategory = null) {
 
     tasks[taskIndex] = { ...tasks[taskIndex], ...updateData };
     if (newCategory !== 1 && 'subcategory' in tasks[taskIndex]) {
+        delete tasks[taskIndex].subcategory;
+    }
+    if (newCategory === 1 && (!newSubcategory || newSubcategory === null) && 'subcategory' in tasks[taskIndex] && tasks[taskIndex].subcategory === null) {
         delete tasks[taskIndex].subcategory;
     }
     saveTasks();
@@ -427,9 +485,9 @@ function toggleCategoryActive(category) {
 
 // Переключение активности подкатегории (Работа/Дом) внутри "Обязательные"
 function toggleSubcategoryActive(subKey) {
-    const hasActive = tasks.some(t => t.category === 1 && (t.subcategory || 'work') === subKey && t.active);
+    const hasActive = tasks.some(t => t.category === 1 && t.subcategory === subKey && t.active);
     const newActive = !hasActive;
-    tasks = tasks.map(t => (t.category === 1 && (t.subcategory || 'work') === subKey)
+    tasks = tasks.map(t => (t.category === 1 && t.subcategory === subKey)
         ? { ...t, active: newActive, statusChangedAt: Date.now() }
         : t
     );
@@ -451,7 +509,7 @@ function exportTasks() {
     const dataStr = JSON.stringify(tasks, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
     
-    const exportFileDefaultName = 'коробочка-задачи.json';
+    const exportFileDefaultName = 'коробочка-з��дачи.json';
     
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
@@ -537,7 +595,7 @@ function showTimer(task) {
     document.querySelector('.timer-controls').style.display = 'flex';
 }
 
-// Функция для скрытия т��ймера
+// Функция для скрытия таймера
 function hideTimer() {
     timerScreen.style.display = 'none';
     document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
@@ -615,26 +673,40 @@ function setupAddCategorySelector() {
         badge.className = 'add-category-badge';
         const dropdown = document.createElement('div');
         dropdown.className = 'add-category-dropdown';
-        const cats = [
-            { v: 0, n: 'Без категории' },
-            { v: 1, n: 'Обязательные' },
-            { v: 2, n: 'Безопасность' },
-            { v: 5, n: 'Доступность радостей' },
-            { v: 3, n: 'Простые радости' },
-            { v: 4, n: 'Эго радости' },
-        ];
-        cats.forEach(c => {
-            const btn = document.createElement('button');
-            btn.className = 'add-category-option';
-            btn.setAttribute('data-category', String(c.v));
-            btn.textContent = c.n;
+        dropdown.innerHTML = `
+            <button class="add-category-option" data-category="0">Без категории</button>
+            <div class="category-option-group">
+                <button class="add-category-option" data-category="1">Обязательные</button>
+                <div class="category-subrow">
+                    <button class="add-category-option" data-category="1" data-subcategory="work">Работа</button>
+                    <span class="category-divider"></span>
+                    <button class="add-category-option" data-category="1" data-subcategory="home">Дом</button>
+                </div>
+            </div>
+            <button class="add-category-option" data-category="2">Безопасность</button>
+            <button class="add-category-option" data-category="5">Доступность радостей</button>
+            <button class="add-category-option" data-category="3">Простые радости</button>
+            <button class="add-category-option" data-category="4">Эго радости</button>
+        `;
+        dropdown.querySelectorAll('.add-category-option').forEach(btn => {
             btn.addEventListener('click', () => {
-                taskCategory.value = String(c.v);
+                const v = btn.getAttribute('data-category') || '0';
+                const sub = btn.getAttribute('data-subcategory');
+                taskCategory.value = v;
                 applyCategoryVisualToSelect();
+                const subControls = document.querySelector('.add-subcategory-controls');
+                if (subControls) {
+                    const workBtn = subControls.querySelector('.add-subcategory-btn[data-sub="work"]');
+                    const homeBtn = subControls.querySelector('.add-subcategory-btn[data-sub="home"]');
+                    if (sub === 'work' || sub === 'home') {
+                        [workBtn, homeBtn].forEach(b => b && b.classList.remove('selected'));
+                        const target = sub === 'work' ? workBtn : homeBtn;
+                        if (target) target.classList.add('selected');
+                    }
+                }
                 dropdown.classList.remove('show');
                 activeDropdown = null;
             });
-            dropdown.appendChild(btn);
         });
         badge.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -702,7 +774,7 @@ window.addEventListener('load', async () => {
 
 // НОВАЯ РЕАЛИЗАЦИЯ ТАЙМЕРА (точный и работающий в фоне)
 
-// Поддержка Wake Lock API, чтобы экран не засыпал во время та��мера
+// Поддержка Wake Lock API, чтобы экран не засыпал во время таймера
 async function requestWakeLock() {
     try {
         if ('wakeLock' in navigator && !wakeLock) {
@@ -885,7 +957,7 @@ async function cancelServerSchedule() {
 
 // Функция для сброса таймера
 function resetTimer() {
-    // отменяем только локальный таймер, серверный не трогаем, чтобы пауза/сброс был явным
+    // отменяе�� только локальный таймер, серверный не трогаем, чтобы пауза/сброс был явным
     stopTimer();
     if (timerEndTimeoutId) {
         clearTimeout(timerEndTimeoutId);
@@ -948,9 +1020,11 @@ addTaskBtn.addEventListener('click', () => {
             active,
             statusChangedAt: Date.now()
         };
-        if (category === 1 && lines.length > 1) {
+        if (category === 1) {
             const selectedBtn = document.querySelector('.add-subcategory-controls .add-subcategory-btn.selected');
-            newTask.subcategory = (selectedBtn && selectedBtn.dataset.sub) ? selectedBtn.dataset.sub : 'work';
+            if (selectedBtn && selectedBtn.dataset.sub) {
+                newTask.subcategory = selectedBtn.dataset.sub;
+            }
         }
         tasks.push(newTask);
     });
@@ -1026,7 +1100,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// Пересчет при возврате на вкладку/разворачивании ��кна
+// Пересчет при возврате на вкладку/разворачивании окна
 window.addEventListener('focus', () => {
     if (timerRunning) {
         timerTime = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
