@@ -938,7 +938,7 @@ textarea {
     font-size: 1.1rem;
 }
 
-/* Показыва��м подзаголовки на всех экранах */
+/* Показываем подзаголовки на всех экранах */
 @media (min-width: 481px) {
     .category-title { display: flex; }
 }
@@ -1093,6 +1093,11 @@ textarea {
 }
 @media (max-width: 480px) {
     .group-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 4px; }
+    .group-grid .task { display: block; }
+    .group-grid .task-content { display: block; }
+    .group-grid .category-selector { float: right; margin: 0 0 6px 6px; }
+    .group-grid .task-controls { float: right; clear: right; }
+    .group-grid .task-text { word-break: normal; overflow-wrap: break-word; }
 }
 @media (min-width: 481px) and (max-width: 767px) {
     .group-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
@@ -1125,7 +1130,7 @@ textarea {
 /* Цвет и иконка caret на бейдже категории задач */
 .category-badge i { color: #5d4037; }
 
-/* Группировка опций в выпадающих списках категорий */
+/* Группировка опций в выпада��щих списках категорий */
 .category-option-group { padding-top: 6px; }
 .category-option-group { margin-top: 4px; margin-bottom: 4px; position: relative; }
 .category-option-group > .category-option { width: 100%; border-bottom-left-radius: 0; border-bottom-right-radius: 0; padding: 3px 8px; font-size: 0.9rem; line-height: 1.1; min-height: 28px; display: flex; align-items: center; justify-content: center; }
@@ -1137,7 +1142,7 @@ textarea {
 /* Редактор текста задачи */
 .task-edit { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Caveat', cursive; font-size: 1.1rem; }
 
-/* Цветизац��я выбранной категории при добавлении задачи */
+/* Цветизация выбранной категории при добавлении задачи */
 .add-category-badge[data-category="0"] { background-color: #f5f5f5; border-left: 2px solid #9E9E9E; }
 .add-category-badge[data-category="1"] { background-color: #fff9c4; border-left: 2px solid #FFD54F; }
 .add-category-badge[data-category="2"] { background-color: #bbdefb; border-left: 2px solid #64B5F6; }
