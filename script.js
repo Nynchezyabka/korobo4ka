@@ -41,7 +41,7 @@ let timerWorker = null;
 let timerEndAt = 0;
 let timerEndTimeoutId = null;
 
-// Э��ем��нты DOM
+// Элем��нты DOM
 const sections = document.querySelectorAll('.section');
 
 // Глобальный обработчик для закрытия открытого выпадающего меню категорий
@@ -199,7 +199,9 @@ function displayTasks() {
             const taskElement = document.createElement('div');
             taskElement.className = `task category-${task.category} ${task.active ? '' : 'inactive'}`;
             taskElement.dataset.id = task.id;
-            taskElement.dataset.subcategory = task.subcategory || "work";
+            if (task.subcategory) {
+                taskElement.dataset.subcategory = task.subcategory;
+            }
 
             const categoryDisplay = `<i class=\"fas fa-folder\"></i><span class=\"category-name\">${getCategoryName(task.category)}</span>`;
 
@@ -237,7 +239,7 @@ function displayTasks() {
             grid.appendChild(taskElement);
         });
 
-        // Группировка задач по подкатегориям для категории "��бязательные"
+        // Группировка задач по подкатегориям для категории "Обязательные"
         if (cat === 1) {
             const workBlock = document.createElement('div');
             const homeBlock = document.createElement('div');
@@ -276,13 +278,18 @@ function displayTasks() {
             workTitle.appendChild(workToggle);
             homeTitle.appendChild(homeToggle);
 
-            // Перемещаем задачи из общего grid в подгруппы
-            [...grid.querySelectorAll(':scope > .task')].forEach(el => {
-                const sub = el.dataset.subcategory === 'home' ? 'home' : 'work';
-                (sub === 'home' ? homeGrid : workGrid).appendChild(el);
+            // Перемещаем задачи из общего grid в подгруппы (только те, у кого задана подкатегория)
+            const nodes = [...grid.querySelectorAll(':scope > .task')];
+            nodes.forEach(el => {
+                const sub = el.dataset.subcategory;
+                if (sub === 'home') {
+                    homeGrid.appendChild(el);
+                } else if (sub === 'work') {
+                    workGrid.appendChild(el);
+                }
             });
 
-            grid.innerHTML = '';
+            // Оставшиеся без подкатегории остаются сверху, затем блоки подкатегорий
             grid.appendChild(workBlock);
             grid.appendChild(homeBlock);
         }
@@ -486,7 +493,7 @@ function getRandomTask(categories) {
     // Преобразуем строку категорий в массив чисел
     const categoryArray = categories.split(',').map(Number);
     
-    // Получаем все активные з��дачи из указанных категорий
+    // Получаем все активные задачи из указанных категорий
     const filteredTasks = tasks.filter(task => 
         categoryArray.includes(task.category) && task.active
     );
@@ -935,7 +942,7 @@ addTaskBtn.addEventListener('click', () => {
             active,
             statusChangedAt: Date.now()
         };
-        if (category === 1) {
+        if (category === 1 && lines.length > 1) {
             const selectedBtn = document.querySelector('.add-subcategory-controls .add-subcategory-btn.selected');
             newTask.subcategory = (selectedBtn && selectedBtn.dataset.sub) ? selectedBtn.dataset.sub : 'work';
         }
@@ -1094,7 +1101,7 @@ if (enableNotifyBtn) {
                 await ensurePushSubscribed();
                 createBrowserNotification('Уведомления включены');
             } else if (result === 'default') {
-                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройках сайта.');
+                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройках са��та.');
             } else if (result === 'denied') {
                 alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
