@@ -517,7 +517,7 @@ function updateTimerDisplay() {
     timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-// Функция для показа уведомления
+// Фу��кция для показа уведомления
 function showNotification(message) {
     const body = message || (currentTask ? `Задача: ${currentTask.text}` : "Время вышло! Задача завершена.");
     showToastNotification("🎁 КОРОБОЧКА", body, 5000);
@@ -612,6 +612,29 @@ function setupAddCategorySelector() {
         container.appendChild(badge);
         container.appendChild(dropdown);
         taskCategory.insertAdjacentElement('afterend', container);
+        // Подкатегории для "Обязательные"
+        let sub = document.querySelector('.add-subcategory-controls');
+        if (!sub) {
+            sub = document.createElement('div');
+            sub.className = 'add-subcategory-controls';
+            const btnWork = document.createElement('button');
+            btnWork.type = 'button';
+            btnWork.className = 'add-subcategory-btn selected';
+            btnWork.dataset.sub = 'work';
+            btnWork.textContent = 'Работа';
+            const btnHome = document.createElement('button');
+            btnHome.type = 'button';
+            btnHome.className = 'add-subcategory-btn';
+            btnHome.dataset.sub = 'home';
+            btnHome.textContent = 'Дом';
+            [btnWork, btnHome].forEach(btn => {
+                btn.addEventListener('click', () => {
+                    sub.querySelectorAll('.add-subcategory-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                });
+            });
+            container.insertAdjacentElement('afterend', sub);
+        }
     }
     applyCategoryVisualToSelect();
 }
