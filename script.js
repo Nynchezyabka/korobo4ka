@@ -245,7 +245,7 @@ function displayTasks() {
         });
     });
 
-    // Добавляем обработчики событий дл�� новых элементов
+    // Добавляем обработчики событий для новых элементов
     document.querySelectorAll('.category-badge').forEach(badge => {
         badge.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -287,7 +287,8 @@ function displayTasks() {
         option.addEventListener('click', function() {
             const taskId = parseInt(this.closest('.category-selector').querySelector('.category-badge').dataset.id);
             const newCategory = parseInt(this.dataset.category);
-            changeTaskCategory(taskId, newCategory);
+            const newSub = this.dataset.subcategory || null;
+            changeTaskCategory(taskId, newCategory, newSub);
             // Закрываем dropdown
             this.closest('.category-dropdown').classList.remove('show');
             activeDropdown = null;
@@ -309,7 +310,7 @@ function displayTasks() {
     });
 }
 
-// Функция для изменения кат��гории задачи
+// Функция для изменения категории задачи
 function changeTaskCategory(taskId, newCategory) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
@@ -384,10 +385,10 @@ function importTasks(file) {
                 }
             }
             
-            // Доба��ляем задачи в базу данных
+            // Добавляем задачи в базу данных
             tasks = importedTasks;
             saveTasks();
-            alert(`Успешно импортировано ${importedTasks.length} задач`);
+            alert(`Успешно импортировано ${importedTasks.length} ��адач`);
             displayTasks();
             
         } catch (error) {
@@ -521,7 +522,7 @@ function setupAddCategorySelector() {
         dropdown.className = 'add-category-dropdown';
         const cats = [
             { v: 0, n: 'Без категории' },
-            { v: 1, n: 'Обязател��ные' },
+            { v: 1, n: 'Обязательные' },
             { v: 2, n: 'Безопасность' },
             { v: 5, n: 'Доступность радостей' },
             { v: 3, n: 'Простые радости' },
