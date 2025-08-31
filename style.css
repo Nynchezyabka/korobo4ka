@@ -204,7 +204,7 @@ textarea, select, input {
     border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 8px;
-    z-index: 2000;
+    z-index: 12000;
     display: none;
 }
 .add-category-dropdown.show { display: block; }
@@ -306,7 +306,7 @@ textarea {
     border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 8px;
-    z-index: 9000;
+    z-index: 12000;
     display: none;
     min-width: 130px;
 }
@@ -396,7 +396,7 @@ textarea {
     border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 8px;
-    z-index: 9000;
+    z-index: 12000;
     display: none;
     min-width: 130px;
 }
@@ -525,7 +525,7 @@ textarea {
 }
 
 #pauseTimerBtn {
-    background-color: #ff9800; /* оранжевый */
+    background-color: #ff9800; /* о��анжевый */
 }
 
 #pauseTimerBtn:active {
@@ -618,15 +618,29 @@ textarea {
 @media (max-width: 480px) {
     .task {
         position: relative;
-        align-items: start;
         padding: 8px 10px;
         margin-bottom: 6px;
+        display: block;
     }
 
     .task-content {
-        display: contents;
+        display: block;
         width: 100%;
+    }
+
+    .category-selector {
+        float: right;
+        margin: 0 0 6px 6px;
+        width: auto;
+    }
+
+    .task-controls {
+        float: right;
+        clear: right;
+        width: auto;
+        display: flex;
         gap: 4px;
+        justify-content: flex-end;
     }
 
     .task-text {
@@ -634,11 +648,8 @@ textarea {
         margin: 0;
         padding-right: 0;
         line-height: 1.25;
-    }
-
-    .category-selector {
-        width: auto;
-        margin: 0 0 6px 0;
+        word-break: normal;
+        overflow-wrap: break-word;
     }
 
     .category-badge {
@@ -647,13 +658,6 @@ textarea {
         margin: 0;
         font-size: 0.9rem;
         padding: 2px 8px;
-    }
-
-    .task-controls {
-        position: static;
-        width: auto;
-        justify-content: flex-end;
-        gap: 4px;
     }
 
     .task-control-btn {
@@ -962,7 +966,7 @@ textarea {
         width: 100%;
     }
     .tasks.mobile-compact .task-content {
-        display: contents;
+        display: block;
         width: 100%;
     }
     .tasks.mobile-compact .task-content::after { content: ""; display: block; clear: both; }
@@ -971,11 +975,12 @@ textarea {
         margin: 0;
         font-size: 0.95rem;
         line-height: 1.2;
-        word-break: break-word;
+        word-break: normal;
+        overflow-wrap: break-word;
     }
     .tasks.mobile-compact .task-controls {
-        float: none;
-        clear: none;
+        float: right;
+        clear: right;
         width: auto;
         display: flex;
         flex-direction: row;
@@ -983,17 +988,13 @@ textarea {
         gap: 4px;
         margin-left: 0;
         position: static;
-        grid-column: 2 / 3;
-        grid-row: 2 / 3;
         justify-content: flex-end;
     }
     .tasks.mobile-compact .task-control-btn { font-size: 0.95rem; padding: 2px; line-height: 1; }
     .tasks.mobile-compact .category-selector {
-        float: none;
+        float: right;
         width: auto;
-        margin: 0 0 6px 0;
-        grid-column: 2 / 3;
-        grid-row: 1 / 2;
+        margin: 0 0 6px 6px;
     }
     .tasks.mobile-compact .category-badge {
         background-color: transparent;
@@ -1092,6 +1093,11 @@ textarea {
 }
 @media (max-width: 480px) {
     .group-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 4px; }
+    .group-grid .task { display: block; }
+    .group-grid .task-content { display: block; }
+    .group-grid .category-selector { float: right; margin: 0 0 6px 6px; }
+    .group-grid .task-controls { float: right; clear: right; }
+    .group-grid .task-text { word-break: normal; overflow-wrap: break-word; }
 }
 @media (min-width: 481px) and (max-width: 767px) {
     .group-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
@@ -1135,6 +1141,9 @@ textarea {
 
 /* Редактор текста задачи */
 .task-edit { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Caveat', cursive; font-size: 1.1rem; }
+
+/* Подпись подкатегории под заголовком задачи */
+.task-subcategory-label { margin-top: 4px; font-size: 0.95rem; opacity: 0.85; }
 
 /* Цветизация выбранной категории при добавлении задачи */
 .add-category-badge[data-category="0"] { background-color: #f5f5f5; border-left: 2px solid #9E9E9E; }

@@ -24,13 +24,14 @@ function getNextId() {
     return maxId + 1;
 }
 
-// Переменные состояния
+// Переменные ��остояния
 let currentTask = null;
 let timerInterval = null;
 let timerTime = 15 * 60; // 15 минут в секундах
 let timerRunning = false;
 let selectedTaskId = null;
 let activeDropdown = null;
+let elevatedTaskEl = null;
 let wakeLock = null; // экраны не засыпают во время таймера (где поддерж��вается)
 
 // Новые переменные для точного таймера
@@ -49,6 +50,10 @@ document.addEventListener('click', function(e) {
     if (activeDropdown && !e.target.closest('.category-selector') && !e.target.closest('.add-category-selector')) {
         activeDropdown.classList.remove('show');
         if (activeDropdown.parentElement) activeDropdown.parentElement.style.zIndex = '';
+        if (typeof elevatedTaskEl !== 'undefined' && elevatedTaskEl) {
+            elevatedTaskEl.style.zIndex = '';
+            elevatedTaskEl = null;
+        }
         activeDropdown = null;
     }
 });
@@ -239,6 +244,18 @@ function displayTasks() {
                     </button>
                 </div>
             `;
+            if (task.category === 1) {
+                const txtEl = taskElement.querySelector('.task-text');
+                if (txtEl) {
+                    const lbl = document.createElement('div');
+                    lbl.className = 'task-subcategory-label';
+                    let subText = 'Обязательные';
+                    if (task.subcategory === 'work') subText += ' - работа';
+                    else if (task.subcategory === 'home') subText += ' - Дом';
+                    lbl.textContent = subText;
+                    txtEl.appendChild(lbl);
+                }
+            }
             if (isMobile && task.text.length > 44) {
                 taskElement.classList.add('sticker-wide');
             }
@@ -320,12 +337,15 @@ function displayTasks() {
             if (activeDropdown && activeDropdown !== this.nextElementSibling) {
                 activeDropdown.classList.remove('show');
                 if (activeDropdown.parentElement) activeDropdown.parentElement.style.zIndex = '';
+                if (elevatedTaskEl) { elevatedTaskEl.style.zIndex = ''; elevatedTaskEl = null; }
             }
             const dropdown = this.nextElementSibling;
             dropdown.classList.toggle('show');
             activeDropdown = dropdown;
             if (dropdown.classList.contains('show')) {
-                if (dropdown.parentElement) dropdown.parentElement.style.zIndex = '9000';
+                if (dropdown.parentElement) dropdown.parentElement.style.zIndex = '12000';
+                elevatedTaskEl = this.closest('.task');
+                if (elevatedTaskEl) elevatedTaskEl.style.zIndex = '11000';
                 dropdown.style.top = '100%';
                 dropdown.style.bottom = 'auto';
                 dropdown.style.left = '';
@@ -347,6 +367,7 @@ function displayTasks() {
                 }
             } else {
                 if (dropdown.parentElement) dropdown.parentElement.style.zIndex = '';
+                if (elevatedTaskEl) { elevatedTaskEl.style.zIndex = ''; elevatedTaskEl = null; }
             }
         });
     });
@@ -361,6 +382,7 @@ function displayTasks() {
             const dd = this.closest('.category-dropdown');
             dd.classList.remove('show');
             if (dd && dd.parentElement) dd.parentElement.style.zIndex = '';
+            if (elevatedTaskEl) { elevatedTaskEl.style.zIndex = ''; elevatedTaskEl = null; }
             activeDropdown = null;
         });
     });
@@ -431,7 +453,7 @@ function displayTasks() {
     });
 }
 
-// Функция для из��енения категории задачи
+// Функция для из��енения категори�� задач��
 function changeTaskCategory(taskId, newCategory, newSubcategory = null) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
@@ -535,7 +557,7 @@ function importTasks(file) {
             // Проверяем структуру задач
             for (const task of importedTasks) {
                 if (!task.text || typeof task.category === 'undefined') {
-                    alert('Ошибка: неправильный формат файла');
+                    alert('О��ибка: неправильный формат файла');
                     return;
                 }
             }
@@ -605,7 +627,7 @@ function hideTimer() {
     releaseWakeLock();
 }
 
-// Функция для обновления отображения таймера
+// Функция для обновления от��бражения таймера
 function updateTimerDisplay() {
     const minutes = Math.floor(timerTime / 60);
     const seconds = timerTime % 60;
@@ -704,10 +726,13 @@ function setupAddCategorySelector() {
                         [workBtn, homeBtn].forEach(b => b && b.classList.remove('selected'));
                         const target = sub === 'work' ? workBtn : homeBtn;
                         if (target) target.classList.add('selected');
+                    } else {
+                        [workBtn, homeBtn].forEach(b => b && b.classList.remove('selected'));
                     }
                 }
                 dropdown.classList.remove('show');
                 activeDropdown = null;
+                container.style.zIndex = '';
             });
         });
         badge.addEventListener('click', (e) => {
@@ -717,6 +742,7 @@ function setupAddCategorySelector() {
             }
             dropdown.classList.toggle('show');
             activeDropdown = dropdown;
+            container.style.zIndex = dropdown.classList.contains('show') ? '12000' : '';
         });
         container.appendChild(badge);
         container.appendChild(dropdown);
@@ -1117,7 +1143,7 @@ window.addEventListener('focus', () => {
     }
 });
 
-// Функция для показа toast-уведомления
+// Функция дл�� показа toast-уведомления
 function showToastNotification(title, message, duration = 5000) {
     let toast = document.getElementById('toast-notification');
     if (!toast) {
@@ -1183,7 +1209,7 @@ if (enableNotifyBtn) {
                 await ensurePushSubscribed();
                 createBrowserNotification('Уведомления включены');
             } else if (result === 'default') {
-                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройках са��та.');
+                alert('Уведомления не включены. Подтвердит�� запрос браузера или разрешите их в настройках са��та.');
             } else if (result === 'denied') {
                 alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
