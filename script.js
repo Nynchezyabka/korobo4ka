@@ -328,6 +328,9 @@ function changeTaskCategory(taskId, newCategory, newSubcategory = null) {
     }
 
     tasks[taskIndex] = { ...tasks[taskIndex], ...updateData };
+    if (newCategory !== 1 && 'subcategory' in tasks[taskIndex]) {
+        delete tasks[taskIndex].subcategory;
+    }
     saveTasks();
     displayTasks();
 }
@@ -453,7 +456,7 @@ function hideTimer() {
     releaseWakeLock();
 }
 
-// Функция для обновления отображения таймера
+// Функция для обновления отображения тай��ера
 function updateTimerDisplay() {
     const minutes = Math.floor(timerTime / 60);
     const seconds = timerTime % 60;
