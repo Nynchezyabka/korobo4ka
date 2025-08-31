@@ -27,13 +27,13 @@ function getNextId() {
 // Переменные состояния
 let currentTask = null;
 let timerInterval = null;
-let timerTime = 15 * 60; // 15 ��инут в секундах
+let timerTime = 15 * 60; // 15 минут в секундах
 let timerRunning = false;
 let selectedTaskId = null;
 let activeDropdown = null;
-let wakeLock = null; // экраны не засыпают во время таймера (где поддерживается)
+let wakeLock = null; // экраны не засыпают во время таймера (где поддерж��вается)
 
-// Новые переменные для т��ч��ого таймера
+// Новые переменные для точного таймера
 let timerStartTime = 0;
 let timerPausedTime = 0;
 let timerAnimationFrame = null;
@@ -41,7 +41,7 @@ let timerWorker = null;
 let timerEndAt = 0;
 let timerEndTimeoutId = null;
 
-// Элементы DOM
+// Элем��нты DOM
 const sections = document.querySelectorAll('.section');
 
 // Глобальный обработчик для закрытия открытого выпадающего меню категорий
@@ -86,6 +86,10 @@ function applyCategoryVisualToSelect() {
         badge.textContent = getCategoryName(val);
         badge.setAttribute('data-category', String(val));
     }
+    const subControls = document.querySelector('.add-subcategory-controls');
+    if (subControls) {
+        subControls.style.display = (val === 1 ? 'flex' : 'none');
+    }
 }
 
 function urlBase64ToUint8Array(base64String) {
@@ -127,7 +131,7 @@ function refreshNotifyBanner() {
     setNotifyBannerVisible(Notification.permission !== 'granted');
 }
 
-// Функция для получе��ия названия категории по номеру
+// Функция для получения названия категории по номеру
 function getCategoryName(category) {
     const categories = {
         0: "Без категории",
@@ -190,10 +194,14 @@ function displayTasks() {
             return a.id - b.id;
         });
 
+
         list.forEach(task => {
             const taskElement = document.createElement('div');
             taskElement.className = `task category-${task.category} ${task.active ? '' : 'inactive'}`;
             taskElement.dataset.id = task.id;
+            if (task.subcategory) {
+                taskElement.dataset.subcategory = task.subcategory;
+            }
 
             const categoryDisplay = `<i class=\"fas fa-folder\"></i><span class=\"category-name\">${getCategoryName(task.category)}</span>`;
 
@@ -207,7 +215,8 @@ function displayTasks() {
                         </div>
                         <div class=\"category-dropdown\" id=\"dropdown-${task.id}\">
                             <button class=\"category-option\" data-category=\"0\">Без категории</button>
-                            <button class=\"category-option\" data-category=\"1\">Обязательные</button>
+                            <button class=\"category-option\" data-category=\"1\" data-subcategory=\"work\">Обязательные �� Работа</button>
+                            <button class=\"category-option\" data-category=\"1\" data-subcategory=\"home\">Обязательные — Дом</button>
                             <button class=\"category-option\" data-category=\"2\">Безопасность</button>
                             <button class=\"category-option\" data-category=\"5\">Доступность радостей</button>
                             <button class=\"category-option\" data-category=\"3\">Простые радости</button>
@@ -229,6 +238,61 @@ function displayTasks() {
             }
             grid.appendChild(taskElement);
         });
+
+        // Группировка задач по подкатегориям для категории "Обязательные"
+        if (cat === 1) {
+            const workBlock = document.createElement('div');
+            const homeBlock = document.createElement('div');
+            const workTitle = document.createElement('div');
+            const homeTitle = document.createElement('div');
+            workTitle.className = 'category-title';
+            homeTitle.className = 'category-title';
+            workTitle.innerHTML = '<span class="category-heading">Работа</span>';
+            homeTitle.innerHTML = '<span class="category-heading">Дом</span>';
+            const workGrid = document.createElement('div');
+            const homeGrid = document.createElement('div');
+            workGrid.className = 'group-grid';
+            homeGrid.className = 'group-grid';
+            workBlock.appendChild(workTitle);
+            workBlock.appendChild(workGrid);
+            homeBlock.appendChild(homeTitle);
+            homeBlock.appendChild(homeGrid);
+
+            // Кнопки включения/выключения подкатегорий
+            const workHasActive = list.some(t => (t.subcategory || 'work') === 'work' && t.active);
+            const homeHasActive = list.some(t => (t.subcategory || 'work') === 'home' && t.active);
+            const workToggle = document.createElement('button');
+            workToggle.className = 'task-control-btn subcategory-toggle-all';
+            workToggle.innerHTML = `<i class=\"fas ${workHasActive ? 'fa-eye-slash' : 'fa-eye'}\"></i>`;
+            workToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleSubcategoryActive('work');
+            });
+            const homeToggle = document.createElement('button');
+            homeToggle.className = 'task-control-btn subcategory-toggle-all';
+            homeToggle.innerHTML = `<i class=\"fas ${homeHasActive ? 'fa-eye-slash' : 'fa-eye'}\"></i>`;
+            homeToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleSubcategoryActive('home');
+            });
+            workTitle.appendChild(workToggle);
+            homeTitle.appendChild(homeToggle);
+
+            // Перемещаем задачи из общего grid в подгруппы (только те, у кого задана подкатегория)
+            const nodes = [...grid.querySelectorAll(':scope > .task')];
+            nodes.forEach(el => {
+                const sub = el.dataset.subcategory;
+                if (sub === 'home') {
+                    homeGrid.appendChild(el);
+                } else if (sub === 'work') {
+                    workGrid.appendChild(el);
+                }
+            });
+
+            // Оставшиеся без подкатегории остаются сверху, затем блоки подкатегорий
+            grid.appendChild(workBlock);
+            grid.appendChild(homeBlock);
+        }
 
         title.addEventListener('click', () => {
             const c = parseInt(group.dataset.category);
@@ -285,7 +349,8 @@ function displayTasks() {
         option.addEventListener('click', function() {
             const taskId = parseInt(this.closest('.category-selector').querySelector('.category-badge').dataset.id);
             const newCategory = parseInt(this.dataset.category);
-            changeTaskCategory(taskId, newCategory);
+            const newSub = this.dataset.subcategory || null;
+            changeTaskCategory(taskId, newCategory, newSub);
             // Закрываем dropdown
             this.closest('.category-dropdown').classList.remove('show');
             activeDropdown = null;
@@ -307,13 +372,16 @@ function displayTasks() {
     });
 }
 
-// Функция для изменения категории задачи
-function changeTaskCategory(taskId, newCategory) {
+// Функция для из��енения категории задачи
+function changeTaskCategory(taskId, newCategory, newSubcategory = null) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
     const wasActive = !!tasks[taskIndex].active;
 
     const updateData = { category: newCategory };
+    if (newCategory === 1) {
+        updateData.subcategory = newSubcategory || (tasks[taskIndex].subcategory || 'work');
+    }
     if (tasks[taskIndex].category === 0 && !tasks[taskIndex].active && newCategory !== 0) {
         updateData.active = true;
     }
@@ -322,6 +390,9 @@ function changeTaskCategory(taskId, newCategory) {
     }
 
     tasks[taskIndex] = { ...tasks[taskIndex], ...updateData };
+    if (newCategory !== 1 && 'subcategory' in tasks[taskIndex]) {
+        delete tasks[taskIndex].subcategory;
+    }
     saveTasks();
     displayTasks();
 }
@@ -339,7 +410,28 @@ function toggleTaskActive(taskId) {
     displayTasks();
 }
 
-// Функция для удаления задачи
+// Пе��еключение активности всех задач внутри категории
+function toggleCategoryActive(category) {
+    const hasActive = tasks.some(t => t.category === category && t.active);
+    const newActive = !hasActive;
+    tasks = tasks.map(t => t.category === category ? { ...t, active: newActive, statusChangedAt: Date.now() } : t);
+    saveTasks();
+    displayTasks();
+}
+
+// Переключение активности подкатегории (Работа/Дом) внутри "Обязательные"
+function toggleSubcategoryActive(subKey) {
+    const hasActive = tasks.some(t => t.category === 1 && (t.subcategory || 'work') === subKey && t.active);
+    const newActive = !hasActive;
+    tasks = tasks.map(t => (t.category === 1 && (t.subcategory || 'work') === subKey)
+        ? { ...t, active: newActive, statusChangedAt: Date.now() }
+        : t
+    );
+    saveTasks();
+    displayTasks();
+}
+
+// Функц��я для удаления задачи
 function deleteTask(taskId) {
     if (confirm('Удалить эту задачу?')) {
         tasks = tasks.filter(t => t.id !== taskId);
@@ -353,7 +445,7 @@ function exportTasks() {
     const dataStr = JSON.stringify(tasks, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
     
-    const exportFileDefaultName = 'коробоч��а-задачи.json';
+    const exportFileDefaultName = 'коробочка-задачи.json';
     
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
@@ -374,10 +466,10 @@ function importTasks(file) {
                 return;
             }
             
-            // П��оверяем структуру задач
+            // Проверяем структуру задач
             for (const task of importedTasks) {
                 if (!task.text || typeof task.category === 'undefined') {
-                    alert('��ши��ка: неправильный формат файла');
+                    alert('Ошибка: неправильный формат файла');
                     return;
                 }
             }
@@ -407,7 +499,7 @@ function getRandomTask(categories) {
     );
     
     if (filteredTasks.length === 0) {
-        alert('Нет активных задач в этой категории!');
+        alert('Нет активных задач в этой категор��и!');
         return null;
     }
     
@@ -439,15 +531,15 @@ function showTimer(task) {
     document.querySelector('.timer-controls').style.display = 'flex';
 }
 
-// Ф��нк��ия для скрытия таймера
+// Функция для скрытия таймера
 function hideTimer() {
     timerScreen.style.display = 'none';
     document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
-    stopTimer(); // Останавливаем таймер при закрытии
+    stopTimer(); // Останавливаем таймер при закрыт��и
     releaseWakeLock();
 }
 
-// Функция для обновления ото��ражения та��мера
+// Функция для обновления отображения таймера
 function updateTimerDisplay() {
     const minutes = Math.floor(timerTime / 60);
     const seconds = timerTime % 60;
@@ -473,11 +565,11 @@ function showNotification(message) {
     }
 }
 
-// Создание браузерног�� уведомления
+// Создание браузерного уведомления
 function createBrowserNotification(message) {
     const title = "🎁 КОРОБОЧКА";
     const options = {
-        body: message || "Время вышло! Задача завершена.",
+        body: message || "Время ��ышло! Задача завершена.",
         icon: "/icon-192.png",
         badge: "/icon-192.png",
         vibrate: [500, 300, 500],
@@ -549,6 +641,29 @@ function setupAddCategorySelector() {
         container.appendChild(badge);
         container.appendChild(dropdown);
         taskCategory.insertAdjacentElement('afterend', container);
+        // Подкатегории для "Обязательные"
+        let sub = document.querySelector('.add-subcategory-controls');
+        if (!sub) {
+            sub = document.createElement('div');
+            sub.className = 'add-subcategory-controls';
+            const btnWork = document.createElement('button');
+            btnWork.type = 'button';
+            btnWork.className = 'add-subcategory-btn selected';
+            btnWork.dataset.sub = 'work';
+            btnWork.textContent = 'Работа';
+            const btnHome = document.createElement('button');
+            btnHome.type = 'button';
+            btnHome.className = 'add-subcategory-btn';
+            btnHome.dataset.sub = 'home';
+            btnHome.textContent = 'Дом';
+            [btnWork, btnHome].forEach(btn => {
+                btn.addEventListener('click', () => {
+                    sub.querySelectorAll('.add-subcategory-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                });
+            });
+            container.insertAdjacentElement('afterend', sub);
+        }
     }
     applyCategoryVisualToSelect();
 }
@@ -575,13 +690,13 @@ window.addEventListener('load', async () => {
     }
 
     if (!navigator.vibrate) {
-        console.log("Вибрация не поддерживается на этом устройств��");
+        console.log("Вибрация не поддерживается на этом устройстве");
     }
 });
 
 // НОВАЯ РЕАЛИЗАЦИЯ ТАЙМЕРА (точный и работающий в фоне)
 
-// Поддержка Wake Lock API, чтобы экран не за��ыпал в�� время таймера
+// Поддержка Wake Lock API, чтобы экран не засыпал во время таймера
 async function requestWakeLock() {
     try {
         if ('wakeLock' in navigator && !wakeLock) {
@@ -610,7 +725,7 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
-// Звуковой сигнал по заверше��ии
+// Звуковой сигнал по завершении
 function playBeep() {
     try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -701,7 +816,7 @@ function startTimer() {
         }
         timerWorker.postMessage('start');
     } else {
-        // Fallback для браузеров без поддержки Web Workers
+        // Fallback для браузеров без подде��жки Web Workers
         timerInterval = setInterval(() => {
             timerTime = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
             updateTimerDisplay();
@@ -716,7 +831,7 @@ function startTimer() {
     }
 }
 
-// Функция для паузы тайме����
+// Функция для паузы таймера
 function pauseTimer() {
     if (!timerRunning) return;
 
@@ -728,7 +843,7 @@ function pauseTimer() {
     timerPausedTime = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
 }
 
-// Функция для останов��и таймера
+// Функция для остановки тайм��ра
 function stopTimer() {
     timerRunning = false;
     releaseWakeLock();
@@ -764,7 +879,7 @@ async function cancelServerSchedule() {
 
 // Функция для сброса таймера
 function resetTimer() {
-    // отменяем только локальный таймер, серверный не трогаем, чт��бы пауза/сброс был явным
+    // отменяем только локальный таймер, серверный не трогаем, чтобы пауза/сброс был явным
     stopTimer();
     if (timerEndTimeoutId) {
         clearTimeout(timerEndTimeoutId);
@@ -776,7 +891,7 @@ function resetTimer() {
     updateTimerDisplay();
 }
 
-// Обработчик�� событий
+// Обработч��ки событий
 sections.forEach(section => {
     section.addEventListener('click', () => {
         const categories = section.dataset.category;
@@ -819,14 +934,19 @@ addTaskBtn.addEventListener('click', () => {
 
     const active = true;
     lines.forEach(text => {
-        tasks.push({
+        const newTask = {
             id: getNextId(),
             text,
             category,
             completed: false,
             active,
             statusChangedAt: Date.now()
-        });
+        };
+        if (category === 1 && lines.length > 1) {
+            const selectedBtn = document.querySelector('.add-subcategory-controls .add-subcategory-btn.selected');
+            newTask.subcategory = (selectedBtn && selectedBtn.dataset.sub) ? selectedBtn.dataset.sub : 'work';
+        }
+        tasks.push(newTask);
     });
 
     saveTasks();
@@ -843,7 +963,7 @@ exportTasksBtn.addEventListener('click', exportTasks);
 importFile.addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
         importTasks(e.target.files[0]);
-        e.target.value = ''; // Сбрасыв��ем значение input
+        e.target.value = ''; // Сбрасываем значение input
     }
 });
 
@@ -981,9 +1101,9 @@ if (enableNotifyBtn) {
                 await ensurePushSubscribed();
                 createBrowserNotification('Уведомления включены');
             } else if (result === 'default') {
-                alert('Уведомления не включены. Подтвердите запрос браузера или разреши��е их в настройка�� ��айта.');
+                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройках са��та.');
             } else if (result === 'denied') {
-                alert('Уведомления заблокированы в настр��йках браузера. Разрешите их вручную.');
+                alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
         } catch (e) {
             alert('Не удалось запросить разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
