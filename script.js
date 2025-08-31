@@ -24,7 +24,7 @@ function getNextId() {
     return maxId + 1;
 }
 
-// Переменные состояния
+// Переменные ��остояния
 let currentTask = null;
 let timerInterval = null;
 let timerTime = 15 * 60; // 15 минут в секундах
@@ -453,7 +453,7 @@ function displayTasks() {
     });
 }
 
-// Функция для из��енения категории задач��
+// Функция для из��енения категори�� задач��
 function changeTaskCategory(taskId, newCategory, newSubcategory = null) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
@@ -587,7 +587,7 @@ function getRandomTask(categories) {
     );
     
     if (filteredTasks.length === 0) {
-        alert('Нет активных ��адач в этой категор��и!');
+        alert('Нет активных задач в этой категор��и!');
         return null;
     }
     
@@ -623,11 +623,11 @@ function showTimer(task) {
 function hideTimer() {
     timerScreen.style.display = 'none';
     document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
-    stopTimer(); // Останав��иваем таймер при закрыт��и
+    stopTimer(); // Останавливаем таймер при закрыт��и
     releaseWakeLock();
 }
 
-// Функция для обновления отображения таймера
+// Функция для обновления от��бражения таймера
 function updateTimerDisplay() {
     const minutes = Math.floor(timerTime / 60);
     const seconds = timerTime % 60;
@@ -726,6 +726,8 @@ function setupAddCategorySelector() {
                         [workBtn, homeBtn].forEach(b => b && b.classList.remove('selected'));
                         const target = sub === 'work' ? workBtn : homeBtn;
                         if (target) target.classList.add('selected');
+                    } else {
+                        [workBtn, homeBtn].forEach(b => b && b.classList.remove('selected'));
                     }
                 }
                 dropdown.classList.remove('show');
@@ -1207,7 +1209,7 @@ if (enableNotifyBtn) {
                 await ensurePushSubscribed();
                 createBrowserNotification('Уведомления включены');
             } else if (result === 'default') {
-                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройках са��та.');
+                alert('Уведомления не включены. Подтвердит�� запрос браузера или разрешите их в настройках са��та.');
             } else if (result === 'denied') {
                 alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
