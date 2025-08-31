@@ -87,11 +87,17 @@ function applyCategoryVisualToSelect() {
     if (!taskCategory) return;
     const val = parseInt(taskCategory.value) || 0;
     const badge = document.querySelector('.add-category-badge');
+    const subControls = document.querySelector('.add-subcategory-controls');
+    let subLabel = '';
+    if (val === 1 && subControls) {
+        const selected = subControls.querySelector('.add-subcategory-btn.selected');
+        if (selected && selected.dataset.sub === 'work') subLabel = ' - работа';
+        else if (selected && selected.dataset.sub === 'home') subLabel = ' - Дом';
+    }
     if (badge) {
-        badge.textContent = getCategoryName(val);
+        badge.textContent = getCategoryName(val) + (subLabel || (val === 1 ? '' : ''));
         badge.setAttribute('data-category', String(val));
     }
-    const subControls = document.querySelector('.add-subcategory-controls');
     if (subControls) {
         subControls.style.display = (val === 1 ? 'flex' : 'none');
     }
@@ -244,18 +250,6 @@ function displayTasks() {
                     </button>
                 </div>
             `;
-            if (task.category === 1) {
-                const txtEl = taskElement.querySelector('.task-text');
-                if (txtEl) {
-                    const lbl = document.createElement('div');
-                    lbl.className = 'task-subcategory-label';
-                    let subText = 'Обязательные';
-                    if (task.subcategory === 'work') subText += ' - работа';
-                    else if (task.subcategory === 'home') subText += ' - Дом';
-                    lbl.textContent = subText;
-                    txtEl.appendChild(lbl);
-                }
-            }
             if (isMobile && task.text.length > 44) {
                 taskElement.classList.add('sticker-wide');
             }
@@ -312,7 +306,7 @@ function displayTasks() {
                 }
             });
 
-            // Оставшиеся без подкатегории остаются сверху, затем блоки подкатегорий
+            // Оставшиеся ��ез подкатегории остаются сверху, затем блоки подкатегорий
             grid.appendChild(workBlock);
             grid.appendChild(homeBlock);
         }
@@ -730,6 +724,7 @@ function setupAddCategorySelector() {
                         [workBtn, homeBtn].forEach(b => b && b.classList.remove('selected'));
                     }
                 }
+                applyCategoryVisualToSelect();
                 dropdown.classList.remove('show');
                 activeDropdown = null;
                 container.style.zIndex = '';
@@ -766,6 +761,7 @@ function setupAddCategorySelector() {
                 btn.addEventListener('click', () => {
                     sub.querySelectorAll('.add-subcategory-btn').forEach(b => b.classList.remove('selected'));
                     btn.classList.add('selected');
+                    applyCategoryVisualToSelect();
                 });
             });
             container.insertAdjacentElement('afterend', sub);
@@ -922,7 +918,7 @@ function startTimer() {
         }
         timerWorker.postMessage('start');
     } else {
-        // Fallback для браузеров без подде��жки Web Workers
+        // Fallback для браузеров бе�� подде��жки Web Workers
         timerInterval = setInterval(() => {
             timerTime = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
             updateTimerDisplay();
@@ -1211,7 +1207,7 @@ if (enableNotifyBtn) {
             } else if (result === 'default') {
                 alert('Уведомления не включены. Подтвердит�� запрос браузера или разрешите их в настройках са��та.');
             } else if (result === 'denied') {
-                alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
+                alert('Уведомления заблокированы �� настройках браузера. Разрешите их вручную.');
             }
         } catch (e) {
             alert('Не удалось запросить разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
