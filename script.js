@@ -310,8 +310,8 @@ function displayTasks() {
     });
 }
 
-// Функция для изменения категории задачи
-function changeTaskCategory(taskId, newCategory) {
+// Функция для изменения категории зада��и
+function changeTaskCategory(taskId, newCategory, newSubcategory = null) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
     const wasActive = !!tasks[taskIndex].active;
@@ -351,12 +351,12 @@ function deleteTask(taskId) {
     }
 }
 
-// Функция для экспорта задач в файл
+// Функция для экспорта ��адач в файл
 function exportTasks() {
     const dataStr = JSON.stringify(tasks, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
     
-    const exportFileDefaultName = 'коробочка-задачи.json';
+    const exportFileDefaultName = 'ко��обочка-задачи.json';
     
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
@@ -388,7 +388,7 @@ function importTasks(file) {
             // Добавляем задачи в базу данных
             tasks = importedTasks;
             saveTasks();
-            alert(`Успешно импортировано ${importedTasks.length} ��адач`);
+            alert(`Успешно импортировано ${importedTasks.length} задач`);
             displayTasks();
             
         } catch (error) {
