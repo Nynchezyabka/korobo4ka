@@ -424,7 +424,7 @@ function exportTasks() {
     linkElement.click();
 }
 
-// Функция для импорта задач из файла
+// Функция д��я импорта задач из файла
 function importTasks(file) {
     const reader = new FileReader();
     
@@ -517,7 +517,7 @@ function updateTimerDisplay() {
     timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-// Фу��кция для показа уведомления
+// Функция для показа уведомления
 function showNotification(message) {
     const body = message || (currentTask ? `Задача: ${currentTask.text}` : "Время вышло! Задача завершена.");
     showToastNotification("🎁 КОРОБОЧКА", body, 5000);
@@ -905,14 +905,19 @@ addTaskBtn.addEventListener('click', () => {
 
     const active = true;
     lines.forEach(text => {
-        tasks.push({
+        const newTask = {
             id: getNextId(),
             text,
             category,
             completed: false,
             active,
             statusChangedAt: Date.now()
-        });
+        };
+        if (category === 1) {
+            const selectedBtn = document.querySelector('.add-subcategory-controls .add-subcategory-btn.selected');
+            newTask.subcategory = (selectedBtn && selectedBtn.dataset.sub) ? selectedBtn.dataset.sub : 'work';
+        }
+        tasks.push(newTask);
     });
 
     saveTasks();
