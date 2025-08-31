@@ -239,6 +239,15 @@ function displayTasks() {
                     </button>
                 </div>
             `;
+            if (task.category === 1 && task.subcategory) {
+                const txtEl = taskElement.querySelector('.task-text');
+                if (txtEl) {
+                    const lbl = document.createElement('div');
+                    lbl.className = 'task-subcategory-label';
+                    lbl.textContent = task.subcategory === 'work' ? 'Обязательные - работа' : 'Обязательные - Дом';
+                    txtEl.appendChild(lbl);
+                }
+            }
             if (isMobile && task.text.length > 44) {
                 taskElement.classList.add('sticker-wide');
             }
@@ -431,7 +440,7 @@ function displayTasks() {
     });
 }
 
-// Функция для из��енения категории задачи
+// Функция для из��енения категории задач��
 function changeTaskCategory(taskId, newCategory, newSubcategory = null) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
@@ -535,7 +544,7 @@ function importTasks(file) {
             // Проверяем структуру задач
             for (const task of importedTasks) {
                 if (!task.text || typeof task.category === 'undefined') {
-                    alert('Ошибка: неправильный формат файла');
+                    alert('О��ибка: неправильный формат файла');
                     return;
                 }
             }
@@ -1117,7 +1126,7 @@ window.addEventListener('focus', () => {
     }
 });
 
-// Функция для показа toast-уведомления
+// Функция дл�� показа toast-уведомления
 function showToastNotification(title, message, duration = 5000) {
     let toast = document.getElementById('toast-notification');
     if (!toast) {
