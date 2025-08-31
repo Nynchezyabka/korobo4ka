@@ -41,7 +41,7 @@ let timerWorker = null;
 let timerEndAt = 0;
 let timerEndTimeoutId = null;
 
-// Элем��нты DOM
+// Э��ем��нты DOM
 const sections = document.querySelectorAll('.section');
 
 // Глобальный обработчик для закрытия открытого выпадающего меню категорий
@@ -237,7 +237,7 @@ function displayTasks() {
             grid.appendChild(taskElement);
         });
 
-        // Группировка задач по подкатегориям для категории "Обязательные"
+        // Группировка задач по подкатегориям для категории "��бязательные"
         if (cat === 1) {
             const workBlock = document.createElement('div');
             const homeBlock = document.createElement('div');
@@ -412,6 +412,18 @@ function toggleCategoryActive(category) {
     displayTasks();
 }
 
+// Переключение активности подкатегории (Работа/Дом) внутри "Обязательные"
+function toggleSubcategoryActive(subKey) {
+    const hasActive = tasks.some(t => t.category === 1 && (t.subcategory || 'work') === subKey && t.active);
+    const newActive = !hasActive;
+    tasks = tasks.map(t => (t.category === 1 && (t.subcategory || 'work') === subKey)
+        ? { ...t, active: newActive, statusChangedAt: Date.now() }
+        : t
+    );
+    saveTasks();
+    displayTasks();
+}
+
 // Функц��я для удаления задачи
 function deleteTask(taskId) {
     if (confirm('Удалить эту задачу?')) {
@@ -474,7 +486,7 @@ function getRandomTask(categories) {
     // Преобразуем строку категорий в массив чисел
     const categoryArray = categories.split(',').map(Number);
     
-    // Получаем все активные задачи из указанных категорий
+    // Получаем все активные з��дачи из указанных категорий
     const filteredTasks = tasks.filter(task => 
         categoryArray.includes(task.category) && task.active
     );
