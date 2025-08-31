@@ -170,7 +170,7 @@ textarea, select, input {
     width: 100%;
 }
 
-/* Цветная индикация категории при добавлении задачи */
+/* Цвет��ая индикация категории при добавлении задачи */
 #taskCategory {
     border-left-width: 4px;
     border-left-style: solid;
@@ -618,15 +618,29 @@ textarea {
 @media (max-width: 480px) {
     .task {
         position: relative;
-        align-items: start;
         padding: 8px 10px;
         margin-bottom: 6px;
+        display: block;
     }
 
     .task-content {
-        display: contents;
+        display: block;
         width: 100%;
+    }
+
+    .category-selector {
+        float: right;
+        margin: 0 0 6px 6px;
+        width: auto;
+    }
+
+    .task-controls {
+        float: right;
+        clear: right;
+        width: auto;
+        display: flex;
         gap: 4px;
+        justify-content: flex-end;
     }
 
     .task-text {
@@ -634,11 +648,8 @@ textarea {
         margin: 0;
         padding-right: 0;
         line-height: 1.25;
-    }
-
-    .category-selector {
-        width: auto;
-        margin: 0 0 6px 0;
+        word-break: normal;
+        overflow-wrap: break-word;
     }
 
     .category-badge {
@@ -647,13 +658,6 @@ textarea {
         margin: 0;
         font-size: 0.9rem;
         padding: 2px 8px;
-    }
-
-    .task-controls {
-        position: static;
-        width: auto;
-        justify-content: flex-end;
-        gap: 4px;
     }
 
     .task-control-btn {
@@ -710,7 +714,7 @@ textarea {
         justify-content: flex-end;
     }
 
-    /* Десктоп/планшет: тот же компактн��й макет с двумя рядами иконок справа */
+    /* Десктоп/планшет: тот же компактный макет с двумя рядами иконок справа */
     .group-grid .task-content { display: contents; }
     .group-grid .task-content::after { content: ""; display: block; clear: both; }
     .group-grid .category-selector { float: none; width: auto; margin: 0 0 6px 0; grid-column: 2 / 3; grid-row: 1 / 2; }
@@ -744,7 +748,7 @@ textarea {
     }
 }
 
-/* Медиа-з��прос для десктопов */
+/* Медиа-з��прос для десктоп��в */
 @media (min-width: 1024px) {
     /* Выровнять элементы задачи в сетку: текст слева, справа сверху категория, снизу под ней кнопки */
     .task {
@@ -791,7 +795,7 @@ textarea {
         gap: 12px;
     }
 
-    /* Кнопки действий выравниваем п�� сетке (3 колонки) */
+    /* Кнопки действий выравниваем п��� сетке (3 колонки) */
     .controls {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -922,7 +926,7 @@ textarea {
     }
 }
 
-/* По��заголовки категорий для мобильно�� группировки */
+/* По��заголовки категорий для мобильной группировки */
 .category-title {
     margin: 10px 0 6px;
     color: #5d4037;
@@ -1010,7 +1014,7 @@ textarea {
     .tasks.mobile-compact .sticker-wide { grid-column: 1 / -1; }
 }
 
-/* Стикерная сетка для планшетов и десктопов */
+/* Стикерная сетка для планшет��в и десктопов */
 .tasks.sticker-grid {
     display: grid;
     gap: 6px;
