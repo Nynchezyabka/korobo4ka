@@ -1,4 +1,4 @@
-// Пер��менная для хранения задач
+// Переменная для хранения задач
 let tasks = [];
 
 // Функции для работы с localStorage
@@ -31,7 +31,7 @@ let timerTime = 15 * 60; // 15 минут в секундах
 let timerRunning = false;
 let selectedTaskId = null;
 let activeDropdown = null;
-let wakeLock = null; // экраны не засыпают во время таймера (где поддерживается)
+let wakeLock = null; // экраны не засыпают во время таймера (где поддерж��вается)
 
 // Новые переменные для точного таймера
 let timerStartTime = 0;
@@ -44,7 +44,7 @@ let timerEndTimeoutId = null;
 // Элем��нты DOM
 const sections = document.querySelectorAll('.section');
 
-// Глобальный обработчик для закрытия от��рытого выпадающего меню категорий
+// Глобальный обработчик для закрытия открытого выпадающего меню категорий
 document.addEventListener('click', function(e) {
     if (activeDropdown && !e.target.closest('.category-selector') && !e.target.closest('.add-category-selector')) {
         activeDropdown.classList.remove('show');
@@ -213,7 +213,7 @@ function displayTasks() {
                         </div>
                         <div class=\"category-dropdown\" id=\"dropdown-${task.id}\">
                             <button class=\"category-option\" data-category=\"0\">Без категории</button>
-                            <button class=\"category-option\" data-category=\"1\" data-subcategory=\"work\">Обязательные — Работа</button>
+                            <button class=\"category-option\" data-category=\"1\" data-subcategory=\"work\">Обязательные �� Работа</button>
                             <button class=\"category-option\" data-category=\"1\" data-subcategory=\"home\">Обязательные — Дом</button>
                             <button class=\"category-option\" data-category=\"2\">Безопасность</button>
                             <button class=\"category-option\" data-category=\"5\">Доступность радостей</button>
@@ -255,6 +255,26 @@ function displayTasks() {
             workBlock.appendChild(workGrid);
             homeBlock.appendChild(homeTitle);
             homeBlock.appendChild(homeGrid);
+
+            // Кнопки включения/выключения подкатегорий
+            const workHasActive = list.some(t => (t.subcategory || 'work') === 'work' && t.active);
+            const homeHasActive = list.some(t => (t.subcategory || 'work') === 'home' && t.active);
+            const workToggle = document.createElement('button');
+            workToggle.className = 'task-control-btn subcategory-toggle-all';
+            workToggle.innerHTML = `<i class=\"fas ${workHasActive ? 'fa-eye-slash' : 'fa-eye'}\"></i>`;
+            workToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleSubcategoryActive('work');
+            });
+            const homeToggle = document.createElement('button');
+            homeToggle.className = 'task-control-btn subcategory-toggle-all';
+            homeToggle.innerHTML = `<i class=\"fas ${homeHasActive ? 'fa-eye-slash' : 'fa-eye'}\"></i>`;
+            homeToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleSubcategoryActive('home');
+            });
+            workTitle.appendChild(workToggle);
+            homeTitle.appendChild(homeToggle);
 
             // Перемещаем задачи из общего grid в подгруппы
             [...grid.querySelectorAll(':scope > .task')].forEach(el => {
@@ -392,7 +412,7 @@ function toggleCategoryActive(category) {
     displayTasks();
 }
 
-// Функция для удаления задачи
+// Функц��я для удаления задачи
 function deleteTask(taskId) {
     if (confirm('Удалить эту задачу?')) {
         tasks = tasks.filter(t => t.id !== taskId);
@@ -435,7 +455,7 @@ function importTasks(file) {
                 }
             }
             
-            // Добавляем зада��и в базу данных
+            // Добавляем задачи в базу данных
             tasks = importedTasks;
             saveTasks();
             alert(`Успешно импортировано ${importedTasks.length} задач`);
@@ -460,7 +480,7 @@ function getRandomTask(categories) {
     );
     
     if (filteredTasks.length === 0) {
-        alert('Нет активных задач в этой категории!');
+        alert('Нет активных задач в этой категор��и!');
         return null;
     }
     
@@ -496,7 +516,7 @@ function showTimer(task) {
 function hideTimer() {
     timerScreen.style.display = 'none';
     document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
-    stopTimer(); // Останавливаем таймер при закрытии
+    stopTimer(); // Останавливаем таймер при закрыт��и
     releaseWakeLock();
 }
 
@@ -530,7 +550,7 @@ function showNotification(message) {
 function createBrowserNotification(message) {
     const title = "🎁 КОРОБОЧКА";
     const options = {
-        body: message || "Время вышло! Задача завершена.",
+        body: message || "Время ��ышло! Задача завершена.",
         icon: "/icon-192.png",
         badge: "/icon-192.png",
         vibrate: [500, 300, 500],
@@ -777,14 +797,14 @@ function startTimer() {
         }
         timerWorker.postMessage('start');
     } else {
-        // Fallback для браузеров без поддержки Web Workers
+        // Fallback для браузеров без подде��жки Web Workers
         timerInterval = setInterval(() => {
             timerTime = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
             updateTimerDisplay();
 
             if (timerTime <= 0) {
                 stopTimer();
-                showNotification(currentTask ? `З��дача: ${currentTask.text}` : undefined);
+                showNotification(currentTask ? `Задача: ${currentTask.text}` : undefined);
                 timerCompleteOptions.style.display = 'flex';
                 document.querySelector('.timer-controls').style.display = 'none';
             }
