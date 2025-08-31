@@ -86,6 +86,10 @@ function applyCategoryVisualToSelect() {
         badge.textContent = getCategoryName(val);
         badge.setAttribute('data-category', String(val));
     }
+    const subControls = document.querySelector('.add-subcategory-controls');
+    if (subControls) {
+        subControls.style.display = (val === 1 ? 'flex' : 'none');
+    }
 }
 
 function urlBase64ToUint8Array(base64String) {
@@ -376,7 +380,7 @@ function changeTaskCategory(taskId, newCategory, newSubcategory = null) {
     displayTasks();
 }
 
-// Функция для переключения ак��ивности задачи
+// Функция для переключения активности задачи
 function toggleTaskActive(taskId) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
@@ -515,7 +519,7 @@ function updateTimerDisplay() {
 
 // Функция для показа уведомления
 function showNotification(message) {
-    const body = message || (currentTask ? `Задача: ${currentTask.text}` : "Время вышл��! Задача завершена.");
+    const body = message || (currentTask ? `Задача: ${currentTask.text}` : "Время вышло! Задача завершена.");
     showToastNotification("🎁 КОРОБОЧКА", body, 5000);
     playBeep();
 
