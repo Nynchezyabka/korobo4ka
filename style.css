@@ -1161,3 +1161,20 @@ textarea {
 .add-subcategory-controls.show { display: flex; }
 .add-subcategory-btn { padding: 6px 10px; border-radius: 6px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; font-family: 'Caveat', cursive; font-size: 1rem; }
 .add-subcategory-btn.selected { background: #5d4037; color: #fff; }
+
+/* Mobile: two-row controls on right inside sticker */
+@media (max-width: 480px) {
+  .tasks.mobile-compact .task,
+  .group-grid .task { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto; column-gap: 6px; align-items: start; padding: 6px 8px; margin: 0; border-radius: 12px; }
+  .tasks.mobile-compact .task-content,
+  .group-grid .task-content { display: contents; }
+  .tasks.mobile-compact .task-text,
+  .group-grid .task-text { grid-column: 1 / 2; grid-row: 1 / 3; margin: 0; padding: 0; line-height: 1.2; }
+  .tasks.mobile-compact .category-selector,
+  .group-grid .category-selector { grid-column: 2 / 3; grid-row: 1 / 2; margin: 0 0 4px 0; float: none; }
+  .tasks.mobile-compact .task-controls,
+  .group-grid .task-controls { grid-column: 2 / 3; grid-row: 2 / 3; justify-content: flex-end; gap: 4px; float: none; clear: none; position: static; width: auto; display: flex; }
+}
+
+/* Hide category/subcategory names on existing task stickers */
+.tasks .category-badge .category-name { display: none; }
