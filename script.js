@@ -310,13 +310,16 @@ function displayTasks() {
     });
 }
 
-// Функция для изменения категории зада��и
+// Функция для изменения категории задачи
 function changeTaskCategory(taskId, newCategory, newSubcategory = null) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex === -1) return;
     const wasActive = !!tasks[taskIndex].active;
 
     const updateData = { category: newCategory };
+    if (newCategory === 1) {
+        updateData.subcategory = newSubcategory || (tasks[taskIndex].subcategory || 'work');
+    }
     if (tasks[taskIndex].category === 0 && !tasks[taskIndex].active && newCategory !== 0) {
         updateData.active = true;
     }
@@ -351,12 +354,12 @@ function deleteTask(taskId) {
     }
 }
 
-// Функция для экспорта ��адач в файл
+// Функция для экспорта задач в файл
 function exportTasks() {
     const dataStr = JSON.stringify(tasks, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
     
-    const exportFileDefaultName = 'ко��обочка-задачи.json';
+    const exportFileDefaultName = 'коробочка-задачи.json';
     
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
