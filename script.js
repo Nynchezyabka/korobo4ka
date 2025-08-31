@@ -348,6 +348,15 @@ function toggleTaskActive(taskId) {
     displayTasks();
 }
 
+// Переключение активности всех задач внутри категории
+function toggleCategoryActive(category) {
+    const hasActive = tasks.some(t => t.category === category && t.active);
+    const newActive = !hasActive;
+    tasks = tasks.map(t => t.category === category ? { ...t, active: newActive, statusChangedAt: Date.now() } : t);
+    saveTasks();
+    displayTasks();
+}
+
 // Функция для удаления задачи
 function deleteTask(taskId) {
     if (confirm('Удалить эту задачу?')) {
@@ -357,7 +366,7 @@ function deleteTask(taskId) {
     }
 }
 
-// Функция для экспорта задач в файл
+// ��ункция для экспорта задач в файл
 function exportTasks() {
     const dataStr = JSON.stringify(tasks, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
@@ -456,7 +465,7 @@ function hideTimer() {
     releaseWakeLock();
 }
 
-// Функция для обновления отображения тай��ера
+// Функция для обновления отображения таймера
 function updateTimerDisplay() {
     const minutes = Math.floor(timerTime / 60);
     const seconds = timerTime % 60;
@@ -995,7 +1004,7 @@ if (enableNotifyBtn) {
                 alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
         } catch (e) {
-            alert('Не удалось запросить разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
+            alert('Не удалось запросить разрешение на уведомления. ��ткройте сайт напрямую и попробуйте снова.');
         }
     });
 }
