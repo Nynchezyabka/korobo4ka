@@ -31,6 +31,7 @@ let timerTime = 15 * 60; // 15 минут в секундах
 let timerRunning = false;
 let selectedTaskId = null;
 let activeDropdown = null;
+let elevatedTaskEl = null;
 let wakeLock = null; // экраны не засыпают во время таймера (где поддерж��вается)
 
 // Новые переменные для точного таймера
@@ -49,6 +50,10 @@ document.addEventListener('click', function(e) {
     if (activeDropdown && !e.target.closest('.category-selector') && !e.target.closest('.add-category-selector')) {
         activeDropdown.classList.remove('show');
         if (activeDropdown.parentElement) activeDropdown.parentElement.style.zIndex = '';
+        if (typeof elevatedTaskEl !== 'undefined' && elevatedTaskEl) {
+            elevatedTaskEl.style.zIndex = '';
+            elevatedTaskEl = null;
+        }
         activeDropdown = null;
     }
 });
@@ -239,12 +244,15 @@ function displayTasks() {
                     </button>
                 </div>
             `;
-            if (task.category === 1 && task.subcategory) {
+            if (task.category === 1) {
                 const txtEl = taskElement.querySelector('.task-text');
                 if (txtEl) {
                     const lbl = document.createElement('div');
                     lbl.className = 'task-subcategory-label';
-                    lbl.textContent = task.subcategory === 'work' ? 'Обязательные - работа' : 'Обязательные - Дом';
+                    let subText = 'Обязательные';
+                    if (task.subcategory === 'work') subText += ' - работа';
+                    else if (task.subcategory === 'home') subText += ' - Дом';
+                    lbl.textContent = subText;
                     txtEl.appendChild(lbl);
                 }
             }
@@ -329,12 +337,15 @@ function displayTasks() {
             if (activeDropdown && activeDropdown !== this.nextElementSibling) {
                 activeDropdown.classList.remove('show');
                 if (activeDropdown.parentElement) activeDropdown.parentElement.style.zIndex = '';
+                if (elevatedTaskEl) { elevatedTaskEl.style.zIndex = ''; elevatedTaskEl = null; }
             }
             const dropdown = this.nextElementSibling;
             dropdown.classList.toggle('show');
             activeDropdown = dropdown;
             if (dropdown.classList.contains('show')) {
-                if (dropdown.parentElement) dropdown.parentElement.style.zIndex = '9000';
+                if (dropdown.parentElement) dropdown.parentElement.style.zIndex = '12000';
+                elevatedTaskEl = this.closest('.task');
+                if (elevatedTaskEl) elevatedTaskEl.style.zIndex = '11000';
                 dropdown.style.top = '100%';
                 dropdown.style.bottom = 'auto';
                 dropdown.style.left = '';
@@ -356,6 +367,7 @@ function displayTasks() {
                 }
             } else {
                 if (dropdown.parentElement) dropdown.parentElement.style.zIndex = '';
+                if (elevatedTaskEl) { elevatedTaskEl.style.zIndex = ''; elevatedTaskEl = null; }
             }
         });
     });
@@ -370,6 +382,7 @@ function displayTasks() {
             const dd = this.closest('.category-dropdown');
             dd.classList.remove('show');
             if (dd && dd.parentElement) dd.parentElement.style.zIndex = '';
+            if (elevatedTaskEl) { elevatedTaskEl.style.zIndex = ''; elevatedTaskEl = null; }
             activeDropdown = null;
         });
     });
@@ -574,7 +587,7 @@ function getRandomTask(categories) {
     );
     
     if (filteredTasks.length === 0) {
-        alert('Нет активных задач в этой категор��и!');
+        alert('Нет активных ��адач в этой категор��и!');
         return null;
     }
     
@@ -610,7 +623,7 @@ function showTimer(task) {
 function hideTimer() {
     timerScreen.style.display = 'none';
     document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
-    stopTimer(); // Останавливаем таймер при закрыт��и
+    stopTimer(); // Останав��иваем таймер при закрыт��и
     releaseWakeLock();
 }
 
@@ -717,6 +730,7 @@ function setupAddCategorySelector() {
                 }
                 dropdown.classList.remove('show');
                 activeDropdown = null;
+                container.style.zIndex = '';
             });
         });
         badge.addEventListener('click', (e) => {
@@ -726,6 +740,7 @@ function setupAddCategorySelector() {
             }
             dropdown.classList.toggle('show');
             activeDropdown = dropdown;
+            container.style.zIndex = dropdown.classList.contains('show') ? '12000' : '';
         });
         container.appendChild(badge);
         container.appendChild(dropdown);
