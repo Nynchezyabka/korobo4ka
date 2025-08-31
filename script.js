@@ -1,4 +1,4 @@
-// Переменная для хранения задач
+// Пер��менная для хранения задач
 let tasks = [];
 
 // Функции для работы с localStorage
@@ -44,7 +44,7 @@ let timerEndTimeoutId = null;
 // Элем��нты DOM
 const sections = document.querySelectorAll('.section');
 
-// Глобальный обработчик для закрытия открытого выпадающего меню категорий
+// Глобальный обработчик для закрытия от��рытого выпадающего меню категорий
 document.addEventListener('click', function(e) {
     if (activeDropdown && !e.target.closest('.category-selector') && !e.target.closest('.add-category-selector')) {
         activeDropdown.classList.remove('show');
@@ -194,16 +194,6 @@ function displayTasks() {
             return a.id - b.id;
         });
 
-        // Кнопка для активации/деактивации всей категории
-        const hasActiveInCategory = list.some(t => t.active);
-        const toggleBtn = document.createElement('button');
-        toggleBtn.className = 'task-control-btn category-toggle-all';
-        toggleBtn.innerHTML = `<i class=\"fas ${hasActiveInCategory ? 'fa-eye-slash' : 'fa-eye'}\"></i>`;
-        toggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleCategoryActive(cat);
-        });
-        title.appendChild(toggleBtn);
 
         list.forEach(task => {
             const taskElement = document.createElement('div');
@@ -445,7 +435,7 @@ function importTasks(file) {
                 }
             }
             
-            // Добавляем задачи в базу данных
+            // Добавляем зада��и в базу данных
             tasks = importedTasks;
             saveTasks();
             alert(`Успешно импортировано ${importedTasks.length} задач`);
@@ -794,7 +784,7 @@ function startTimer() {
 
             if (timerTime <= 0) {
                 stopTimer();
-                showNotification(currentTask ? `Задача: ${currentTask.text}` : undefined);
+                showNotification(currentTask ? `З��дача: ${currentTask.text}` : undefined);
                 timerCompleteOptions.style.display = 'flex';
                 document.querySelector('.timer-controls').style.display = 'none';
             }
