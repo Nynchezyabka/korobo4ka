@@ -204,7 +204,7 @@ textarea, select, input {
     border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 8px;
-    z-index: 2000;
+    z-index: 12000;
     display: none;
 }
 .add-category-dropdown.show { display: block; }
@@ -912,7 +912,7 @@ textarea {
     transform: scale(0.9);
 }
 
-/* Адаптивность для мобильных устройств */
+/* Адаптивнос��ь для мобильных устройств */
 @media (max-width: 480px) {
     .toast-notification {
         bottom: 10px;
