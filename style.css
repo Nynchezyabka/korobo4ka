@@ -525,7 +525,7 @@ textarea {
 }
 
 #pauseTimerBtn {
-    background-color: #ff9800; /* оранжевый */
+    background-color: #ff9800; /* о��анжевый */
 }
 
 #pauseTimerBtn:active {
@@ -1130,7 +1130,7 @@ textarea {
 /* Цвет и иконка caret на бейдже категории задач */
 .category-badge i { color: #5d4037; }
 
-/* Группировка опций в выпада��щих списках категорий */
+/* Группировка опций в выпадающих списках категорий */
 .category-option-group { padding-top: 6px; }
 .category-option-group { margin-top: 4px; margin-bottom: 4px; position: relative; }
 .category-option-group > .category-option { width: 100%; border-bottom-left-radius: 0; border-bottom-right-radius: 0; padding: 3px 8px; font-size: 0.9rem; line-height: 1.1; min-height: 28px; display: flex; align-items: center; justify-content: center; }
@@ -1141,6 +1141,9 @@ textarea {
 
 /* Редактор текста задачи */
 .task-edit { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Caveat', cursive; font-size: 1.1rem; }
+
+/* Подпись подкатегории под заголовком задачи */
+.task-subcategory-label { margin-top: 4px; font-size: 0.95rem; opacity: 0.85; }
 
 /* Цветизация выбранной категории при добавлении задачи */
 .add-category-badge[data-category="0"] { background-color: #f5f5f5; border-left: 2px solid #9E9E9E; }
