@@ -170,7 +170,7 @@ textarea, select, input {
     width: 100%;
 }
 
-/* Цвет��ая индикация категории при добавлении задачи */
+/* Цветная индикация категории при добавлении задачи */
 #taskCategory {
     border-left-width: 4px;
     border-left-style: solid;
@@ -748,7 +748,7 @@ textarea {
     }
 }
 
-/* Медиа-з��прос для десктоп��в */
+/* Медиа-з��прос для десктопов */
 @media (min-width: 1024px) {
     /* Выровнять элементы задачи в сетку: текст слева, справа сверху категория, снизу под ней кнопки */
     .task {
@@ -795,7 +795,7 @@ textarea {
         gap: 12px;
     }
 
-    /* Кнопки действий выравниваем п��� сетке (3 колонки) */
+    /* Кнопки действий выравниваем п�� сетке (3 колонки) */
     .controls {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -938,7 +938,7 @@ textarea {
     font-size: 1.1rem;
 }
 
-/* Показываем подзаголовки на всех экранах */
+/* Показыва��м подзаголовки на всех экранах */
 @media (min-width: 481px) {
     .category-title { display: flex; }
 }
@@ -966,7 +966,7 @@ textarea {
         width: 100%;
     }
     .tasks.mobile-compact .task-content {
-        display: contents;
+        display: block;
         width: 100%;
     }
     .tasks.mobile-compact .task-content::after { content: ""; display: block; clear: both; }
@@ -975,11 +975,12 @@ textarea {
         margin: 0;
         font-size: 0.95rem;
         line-height: 1.2;
-        word-break: break-word;
+        word-break: normal;
+        overflow-wrap: break-word;
     }
     .tasks.mobile-compact .task-controls {
-        float: none;
-        clear: none;
+        float: right;
+        clear: right;
         width: auto;
         display: flex;
         flex-direction: row;
@@ -987,17 +988,13 @@ textarea {
         gap: 4px;
         margin-left: 0;
         position: static;
-        grid-column: 2 / 3;
-        grid-row: 2 / 3;
         justify-content: flex-end;
     }
     .tasks.mobile-compact .task-control-btn { font-size: 0.95rem; padding: 2px; line-height: 1; }
     .tasks.mobile-compact .category-selector {
-        float: none;
+        float: right;
         width: auto;
-        margin: 0 0 6px 0;
-        grid-column: 2 / 3;
-        grid-row: 1 / 2;
+        margin: 0 0 6px 6px;
     }
     .tasks.mobile-compact .category-badge {
         background-color: transparent;
@@ -1014,7 +1011,7 @@ textarea {
     .tasks.mobile-compact .sticker-wide { grid-column: 1 / -1; }
 }
 
-/* Стикерная сетка для планшет��в и десктопов */
+/* Стикерная сетка для планшетов и десктопов */
 .tasks.sticker-grid {
     display: grid;
     gap: 6px;
@@ -1140,7 +1137,7 @@ textarea {
 /* Редактор текста задачи */
 .task-edit { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Caveat', cursive; font-size: 1.1rem; }
 
-/* Цветизация выбранной категории при добавлении задачи */
+/* Цветизац��я выбранной категории при добавлении задачи */
 .add-category-badge[data-category="0"] { background-color: #f5f5f5; border-left: 2px solid #9E9E9E; }
 .add-category-badge[data-category="1"] { background-color: #fff9c4; border-left: 2px solid #FFD54F; }
 .add-category-badge[data-category="2"] { background-color: #bbdefb; border-left: 2px solid #64B5F6; }
