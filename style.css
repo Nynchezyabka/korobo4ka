@@ -673,7 +673,7 @@ textarea {
     }
 }
 
-/* Медиа-запрос ��ля планшетов и больших ��елефонов */
+/* Медиа-запрос ��ля планшетов и больших телефонов */
 @media (min-width: 481px) {
     body {
         padding: 15px;
@@ -1123,6 +1123,7 @@ textarea {
 .group-grid .task { padding: 6px 8px; border-radius: 12px; }
 .group-grid .category-badge { background-color: transparent; padding: 0 6px; }
 .group-grid .category-badge .category-name { display: none; }
+.group-grid .category-title { grid-column: 1 / -1; }
 
 /* Переопределяем стару�� десктопную раскладку внутри групп */
 @media (min-width: 1024px) {
