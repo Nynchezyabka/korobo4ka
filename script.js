@@ -245,26 +245,14 @@ function displayTasks() {
             grid.appendChild(taskElement);
         });
 
-        // Группировка задач по подкатегориям для категории "Обязательные"
+        // Группировка задач по подкатегориям для категории "Обязатель��ые"
         if (cat === 1) {
-            const workBlock = document.createElement('div');
-            workBlock.className = 'subcategory-block subcategory-work';
-            const homeBlock = document.createElement('div');
-            homeBlock.className = 'subcategory-block subcategory-home';
             const workTitle = document.createElement('div');
             const homeTitle = document.createElement('div');
             workTitle.className = 'category-title';
             homeTitle.className = 'category-title';
             workTitle.innerHTML = '<span class="category-heading">Работа</span>';
             homeTitle.innerHTML = '<span class="category-heading">Дом</span>';
-            const workGrid = document.createElement('div');
-            const homeGrid = document.createElement('div');
-            workGrid.className = 'group-grid';
-            homeGrid.className = 'group-grid';
-            workBlock.appendChild(workTitle);
-            workBlock.appendChild(workGrid);
-            homeBlock.appendChild(homeTitle);
-            homeBlock.appendChild(homeGrid);
 
             // Кнопки включения/выключения подкатегорий
             const workHasActive = list.some(t => t.subcategory === 'work' && t.active);
@@ -286,23 +274,20 @@ function displayTasks() {
             workTitle.appendChild(workToggle);
             homeTitle.appendChild(homeToggle);
 
-            // Перемещаем задачи из общего grid в подгруппы (только те, у кого задана подкатегория)
+            // Перемещаем задачи в одну общую сетку с заголовками подкатегорий
             const nodes = [...grid.querySelectorAll(':scope > .task')];
-            nodes.forEach(el => {
-                const sub = el.dataset.subcategory;
-                if (sub === 'home') {
-                    homeGrid.appendChild(el);
-                } else if (sub === 'work') {
-                    workGrid.appendChild(el);
-                }
-            });
+            const workTasks = nodes.filter(el => el.dataset.subcategory === 'work');
+            const homeTasks = nodes.filter(el => el.dataset.subcategory === 'home');
+            if (workTasks.length) {
+                grid.appendChild(workTitle);
+                workTasks.forEach(el => grid.appendChild(el));
+            }
+            if (homeTasks.length) {
+                grid.appendChild(homeTitle);
+                homeTasks.forEach(el => grid.appendChild(el));
+            }
 
-            // Оставшиеся без подкатегории остаются сверху, затем блоки подкатегорий в отдельной сетке
-            const subcats = document.createElement('div');
-            subcats.className = 'subcategory-columns';
-            subcats.appendChild(workBlock);
-            subcats.appendChild(homeBlock);
-            grid.appendChild(subcats);
+            // Оставшиеся без подкатегории остаются сверху, далее подкатегории заголовком и их задачи
         }
 
         title.addEventListener('click', () => {
@@ -1188,7 +1173,7 @@ if (enableNotifyBtn) {
                 await ensurePushSubscribed();
                 createBrowserNotification('Уведомления включены');
             } else if (result === 'default') {
-                alert('Уведомления не ��ключены. Подтвердите запрос браузера или разрешите их в настройках са��та.');
+                alert('Уведомления не ��ключены. Подтвердите запрос браузера или разрешите их в ��астройках са��та.');
             } else if (result === 'denied') {
                 alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
