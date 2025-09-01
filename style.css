@@ -673,7 +673,7 @@ textarea {
     }
 }
 
-/* Медиа-запрос ��ля планшетов и больших телефонов */
+/* Медиа-запрос ��ля планшетов и больших ��елефонов */
 @media (min-width: 481px) {
     body {
         padding: 15px;
@@ -1101,6 +1101,21 @@ textarea {
 }
 @media (min-width: 1024px) {
     .group-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+}
+
+/* Сетка колонок подкатегорий внутри "Обязательные" */
+.subcategory-columns { display: grid; gap: 6px; grid-auto-flow: dense; }
+@media (max-width: 480px) {
+    .subcategory-columns { grid-template-columns: 1fr; gap: 4px; }
+}
+@media (min-width: 481px) and (max-width: 767px) {
+    .subcategory-columns { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+    .subcategory-columns { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+}
+@media (min-width: 1024px) {
+    .subcategory-columns { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 }
 
 /* Стикер на всю строку для длинных задач */
