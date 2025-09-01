@@ -31,7 +31,7 @@ let timerTime = 15 * 60; // 15 мину�� в секундах
 let timerRunning = false;
 let selectedTaskId = null;
 let activeDropdown = null;
-let wakeLock = null; // экраны не засыпают во время таймера (где поддерж��вается)
+let wakeLock = null; // экраны не засы��ают во время таймера (где поддерж��вается)
 
 // Новые переменные для точного таймера
 let timerStartTime = 0;
@@ -528,7 +528,7 @@ function exportTasks() {
     const dataStr = JSON.stringify(tasks, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
     
-    const exportFileDefaultName = 'коробочка-з��дачи.json';
+    const exportFileDefaultName = 'коробочка-задачи.json';
     
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
@@ -545,7 +545,7 @@ function importTasks(file) {
             const importedTasks = JSON.parse(e.target.result);
             
             if (!Array.isArray(importedTasks)) {
-                alert('О��ибка: файл должен содержать массив задач');
+                alert('Ошибка: файл должен содержать массив задач');
                 return;
             }
             
@@ -1135,7 +1135,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// Пересчет при возврате на вкладку/разворачивании окна
+// Пересчет при возвра��е на вкладку/разворачивании окна
 window.addEventListener('focus', () => {
     if (timerRunning) {
         timerTime = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
