@@ -246,13 +246,19 @@ function displayTasks() {
                     </button>
                 </div>
             `;
-            // Переставляем селектор категории перед текстом для корректного обтекания на мобильных
+            // Перестав��яем элементы для мобильного: папка сверху справа, ниже сразу глаз и урна
             const contentWrap = taskElement.querySelector('.task-content');
             if (contentWrap) {
                 const txt = contentWrap.querySelector('.task-text');
                 const sel = contentWrap.querySelector('.category-selector');
-                if (txt && sel && sel.nextElementSibling !== txt) {
+                if (isMobile && txt && sel && sel.nextElementSibling !== txt) {
                     contentWrap.insertBefore(sel, txt);
+                }
+                if (isMobile) {
+                    const controls = taskElement.querySelector('.task-controls');
+                    if (controls && txt) {
+                        contentWrap.insertBefore(controls, txt);
+                    }
                 }
             }
             if (isMobile && task.text.length > 44) {
@@ -508,7 +514,7 @@ function toggleSubcategoryActive(subKey) {
     displayTasks();
 }
 
-// Функц��я для удаления задачи
+// Функц����я для удаления задачи
 function deleteTask(taskId) {
     if (confirm('Удалить эту задачу?')) {
         tasks = tasks.filter(t => t.id !== taskId);
@@ -612,7 +618,7 @@ function showTimer(task) {
 function hideTimer() {
     timerScreen.style.display = 'none';
     document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
-    stopTimer(); // Останавливаем таймер при закрыт��и
+    stopTimer(); // Останавливаем тайм��р при закрыт��и
     releaseWakeLock();
 }
 
@@ -1194,7 +1200,7 @@ function hideToastNotification() {
 if (enableNotifyBtn) {
     enableNotifyBtn.addEventListener('click', async () => {
         if (!('Notification' in window)) {
-            alert('Уведомления не поддерживаются этим браузером');
+            alert('Уведомления н�� поддерживаются этим браузером');
             return;
         }
         if (Notification.permission === 'granted') {
