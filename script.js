@@ -83,7 +83,14 @@ function applyCategoryVisualToSelect() {
     const val = parseInt(taskCategory.value) || 0;
     const badge = document.querySelector('.add-category-badge');
     if (badge) {
-        badge.textContent = getCategoryName(val);
+        let label = getCategoryName(val);
+        if (val === 1) {
+            const sel = document.querySelector('.add-subcategory-controls .add-subcategory-btn.selected');
+            if (sel && sel.dataset.sub) {
+                label = sel.dataset.sub === 'work' ? 'Обязательные - Работа' : 'Обязательные - Дом';
+            }
+        }
+        badge.textContent = label;
         badge.setAttribute('data-category', String(val));
     }
     const subControls = document.querySelector('.add-subcategory-controls');
@@ -245,7 +252,7 @@ function displayTasks() {
             grid.appendChild(taskElement);
         });
 
-        // Группировка задач по подкатегориям для категории "Обязатель��ые"
+        // Группировка задач по подкатегориям для категории "Обязательные"
         if (cat === 1) {
             const workTitle = document.createElement('div');
             const homeTitle = document.createElement('div');
@@ -274,18 +281,23 @@ function displayTasks() {
             workTitle.appendChild(workToggle);
             homeTitle.appendChild(homeToggle);
 
-            // Перемещаем задачи в одну общую сетку с заголовками подкатегорий
+            // Перемещаем задачи в одну общую сетку с заголовками подкатегорий без дубликатов
             const nodes = [...grid.querySelectorAll(':scope > .task')];
             const workTasks = nodes.filter(el => el.dataset.subcategory === 'work');
             const homeTasks = nodes.filter(el => el.dataset.subcategory === 'home');
+            const noneTasks = nodes.filter(el => !el.dataset.subcategory);
+            const frag = document.createDocumentFragment();
+            noneTasks.forEach(el => frag.appendChild(el));
             if (workTasks.length) {
-                grid.appendChild(workTitle);
-                workTasks.forEach(el => grid.appendChild(el));
+                frag.appendChild(workTitle);
+                workTasks.forEach(el => frag.appendChild(el));
             }
             if (homeTasks.length) {
-                grid.appendChild(homeTitle);
-                homeTasks.forEach(el => grid.appendChild(el));
+                frag.appendChild(homeTitle);
+                homeTasks.forEach(el => frag.appendChild(el));
             }
+            grid.innerHTML = '';
+            grid.appendChild(frag);
 
             // Оставшиеся без подкатегории остаются сверху, далее подкатегории заголовком и их задачи
         }
@@ -466,7 +478,7 @@ function toggleTaskActive(taskId) {
     displayTasks();
 }
 
-// Пе��еключение активности всех задач внутри категории
+// Пе��еключение активности всех задач в��утри категории
 function toggleCategoryActive(category) {
     const hasActive = tasks.some(t => t.category === category && t.active);
     const newActive = !hasActive;
@@ -685,7 +697,6 @@ function setupAddCategorySelector() {
                 const v = btn.getAttribute('data-category') || '0';
                 const sub = btn.getAttribute('data-subcategory');
                 taskCategory.value = v;
-                applyCategoryVisualToSelect();
                 const subControls = document.querySelector('.add-subcategory-controls');
                 if (subControls) {
                     const workBtn = subControls.querySelector('.add-subcategory-btn[data-sub="work"]');
@@ -696,6 +707,7 @@ function setupAddCategorySelector() {
                         if (target) target.classList.add('selected');
                     }
                 }
+                applyCategoryVisualToSelect();
                 dropdown.classList.remove('show');
                 activeDropdown = null;
             });
@@ -1173,7 +1185,7 @@ if (enableNotifyBtn) {
                 await ensurePushSubscribed();
                 createBrowserNotification('Уведомления включены');
             } else if (result === 'default') {
-                alert('Уведомления не ��ключены. Подтвердите запрос браузера или разрешите их в ��астройках са��та.');
+                alert('Уведомления не ��ключены. Подтвердите запрос браузера или разрешите их в настройках са��та.');
             } else if (result === 'denied') {
                 alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
