@@ -145,7 +145,7 @@ function getCategoryName(category) {
         1: "Обязательные",
         2: "Безопасность",
         3: "Простые радости",
-        4: "Эго радости",
+        4: "��го радости",
         5: "Доступность радостей"
     };
     return categories[category] || "Неизвестно";
@@ -246,6 +246,15 @@ function displayTasks() {
                     </button>
                 </div>
             `;
+            // Переставляем селектор категории перед текстом для корректного обтекания на мобильных
+            const contentWrap = taskElement.querySelector('.task-content');
+            if (contentWrap) {
+                const txt = contentWrap.querySelector('.task-text');
+                const sel = contentWrap.querySelector('.category-selector');
+                if (txt && sel && sel.nextElementSibling !== txt) {
+                    contentWrap.insertBefore(sel, txt);
+                }
+            }
             if (isMobile && task.text.length > 44) {
                 taskElement.classList.add('sticker-wide');
             }
