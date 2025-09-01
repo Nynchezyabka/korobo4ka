@@ -478,7 +478,7 @@ function toggleTaskActive(taskId) {
     displayTasks();
 }
 
-// Пе��ек��ючение активности всех задач внутри категории
+// Пе��еключение активности всех задач внутри категории
 function toggleCategoryActive(category) {
     const hasActive = tasks.some(t => t.category === category && t.active);
     const newActive = !hasActive;
@@ -580,7 +580,7 @@ function showTimer(task) {
     currentTask = task;
     timerTaskText.textContent = task.text;
 
-    // Полный сб��ос состояния т��ймера перед новым запуском
+    // Полный сб��ос состояния таймера перед новым запуском
     if (timerEndTimeoutId) {
         clearTimeout(timerEndTimeoutId);
         timerEndTimeoutId = null;
@@ -701,8 +701,10 @@ function setupAddCategorySelector() {
                 if (subControls) {
                     const workBtn = subControls.querySelector('.add-subcategory-btn[data-sub="work"]');
                     const homeBtn = subControls.querySelector('.add-subcategory-btn[data-sub="home"]');
+                    // Сбрасываем выбор
+                    [workBtn, homeBtn].forEach(b => b && b.classList.remove('selected'));
+                    // Если выбрана подкатегория из дропдауна, отмечаем её
                     if (sub === 'work' || sub === 'home') {
-                        [workBtn, homeBtn].forEach(b => b && b.classList.remove('selected'));
                         const target = sub === 'work' ? workBtn : homeBtn;
                         if (target) target.classList.add('selected');
                     }
@@ -730,7 +732,7 @@ function setupAddCategorySelector() {
             sub.className = 'add-subcategory-controls';
             const btnWork = document.createElement('button');
             btnWork.type = 'button';
-            btnWork.className = 'add-subcategory-btn selected';
+            btnWork.className = 'add-subcategory-btn';
             btnWork.dataset.sub = 'work';
             btnWork.textContent = 'Работа';
             const btnHome = document.createElement('button');
@@ -740,6 +742,10 @@ function setupAddCategorySelector() {
             btnHome.textContent = 'Дом';
             [btnWork, btnHome].forEach(btn => {
                 btn.addEventListener('click', () => {
+                    // При выборе подкатегории автоматически выставляем категорию "Обязательные"
+                    if (taskCategory && taskCategory.value !== '1') {
+                        taskCategory.value = '1';
+                    }
                     sub.querySelectorAll('.add-subcategory-btn').forEach(b => b.classList.remove('selected'));
                     btn.classList.add('selected');
                     applyCategoryVisualToSelect();
@@ -1010,6 +1016,14 @@ addTaskBtn.addEventListener('click', () => {
     const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
     const category = parseInt(taskCategory.value);
     if (lines.length === 0) return;
+
+    // Для надёжности: если выбрана подкатегория, принудительно устанавливаем категорию 1
+    if (category !== 1) {
+        const selBtn = document.querySelector('.add-subcategory-controls .add-subcategory-btn.selected');
+        if (selBtn && selBtn.dataset.sub) {
+            if (taskCategory) taskCategory.value = '1';
+        }
+    }
 
     if (lines.length > 1) {
         if (!confirm(`Добавить ${lines.length} задач?`)) return;
