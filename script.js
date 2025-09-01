@@ -27,11 +27,11 @@ function getNextId() {
 // Переменные состояния
 let currentTask = null;
 let timerInterval = null;
-let timerTime = 15 * 60; // 15 минут в секундах
+let timerTime = 15 * 60; // 15 мину�� в секундах
 let timerRunning = false;
 let selectedTaskId = null;
 let activeDropdown = null;
-let wakeLock = null; // экраны не засыпают во время таймера (где поддерж��вается)
+let wakeLock = null; // экраны не засы��ают во время таймера (где поддерж��вается)
 
 // Новые переменные для точного таймера
 let timerStartTime = 0;
@@ -83,7 +83,14 @@ function applyCategoryVisualToSelect() {
     const val = parseInt(taskCategory.value) || 0;
     const badge = document.querySelector('.add-category-badge');
     if (badge) {
-        badge.textContent = getCategoryName(val);
+        let label = getCategoryName(val);
+        if (val === 1) {
+            const sel = document.querySelector('.add-subcategory-controls .add-subcategory-btn.selected');
+            if (sel && sel.dataset.sub) {
+                label = sel.dataset.sub === 'work' ? 'Обязательные - Работа' : 'Обязательные - Дом';
+            }
+        }
+        badge.textContent = label;
         badge.setAttribute('data-category', String(val));
     }
     const subControls = document.querySelector('.add-subcategory-controls');
@@ -138,7 +145,7 @@ function getCategoryName(category) {
         1: "Обязательные",
         2: "Безопасность",
         3: "Простые радости",
-        4: "Эго радости",
+        4: "Эго-радости",
         5: "Доступность радостей"
     };
     return categories[category] || "Неизвестно";
@@ -226,7 +233,7 @@ function displayTasks() {
                             <button class=\"category-option\" data-category=\"2\">Безопасность</button>
                             <button class=\"category-option\" data-category=\"5\">Доступность радостей</button>
                             <button class=\"category-option\" data-category=\"3\">Простые радости</button>
-                            <button class=\"category-option\" data-category=\"4\">Эго радости</button>
+                            <button class=\"category-option\" data-category=\"4\">Эго-радости</button>
                         </div>
                     </div>
                 </div>
@@ -239,6 +246,21 @@ function displayTasks() {
                     </button>
                 </div>
             `;
+            // Перестав��яем элементы для мобильного: папка сверху справа, ниже сразу глаз и урна
+            const contentWrap = taskElement.querySelector('.task-content');
+            if (contentWrap) {
+                const txt = contentWrap.querySelector('.task-text');
+                const sel = contentWrap.querySelector('.category-selector');
+                if (isMobile && txt && sel && sel.nextElementSibling !== txt) {
+                    contentWrap.insertBefore(sel, txt);
+                }
+                if (isMobile) {
+                    const controls = taskElement.querySelector('.task-controls');
+                    if (controls && txt) {
+                        contentWrap.insertBefore(controls, txt);
+                    }
+                }
+            }
             if (isMobile && task.text.length > 44) {
                 taskElement.classList.add('sticker-wide');
             }
@@ -247,22 +269,12 @@ function displayTasks() {
 
         // Группировка задач по подкатегориям для категории "Обязательные"
         if (cat === 1) {
-            const workBlock = document.createElement('div');
-            const homeBlock = document.createElement('div');
             const workTitle = document.createElement('div');
             const homeTitle = document.createElement('div');
             workTitle.className = 'category-title';
             homeTitle.className = 'category-title';
             workTitle.innerHTML = '<span class="category-heading">Работа</span>';
             homeTitle.innerHTML = '<span class="category-heading">Дом</span>';
-            const workGrid = document.createElement('div');
-            const homeGrid = document.createElement('div');
-            workGrid.className = 'group-grid';
-            homeGrid.className = 'group-grid';
-            workBlock.appendChild(workTitle);
-            workBlock.appendChild(workGrid);
-            homeBlock.appendChild(homeTitle);
-            homeBlock.appendChild(homeGrid);
 
             // Кнопки включения/выключения подкатегорий
             const workHasActive = list.some(t => t.subcategory === 'work' && t.active);
@@ -284,20 +296,25 @@ function displayTasks() {
             workTitle.appendChild(workToggle);
             homeTitle.appendChild(homeToggle);
 
-            // Перемещаем задачи из общего grid в подгруппы (только те, у кого задана подкатегория)
+            // Перемещаем задачи в одну общую сетку с заголовками подкатегорий без дубликатов
             const nodes = [...grid.querySelectorAll(':scope > .task')];
-            nodes.forEach(el => {
-                const sub = el.dataset.subcategory;
-                if (sub === 'home') {
-                    homeGrid.appendChild(el);
-                } else if (sub === 'work') {
-                    workGrid.appendChild(el);
-                }
-            });
+            const workTasks = nodes.filter(el => el.dataset.subcategory === 'work');
+            const homeTasks = nodes.filter(el => el.dataset.subcategory === 'home');
+            const noneTasks = nodes.filter(el => !el.dataset.subcategory);
+            const frag = document.createDocumentFragment();
+            noneTasks.forEach(el => frag.appendChild(el));
+            if (workTasks.length) {
+                frag.appendChild(workTitle);
+                workTasks.forEach(el => frag.appendChild(el));
+            }
+            if (homeTasks.length) {
+                frag.appendChild(homeTitle);
+                homeTasks.forEach(el => frag.appendChild(el));
+            }
+            grid.innerHTML = '';
+            grid.appendChild(frag);
 
-            // Оставшиеся без подкатегории остаются сверху, затем блоки подкатегорий
-            grid.appendChild(workBlock);
-            grid.appendChild(homeBlock);
+            // Оставшиеся без подкатегории остаются сверху, далее подкатегории заголовком и их задачи
         }
 
         title.addEventListener('click', () => {
@@ -497,7 +514,7 @@ function toggleSubcategoryActive(subKey) {
     displayTasks();
 }
 
-// Функц��я для удаления задачи
+// Функц����я для удаления задачи
 function deleteTask(taskId) {
     if (confirm('Удалить эту задачу?')) {
         tasks = tasks.filter(t => t.id !== taskId);
@@ -511,7 +528,7 @@ function exportTasks() {
     const dataStr = JSON.stringify(tasks, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
     
-    const exportFileDefaultName = 'коробочка-з��дачи.json';
+    const exportFileDefaultName = 'коробочка-задачи.json';
     
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
@@ -565,7 +582,7 @@ function getRandomTask(categories) {
     );
     
     if (filteredTasks.length === 0) {
-        alert('Нет активных задач в этой категор��и!');
+        alert('Нет активных задач �� этой категор��и!');
         return null;
     }
     
@@ -601,7 +618,7 @@ function showTimer(task) {
 function hideTimer() {
     timerScreen.style.display = 'none';
     document.body.style.overflow = 'auto'; // Восстанавливаем прокрутку
-    stopTimer(); // Останавливаем таймер при закрыт��и
+    stopTimer(); // Останавливаем тайм��р при закрыт��и
     releaseWakeLock();
 }
 
@@ -614,7 +631,7 @@ function updateTimerDisplay() {
 
 // Функция для показа уведомления
 function showNotification(message) {
-    const body = message || (currentTask ? `Задача: ${currentTask.text}` : "Время вышло! Задача завершена.");
+    const body = message || (currentTask ? `Задача: ${currentTask.text}` : "Время вышло! Задача ��авершена.");
     showToastNotification("🎁 КОРОБОЧКА", body, 5000);
     playBeep();
 
@@ -688,24 +705,26 @@ function setupAddCategorySelector() {
             <button class="add-category-option" data-category="2">Безопасность</button>
             <button class="add-category-option" data-category="5">Доступность радостей</button>
             <button class="add-category-option" data-category="3">Простые радости</button>
-            <button class="add-category-option" data-category="4">Эго радости</button>
+            <button class="add-category-option" data-category="4">Эго-радости</button>
         `;
         dropdown.querySelectorAll('.add-category-option').forEach(btn => {
             btn.addEventListener('click', () => {
                 const v = btn.getAttribute('data-category') || '0';
                 const sub = btn.getAttribute('data-subcategory');
                 taskCategory.value = v;
-                applyCategoryVisualToSelect();
                 const subControls = document.querySelector('.add-subcategory-controls');
                 if (subControls) {
                     const workBtn = subControls.querySelector('.add-subcategory-btn[data-sub="work"]');
                     const homeBtn = subControls.querySelector('.add-subcategory-btn[data-sub="home"]');
+                    // Сбрасываем выбор
+                    [workBtn, homeBtn].forEach(b => b && b.classList.remove('selected'));
+                    // Если выбрана подкатегория из дропдауна, отмечаем её
                     if (sub === 'work' || sub === 'home') {
-                        [workBtn, homeBtn].forEach(b => b && b.classList.remove('selected'));
                         const target = sub === 'work' ? workBtn : homeBtn;
                         if (target) target.classList.add('selected');
                     }
                 }
+                applyCategoryVisualToSelect();
                 dropdown.classList.remove('show');
                 activeDropdown = null;
             });
@@ -728,7 +747,7 @@ function setupAddCategorySelector() {
             sub.className = 'add-subcategory-controls';
             const btnWork = document.createElement('button');
             btnWork.type = 'button';
-            btnWork.className = 'add-subcategory-btn selected';
+            btnWork.className = 'add-subcategory-btn';
             btnWork.dataset.sub = 'work';
             btnWork.textContent = 'Работа';
             const btnHome = document.createElement('button');
@@ -738,8 +757,13 @@ function setupAddCategorySelector() {
             btnHome.textContent = 'Дом';
             [btnWork, btnHome].forEach(btn => {
                 btn.addEventListener('click', () => {
+                    // При выборе подкатегории ��втоматически выставляем категорию "Обязательные"
+                    if (taskCategory && taskCategory.value !== '1') {
+                        taskCategory.value = '1';
+                    }
                     sub.querySelectorAll('.add-subcategory-btn').forEach(b => b.classList.remove('selected'));
                     btn.classList.add('selected');
+                    applyCategoryVisualToSelect();
                 });
             });
             container.insertAdjacentElement('afterend', sub);
@@ -959,7 +983,7 @@ async function cancelServerSchedule() {
 
 // Функция для сброса таймера
 function resetTimer() {
-    // отменяе�� только локальный таймер, серверный не трогаем, чтобы пауза/сброс был явным
+    // отменяе�� только локальный тайм��р, серверный не трогаем, чтобы пауза/сброс был явным
     stopTimer();
     if (timerEndTimeoutId) {
         clearTimeout(timerEndTimeoutId);
@@ -1005,8 +1029,17 @@ taskCategory.addEventListener('change', applyCategoryVisualToSelect);
 addTaskBtn.addEventListener('click', () => {
     const raw = taskText.value;
     const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-    const category = parseInt(taskCategory.value);
+    let category = parseInt(taskCategory.value);
     if (lines.length === 0) return;
+
+    // Для надёжности: если выбрана подкатегория, принудительно устанавливаем категорию 1
+    if (category !== 1) {
+        const selBtn = document.querySelector('.add-subcategory-controls .add-subcategory-btn.selected');
+        if (selBtn && selBtn.dataset.sub) {
+            if (taskCategory) taskCategory.value = '1';
+            category = 1;
+        }
+    }
 
     if (lines.length > 1) {
         if (!confirm(`Добавить ${lines.length} задач?`)) return;
@@ -1102,7 +1135,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// Пересчет при возврате на вкладку/разворачивании окна
+// Пересчет при возвра��е на вкладку/разворачивании окна
 window.addEventListener('focus', () => {
     if (timerRunning) {
         timerTime = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
@@ -1167,7 +1200,7 @@ function hideToastNotification() {
 if (enableNotifyBtn) {
     enableNotifyBtn.addEventListener('click', async () => {
         if (!('Notification' in window)) {
-            alert('Уведомления не поддерживаются этим браузером');
+            alert('Уведомления н�� поддерживаются этим браузером');
             return;
         }
         if (Notification.permission === 'granted') {
@@ -1183,12 +1216,12 @@ if (enableNotifyBtn) {
                 await ensurePushSubscribed();
                 createBrowserNotification('Уведомления включены');
             } else if (result === 'default') {
-                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройках са��та.');
+                alert('Уведомления не ��ключены. Подтвердите запрос браузера или разрешите их в настройках са��та.');
             } else if (result === 'denied') {
                 alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
         } catch (e) {
-            alert('Не удалось запросить разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
+            alert('Не удалось запроси��ь разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
         }
     });
 }

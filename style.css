@@ -6,7 +6,7 @@
 }
 
 body {
-    font-family: 'Caveat', cursive, sans-serif;
+    font-family: 'Caveat', cursive, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
     background-color: #fffaf0;
     background-image:
         linear-gradient(rgba(210, 190, 150, 0.12) 1px, transparent 1px),
@@ -187,6 +187,7 @@ textarea, select, input {
 .task-form #taskCategory { display: none; }
 .add-category-selector { position: relative; display: inline-block; width: 100%; z-index: 2000; }
 .add-category-badge {
+    font-family: inherit;
     font-size: 1rem;
     padding: 8px 10px;
     border-radius: 6px;
@@ -791,7 +792,7 @@ textarea {
         gap: 12px;
     }
 
-    /* Кнопки действий выравниваем п�� сетке (3 колонки) */
+    /* Кнопки действий выравниваем п�� с��тке (3 колонки) */
     .controls {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -922,6 +923,8 @@ textarea {
     }
 }
 
+.category-name, .category-heading { font-family: inherit; }
+
 /* По��заголовки категорий для мобильной группировки */
 .category-title {
     margin: 10px 0 6px;
@@ -951,18 +954,14 @@ textarea {
     .tasks.mobile-compact .category-group { grid-column: 1 / -1; }
     .tasks.mobile-compact .category-title { display: block; grid-column: 1 / -1; }
     .tasks.mobile-compact .task {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        grid-template-rows: auto auto;
-        column-gap: 6px;
-        align-items: start;
+        display: block;
         padding: 4px 6px;
         margin: 0;
         border-radius: 12px;
         width: 100%;
     }
     .tasks.mobile-compact .task-content {
-        display: contents;
+        display: block;
         width: 100%;
     }
     .tasks.mobile-compact .task-content::after { content: ""; display: block; clear: both; }
@@ -973,28 +972,22 @@ textarea {
         line-height: 1.2;
         word-break: break-word;
     }
+    .tasks.mobile-compact .category-selector {
+        float: right;
+        width: auto;
+        margin: 0 0 4px 6px;
+    }
     .tasks.mobile-compact .task-controls {
-        float: none;
-        clear: none;
+        float: right;
+        clear: right;
         width: auto;
         display: flex;
         flex-direction: row;
         align-items: center;
         gap: 4px;
-        margin-left: 0;
-        position: static;
-        grid-column: 2 / 3;
-        grid-row: 2 / 3;
-        justify-content: flex-end;
+        margin-top: 2px;
     }
     .tasks.mobile-compact .task-control-btn { font-size: 0.95rem; padding: 2px; line-height: 1; }
-    .tasks.mobile-compact .category-selector {
-        float: none;
-        width: auto;
-        margin: 0 0 6px 0;
-        grid-column: 2 / 3;
-        grid-row: 1 / 2;
-    }
     .tasks.mobile-compact .category-badge {
         background-color: transparent;
         padding: 0;
@@ -1092,6 +1085,12 @@ textarea {
 }
 @media (max-width: 480px) {
     .group-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 4px; }
+    .group-grid .task { display: block; padding: 4px 6px; border-radius: 12px; }
+    .group-grid .task-content { display: block; }
+    .group-grid .category-selector { float: right; width: auto; margin: 0 0 4px 6px; }
+    .group-grid .task-controls { float: right; clear: right; width: auto; display: flex; gap: 4px; align-items: center; margin-top: 2px; }
+    .group-grid .task::after { content: ""; display: block; clear: both; }
+    .group-grid .task-text { padding: 0; margin: 0; font-size: 0.95rem; line-height: 1.2; word-break: break-word; }
 }
 @media (min-width: 481px) and (max-width: 767px) {
     .group-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
@@ -1103,11 +1102,27 @@ textarea {
     .group-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 }
 
+/* Сетка колонок подкатегорий внутри "Обязательные" */
+.subcategory-columns { display: grid; gap: 6px; grid-auto-flow: dense; }
+@media (max-width: 480px) {
+    .subcategory-columns { grid-template-columns: 1fr; gap: 4px; }
+}
+@media (min-width: 481px) and (max-width: 767px) {
+    .subcategory-columns { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+    .subcategory-columns { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+}
+@media (min-width: 1024px) {
+    .subcategory-columns { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+}
+
 /* Стикер на всю строку для длинных задач */
 .group-grid .sticker-wide { grid-column: 1 / -1; }
 .group-grid .task { padding: 6px 8px; border-radius: 12px; }
 .group-grid .category-badge { background-color: transparent; padding: 0 6px; }
 .group-grid .category-badge .category-name { display: none; }
+.group-grid .category-title { grid-column: 1 / -1; }
 
 /* Переопределяем стару�� десктопную раскладку внутри групп */
 @media (min-width: 1024px) {
@@ -1121,7 +1136,7 @@ textarea {
 /* Скрытие задач при свёрнутой группе */
 .category-group.collapsed .group-grid { display: none; }
 
-/* Цвет и иконка caret на бейдже категории задач */
+/* Цвет и иконка caret на бейдже катего��ии задач */
 .category-badge i { color: #5d4037; }
 
 /* Группировка опций в выпадающих списках категорий */
