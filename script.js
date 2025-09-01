@@ -478,7 +478,7 @@ function toggleTaskActive(taskId) {
     displayTasks();
 }
 
-// Пе��еключение активности всех задач в��утри категории
+// Пе��ек��ючение активности всех задач внутри категории
 function toggleCategoryActive(category) {
     const hasActive = tasks.some(t => t.category === category && t.active);
     const newActive = !hasActive;
@@ -580,7 +580,7 @@ function showTimer(task) {
     currentTask = task;
     timerTaskText.textContent = task.text;
 
-    // Полный сб��ос состояния таймера перед новым запуском
+    // Полный сб��ос состояния т��ймера перед новым запуском
     if (timerEndTimeoutId) {
         clearTimeout(timerEndTimeoutId);
         timerEndTimeoutId = null;
@@ -742,6 +742,7 @@ function setupAddCategorySelector() {
                 btn.addEventListener('click', () => {
                     sub.querySelectorAll('.add-subcategory-btn').forEach(b => b.classList.remove('selected'));
                     btn.classList.add('selected');
+                    applyCategoryVisualToSelect();
                 });
             });
             container.insertAdjacentElement('afterend', sub);
