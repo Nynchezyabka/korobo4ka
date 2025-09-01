@@ -515,7 +515,7 @@ textarea {
     transition: all 0.3s;
 }
 
-/* ��овые цвета для кнопок таймера */
+/* ����овые цвета для кнопок таймера */
 #startTimerBtn {
     background-color: #9CCC65; /* желто-зеленый */
 }
@@ -1082,6 +1082,12 @@ textarea {
 }
 @media (max-width: 480px) {
     .group-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 4px; }
+    .group-grid .task { display: block; padding: 4px 6px; border-radius: 12px; }
+    .group-grid .task-content { display: block; }
+    .group-grid .category-selector { float: right; width: auto; margin: 0 0 4px 6px; }
+    .group-grid .task-controls { float: right; clear: right; width: auto; display: flex; gap: 4px; align-items: center; }
+    .group-grid .task::after { content: ""; display: block; clear: both; }
+    .group-grid .task-text { padding: 0; margin: 0; font-size: 0.95rem; line-height: 1.2; word-break: break-word; }
 }
 @media (min-width: 481px) and (max-width: 767px) {
     .group-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
@@ -1130,7 +1136,7 @@ textarea {
 /* Цвет и иконка caret на бейдже категории задач */
 .category-badge i { color: #5d4037; }
 
-/* Группировка опций в выпадающих списках категори�� */
+/* Группировка опций в выпадающих списках категорий */
 .category-option-group { padding-top: 6px; }
 .category-option-group { margin-top: 4px; margin-bottom: 4px; position: relative; }
 .category-option-group > .category-option { width: 100%; border-bottom-left-radius: 0; border-bottom-right-radius: 0; padding: 3px 8px; font-size: 0.9rem; line-height: 1.1; min-height: 28px; display: flex; align-items: center; justify-content: center; }
