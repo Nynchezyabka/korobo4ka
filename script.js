@@ -248,7 +248,9 @@ function displayTasks() {
         // Группировка задач по подкатегориям для категории "Обязательные"
         if (cat === 1) {
             const workBlock = document.createElement('div');
+            workBlock.className = 'subcategory-block subcategory-work';
             const homeBlock = document.createElement('div');
+            homeBlock.className = 'subcategory-block subcategory-home';
             const workTitle = document.createElement('div');
             const homeTitle = document.createElement('div');
             workTitle.className = 'category-title';
@@ -295,9 +297,12 @@ function displayTasks() {
                 }
             });
 
-            // Оставшиеся без подкатегории остаются сверху, затем блоки подкатегорий
-            grid.appendChild(workBlock);
-            grid.appendChild(homeBlock);
+            // Оставшиеся без подкатегории остаются сверху, затем блоки подкатегорий в отдельной сетке
+            const subcats = document.createElement('div');
+            subcats.className = 'subcategory-columns';
+            subcats.appendChild(workBlock);
+            subcats.appendChild(homeBlock);
+            grid.appendChild(subcats);
         }
 
         title.addEventListener('click', () => {
@@ -528,7 +533,7 @@ function importTasks(file) {
             const importedTasks = JSON.parse(e.target.result);
             
             if (!Array.isArray(importedTasks)) {
-                alert('Ошибка: файл должен содержать массив задач');
+                alert('О��ибка: файл должен содержать массив задач');
                 return;
             }
             
@@ -565,7 +570,7 @@ function getRandomTask(categories) {
     );
     
     if (filteredTasks.length === 0) {
-        alert('Нет активных задач в этой категор��и!');
+        alert('Нет активных задач �� этой категор��и!');
         return null;
     }
     
@@ -1183,7 +1188,7 @@ if (enableNotifyBtn) {
                 await ensurePushSubscribed();
                 createBrowserNotification('Уведомления включены');
             } else if (result === 'default') {
-                alert('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройках са��та.');
+                alert('Уведомления не ��ключены. Подтвердите запрос браузера или разрешите их в настройках са��та.');
             } else if (result === 'denied') {
                 alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
