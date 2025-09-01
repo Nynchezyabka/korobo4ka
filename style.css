@@ -187,7 +187,7 @@ textarea, select, input {
 .task-form #taskCategory { display: none; }
 .add-category-selector { position: relative; display: inline-block; width: 100%; z-index: 2000; }
 .add-category-badge {
-    font-family: 'Marck Script', 'Caveat', cursive;
+    font-family: inherit;
     font-size: 1rem;
     padding: 8px 10px;
     border-radius: 6px;
@@ -792,7 +792,7 @@ textarea {
         gap: 12px;
     }
 
-    /* Кнопки действий выравниваем п�� сетке (3 колонки) */
+    /* Кнопки действий выравниваем п�� с��тке (3 колонки) */
     .controls {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -923,7 +923,7 @@ textarea {
     }
 }
 
-.category-name, .category-heading { font-family: 'Marck Script', 'Caveat', cursive, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; }
+.category-name, .category-heading { font-family: inherit; }
 
 /* По��заголовки категорий для мобильной группировки */
 .category-title {
@@ -1124,7 +1124,7 @@ textarea {
 .group-grid .category-badge .category-name { display: none; }
 .group-grid .category-title { grid-column: 1 / -1; }
 
-/* Переопределяем стару�� десктопную раскладку внутр�� групп */
+/* Переопределяем стару�� десктопную раскладку внутри групп */
 @media (min-width: 1024px) {
     .group-grid .task { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto; column-gap: 10px; align-items: start; }
     .group-grid .task-content { display: contents; }
@@ -1136,7 +1136,7 @@ textarea {
 /* Скрытие задач при свёрнутой группе */
 .category-group.collapsed .group-grid { display: none; }
 
-/* Цвет и иконка caret на бейдже категории задач */
+/* Цвет и иконка caret на бейдже катего��ии задач */
 .category-badge i { color: #5d4037; }
 
 /* Группировка опций в выпадающих списках категорий */
