@@ -27,7 +27,7 @@ function getNextId() {
 // Переменные состояния
 let currentTask = null;
 let timerInterval = null;
-let timerTime = 15 * 60; // 15 минут в секундах
+let timerTime = 15 * 60; // 15 мину�� в секундах
 let timerRunning = false;
 let selectedTaskId = null;
 let activeDropdown = null;
@@ -742,7 +742,7 @@ function setupAddCategorySelector() {
             btnHome.textContent = 'Дом';
             [btnWork, btnHome].forEach(btn => {
                 btn.addEventListener('click', () => {
-                    // При выборе подкатегории автоматически выставляем категорию "Обязательные"
+                    // При выборе подкатегории ��втоматически выставляем категорию "Обязательные"
                     if (taskCategory && taskCategory.value !== '1') {
                         taskCategory.value = '1';
                     }
@@ -968,7 +968,7 @@ async function cancelServerSchedule() {
 
 // Функция для сброса таймера
 function resetTimer() {
-    // отменяе�� только локальный таймер, серверный не трогаем, чтобы пауза/сброс был явным
+    // отменяе�� только локальный тайм��р, серверный не трогаем, чтобы пауза/сброс был явным
     stopTimer();
     if (timerEndTimeoutId) {
         clearTimeout(timerEndTimeoutId);
@@ -1014,7 +1014,7 @@ taskCategory.addEventListener('change', applyCategoryVisualToSelect);
 addTaskBtn.addEventListener('click', () => {
     const raw = taskText.value;
     const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-    const category = parseInt(taskCategory.value);
+    let category = parseInt(taskCategory.value);
     if (lines.length === 0) return;
 
     // Для надёжности: если выбрана подкатегория, принудительно устанавливаем категорию 1
@@ -1022,6 +1022,7 @@ addTaskBtn.addEventListener('click', () => {
         const selBtn = document.querySelector('.add-subcategory-controls .add-subcategory-btn.selected');
         if (selBtn && selBtn.dataset.sub) {
             if (taskCategory) taskCategory.value = '1';
+            category = 1;
         }
     }
 
@@ -1205,7 +1206,7 @@ if (enableNotifyBtn) {
                 alert('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
         } catch (e) {
-            alert('Не удалось запросить разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
+            alert('Не удалось запроси��ь разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
         }
     });
 }
