@@ -848,7 +848,7 @@ textarea {
         background-color: #757575;
     }
 }
-/* Стили для toast-уведомле��ий */
+/* Стили для toast-уведомлений */
 .toast-notification {
     position: fixed;
     bottom: 20px;
@@ -922,7 +922,7 @@ textarea {
     }
 }
 
-.category-name, .category-heading { font-family: inherit; }
+.category-name, .category-heading { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans', Arial, 'Helvetica Neue', system-ui, sans-serif; }
 
 /* По��заголовки категорий для мобильной группировки */
 .category-title {
@@ -1161,7 +1161,7 @@ textarea {
 /* Кнопка актива��ии/деактивации всей категории в з��головке группы */
 .category-title .subcategory-toggle-all { margin-left: 6px; }
 
-/* Контролы подкатегорий при добавлении задачи (для "Обязательные") */
+/* Контролы подкатег��рий при добавлении задачи (для "Обязательные") */
 .add-subcategory-controls { display: none; margin-top: 6px; gap: 6px; }
 .add-subcategory-controls.show { display: flex; }
 .add-subcategory-btn { padding: 6px 10px; border-radius: 6px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; font-family: 'Caveat', cursive; font-size: 1rem; }
