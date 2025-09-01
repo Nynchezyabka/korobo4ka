@@ -145,7 +145,7 @@ function getCategoryName(category) {
         1: "Обязательные",
         2: "Безопасность",
         3: "Простые радости",
-        4: "��го радости",
+        4: "Эго-радости",
         5: "Доступность радостей"
     };
     return categories[category] || "Неизвестно";
@@ -233,7 +233,7 @@ function displayTasks() {
                             <button class=\"category-option\" data-category=\"2\">Безопасность</button>
                             <button class=\"category-option\" data-category=\"5\">Доступность радостей</button>
                             <button class=\"category-option\" data-category=\"3\">Простые радости</button>
-                            <button class=\"category-option\" data-category=\"4\">Эго радости</button>
+                            <button class=\"category-option\" data-category=\"4\">Эго-радости</button>
                         </div>
                     </div>
                 </div>
@@ -631,7 +631,7 @@ function updateTimerDisplay() {
 
 // Функция для показа уведомления
 function showNotification(message) {
-    const body = message || (currentTask ? `Задача: ${currentTask.text}` : "Время вышло! Задача завершена.");
+    const body = message || (currentTask ? `Задача: ${currentTask.text}` : "Время вышло! Задача ��авершена.");
     showToastNotification("🎁 КОРОБОЧКА", body, 5000);
     playBeep();
 
@@ -705,7 +705,7 @@ function setupAddCategorySelector() {
             <button class="add-category-option" data-category="2">Безопасность</button>
             <button class="add-category-option" data-category="5">Доступность радостей</button>
             <button class="add-category-option" data-category="3">Простые радости</button>
-            <button class="add-category-option" data-category="4">Эго радости</button>
+            <button class="add-category-option" data-category="4">Эго-радости</button>
         `;
         dropdown.querySelectorAll('.add-category-option').forEach(btn => {
             btn.addEventListener('click', () => {
