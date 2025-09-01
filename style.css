@@ -187,6 +187,7 @@ textarea, select, input {
 .task-form #taskCategory { display: none; }
 .add-category-selector { position: relative; display: inline-block; width: 100%; z-index: 2000; }
 .add-category-badge {
+    font-family: 'Marck Script', 'Caveat', cursive;
     font-size: 1rem;
     padding: 8px 10px;
     border-radius: 6px;
@@ -922,7 +923,7 @@ textarea {
     }
 }
 
-.category-name, .category-heading { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans', Arial, 'Helvetica Neue', system-ui, sans-serif; }
+.category-name, .category-heading { font-family: 'Marck Script', 'Caveat', cursive, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; }
 
 /* По��заголовки категорий для мобильной группировки */
 .category-title {
@@ -1123,7 +1124,7 @@ textarea {
 .group-grid .category-badge .category-name { display: none; }
 .group-grid .category-title { grid-column: 1 / -1; }
 
-/* Переопределяем стару�� десктопную раскладку внутри групп */
+/* Переопределяем стару�� десктопную раскладку внутр�� групп */
 @media (min-width: 1024px) {
     .group-grid .task { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto; column-gap: 10px; align-items: start; }
     .group-grid .task-content { display: contents; }
@@ -1161,7 +1162,7 @@ textarea {
 /* Кнопка актива��ии/деактивации всей категории в з��головке группы */
 .category-title .subcategory-toggle-all { margin-left: 6px; }
 
-/* Контролы подкатег��рий при добавлении задачи (для "Обязательные") */
+/* Контролы подкатегорий при добавлении задачи (для "Обязательные") */
 .add-subcategory-controls { display: none; margin-top: 6px; gap: 6px; }
 .add-subcategory-controls.show { display: flex; }
 .add-subcategory-btn { padding: 6px 10px; border-radius: 6px; background: rgba(0,0,0,0.05); border: none; cursor: pointer; font-family: 'Caveat', cursive; font-size: 1rem; }
