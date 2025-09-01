@@ -515,7 +515,7 @@ textarea {
     transition: all 0.3s;
 }
 
-/* ����овые цвета для кнопок таймера */
+/* ��овые цвета для кнопок таймера */
 #startTimerBtn {
     background-color: #9CCC65; /* желто-зеленый */
 }
@@ -614,7 +614,7 @@ textarea {
     margin-top: 15px;
 }
 
-/* Мобильная версия — компактное отображение */
+/* Мобильная версия — компактное отображени�� */
 @media (max-width: 480px) {
     .task {
         position: relative;
@@ -912,7 +912,7 @@ textarea {
     transform: scale(0.9);
 }
 
-/* Адаптивность для мобильных устройств */
+/* ��даптивность для мобильных устройств */
 @media (max-width: 480px) {
     .toast-notification {
         bottom: 10px;
@@ -1085,7 +1085,7 @@ textarea {
     .group-grid .task { display: block; padding: 4px 6px; border-radius: 12px; }
     .group-grid .task-content { display: block; }
     .group-grid .category-selector { float: right; width: auto; margin: 0 0 4px 6px; }
-    .group-grid .task-controls { float: right; clear: right; width: auto; display: flex; gap: 4px; align-items: center; }
+    .group-grid .task-controls { float: right; clear: right; width: auto; display: flex; gap: 4px; align-items: center; margin-top: 2px; }
     .group-grid .task::after { content: ""; display: block; clear: both; }
     .group-grid .task-text { padding: 0; margin: 0; font-size: 0.95rem; line-height: 1.2; word-break: break-word; }
 }
