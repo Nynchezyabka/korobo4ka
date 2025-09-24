@@ -1,5 +1,5 @@
 // sw.js
-const CACHE_NAME = 'korobochka-cache-v1';
+const CACHE_NAME = 'korobochka-cache-v3';
 const ASSETS = [
   '/',
   '/index.html',

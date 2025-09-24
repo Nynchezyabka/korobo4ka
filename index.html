@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎁 КОРОБОЧКА 3.5</title>
+    <title>🎁 КОРОБОЧКА 3.8</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -15,34 +16,56 @@
 <body>
     <div class="container">
         <header>
-            <h1>🎁 КОРОБОЧКА 3.5</h1>
+            <h1>🎁 КОРОБОЧКА 3.8</h1>
+            <button class="notify-toggle" id="notifyToggleBtn" aria-label="Уведомления">
+                <i class="fas fa-bell-slash"></i>
+            </button>
         </header>
-
-        <div class="notify-banner" id="notifyBanner" style="display: none;">
-            <span class="notify-text">Включите уведомления, чтобы получать всплывающие напоминания и вибрацию при завершении таймера.</span>
-            <button id="enableNotifyBtn">Включить уведомления</button>
-        </div>
 
         <div class="sections">
             <div class="section mandatory" data-category="1">
                 <h2>Обязательные дела</h2>
-                <p>Нажмите, чтобы выбрать случайную задачу</p>
+                <div class="section-actions">
+                    <button class="section-action-btn section-random-btn" aria-label="Случайная задача">
+                        <i class="fas fa-dice"></i>
+                        <span class="action-text">случайная задача</span>
+                    </button>
+                    <button class="section-action-btn section-add-btn" aria-label="Добавить задачу">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
             </div>
             
             <div class="section security" data-category="2,5">
                 <h2>Система безопасности <br>и доступность простых радостей</h2>
-                <p>Нажмите, чтобы выбрать случайную задачу</p>
+                <div class="section-actions">
+                    <button class="section-action-btn section-random-btn" aria-label="Случайная задача">
+                        <i class="fas fa-dice"></i>
+                        <span class="action-text">случайная задача</span>
+                    </button>
+                    <button class="section-action-btn section-add-btn" aria-label="Добавить задачу">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
             </div>
             
             <div class="section joys" data-category="3,4">
                 <h2>Простые и эго-радости</h2>
-                <p>Нажмите, чтобы выбрать случайную задачу</p>
+                <div class="section-actions">
+                    <button class="section-action-btn section-random-btn" aria-label="Случайная задача">
+                        <i class="fas fa-dice"></i>
+                        <span class="action-text">случайная задача</span>
+                    </button>
+                    <button class="section-action-btn section-add-btn" aria-label="Добавить задачу">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
             </div>
         </div>
         
         <div class="controls">
             <button id="showTasksBtn">Все задачи</button>
-            <button id="addSingleBtn">Добавить задачу</button>
+            <button id="archiveBtn">Выполненные</button>
             <button id="addMultipleBtn">Добавить несколько задач</button>
             <button id="exportTasksBtn">Скачать задачи</button>
         </div>
@@ -53,12 +76,12 @@
             <div class="task-form">
                 <textarea id="taskText" placeholder="Введите новую задачу или несколько (каждая с новой строки)..."></textarea>
                 <select id="taskCategory">
-                    <option value="0">Без категории (неактивна)</option>
+                    <option value="0">Категория не определена (неактивна)</option>
                     <option value="1">Обязательные дела</option>
                     <option value="2">Система безопасности</option>
                     <option value="5">Доступность простых радостей</option>
                     <option value="3">Простые радости</option>
-                    <option value="4">Эго радости</option>
+                    <option value="4">Эго-радости</option>
                 </select>
                 <button id="addTaskBtn">Добавить задачу</button>
             </div>
@@ -68,6 +91,9 @@
                     <i class="fas fa-upload"></i> Загрузить задачи из файла
                 </label>
                 <input type="file" id="importFile" class="file-input" accept=".json">
+                <button id="pasteTasksBtn" class="file-label" type="button">
+                    <i class="fas fa-clipboard"></i> Вставить список задач
+                </button>
             </div>
             
             <div class="tasks" id="tasksContainer">
@@ -86,22 +112,123 @@
             
             <div class="timer-controls">
                 <input type="number" id="timerMinutes" min="1" max="120" value="15">
+                <button class="timer-btn" id="soundToggleBtn" aria-pressed="true" aria-label="Звук включён" title="Звук включён"><i class="fas fa-volume-up"></i></button>
                 <button class="timer-btn" id="startTimerBtn">Старт</button>
                 <button class="timer-btn" id="pauseTimerBtn">Пауза</button>
                 <button class="timer-btn" id="resetTimerBtn">Сброс</button>
             </div>
-            
+
+            <div class="timer-primary-actions">
+                <button class="timer-btn" id="completeNowBtn"><i class="fas fa-check"></i> Готово</button>
+            </div>
+
             <div class="timer-complete-options" id="timerCompleteOptions">
                 <button class="timer-btn" id="completeTaskBtn">Завершить задачу</button>
                 <button class="timer-btn" id="returnTaskBtn">Вернуть в коробочку</button>
             </div>
-            
+
             <button class="timer-btn" id="closeTimerBtn" style="margin-top: 15px;">Закрыть</button>
         </div>
     </div>
 
     <div class="notification" id="notification">
         Время вышло!
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal" id="addTaskModal" aria-hidden="true" role="dialog">
+        <div class="modal-backdrop" id="modalBackdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="modalCloseBtn" aria-label="Закрыть">&times;</button>
+            <h3>Добавить задачу</h3>
+            <textarea id="modalTaskText" placeholder="Введите новую задачу или несколько (каждая с новой строки)..."></textarea>
+            <div id="modalCategoryOptions" class="modal-category-options" aria-label="Выбор категории"></div>
+            <div class="add-subcategory-controls" id="modalSubcategories" style="display:none;"></div>
+            <div class="modal-actions">
+                <button id="modalAddTaskBtn">Добавить</button>
+                <button id="modalCancelBtn">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm / Info Modal -->
+    <div class="modal" id="confirmModal" aria-hidden="true" role="dialog">
+        <div class="modal-backdrop" id="confirmBackdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="confirmCloseBtn" aria-label="Закрыть">&times;</button>
+            <h3 id="confirmTitle">Подтверждение</h3>
+            <div class="modal-message" id="confirmMessage"></div>
+            <label class="modal-check" id="confirmCheckWrap" style="display:none;"><input type="checkbox" id="confirmCheckbox"> <span id="confirmCheckboxLabel">Подтверждаю действие</span></label>
+            <div class="modal-actions">
+                <button id="confirmOkBtn">Подтвердить</button>
+                <button id="confirmCancelBtn">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subcategory Actions Modal -->
+    <div class="modal" id="subcatActionsModal" aria-hidden="true" role="dialog">
+        <div class="modal-backdrop" id="subcatActionsBackdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="subcatActionsClose" aria-label="Закрыть">&times;</button>
+            <h3>Действия с подкатегорией</h3>
+            <div class="subcat-actions">
+                <button type="button" class="subcat-action-btn" data-action="rename">Переименовать</button>
+                <button type="button" class="subcat-action-btn" data-action="move">Перенести задачи</button>
+                <button type="button" class="subcat-action-btn destructive" data-action="delete">Удалить подкатегорию</button>
+            </div>
+            <div class="modal-actions">
+                <button id="subcatActionsCancel">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rename Subcategory Modal -->
+    <div class="modal" id="renameSubcatModal" aria-hidden="true" role="dialog">
+        <div class="modal-backdrop" id="renameSubcatBackdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="renameSubcatClose" aria-label="Закрыть">&times;</button>
+            <h3>Переименовать подкатегорию</h3>
+            <label for="renameSubcatInput" class="modal-label">Новое название</label>
+            <input type="text" id="renameSubcatInput">
+            <div class="modal-actions">
+                <button id="renameSubcatOk">Сохранить</button>
+                <button id="renameSubcatCancel">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Move Tasks Modal -->
+    <div class="modal" id="moveTasksModal" aria-hidden="true" role="dialog">
+        <div class="modal-backdrop" id="moveTasksBackdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="moveTasksClose" aria-label="Закрыть">&times;</button>
+            <h3>Перенос задач</h3>
+            <div class="modal-category-options" id="moveCategoryOptions"></div>
+            <div class="add-subcategory-controls" id="moveSubcategories" style="display:none;"></div>
+            <div class="modal-actions">
+                <button id="moveTasksOk">Перенести</button>
+                <button id="moveTasksCancel">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paste Tasks Modal -->
+    <div class="modal" id="pasteTasksModal" aria-hidden="true" role="dialog">
+        <div class="modal-backdrop" id="pasteTasksBackdrop"></div>
+        <div class="modal-content paste-modal-content">
+            <button class="modal-close" id="pasteTasksCloseBtn" aria-label="Закрыть">&times;</button>
+            <h3>Вставить список задач</h3>
+            <div class="paste-modal-body">
+                <label for="pasteTasksInput" class="modal-label">Каждая задача с новой строки</label>
+                <textarea id="pasteTasksInput" class="paste-modal-textarea" placeholder="Вставьте задачи..." aria-label="Список задач построчно"></textarea>
+                <div class="modal-note">Задачи будут добавлены в категорию «Категория не определена». Позже их можно распределить.</div>
+            </div>
+            <div class="modal-actions">
+                <button id="pasteTasksAddBtn">Добавить</button>
+                <button id="pasteTasksCancelBtn" type="button">Отмена</button>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
