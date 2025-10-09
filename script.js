@@ -12,24 +12,34 @@ function sanitizeStoredText(s) {
     return t;
 }
 
-function loadTasks() {
-    const tasksJSON = localStorage.getItem('tasks');
-    if (tasksJSON) {
-        tasks = JSON.parse(tasksJSON);
-        // sanitize stored texts
-        tasks = tasks.map(t => ({ ...t, text: sanitizeStoredText(t.text) }));
-        // sanitize categories: force invalid/missing to 0 (Категория не определена)
-        const valid = new Set([0,1,2,3,4,5]);
-        tasks = tasks.map(t => {
-            const n = parseInt(t.category);
-            const category = (Number.isFinite(n) && valid.has(n)) ? n : 0;
-            const active = (typeof t.active === 'boolean') ? t.active : true;
-            return { ...t, category, active };
-        });
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-    } else {
-        tasks = [];
+async function loadTasks() {
+    try { await (window.DB && DB.init ? DB.init() : Promise.resolve()); } catch (_) {}
+
+    // Prefer IndexedDB
+    try {
+        const fromDb = (window.DB && DB.getAllTasks) ? await DB.getAllTasks() : [];
+        if (Array.isArray(fromDb) && fromDb.length) {
+            tasks = fromDb;
+        } else {
+            const tasksJSON = localStorage.getItem('tasks');
+            tasks = tasksJSON ? JSON.parse(tasksJSON) : [];
+        }
+    } catch (_) {
+        const tasksJSON = localStorage.getItem('tasks');
+        tasks = tasksJSON ? JSON.parse(tasksJSON) : [];
     }
+
+    // sanitize stored texts
+    tasks = tasks.map(t => ({ ...t, text: sanitizeStoredText(t.text) }));
+    // sanitize categories: force invalid/missing to 0 (Категория не определена)
+    const valid = new Set([0,1,2,3,4,5]);
+    tasks = tasks.map(t => {
+        const n = parseInt(t.category);
+        const category = (Number.isFinite(n) && valid.has(n)) ? n : 0;
+        const active = (typeof t.active === 'boolean') ? t.active : true;
+        return { ...t, category, active };
+    });
+
     // sanitize custom subcategories if any
     try {
         const customSubsRaw = localStorage.getItem('customSubcategories');
@@ -38,7 +48,6 @@ function loadTasks() {
             Object.keys(cs).forEach(k => {
                 cs[k] = cs[k].map(v => sanitizeStoredText(v));
             });
-            // Migration: deduplicate saved subcategories for category 1 (keep user-defined values intact)
             const c1 = cs['1'] || cs[1];
             if (Array.isArray(c1)) {
                 const filtered = [];
@@ -54,7 +63,7 @@ function loadTasks() {
         }
     } catch (e) {}
 
-    // Migration: normalize existing tasks subcategory names for category 1
+    // Normalize existing tasks subcategory names for category 1 then persist to DB
     try {
         tasks = tasks.map(t => {
             if (t && t.category === 1 && typeof t.subcategory === 'string' && t.subcategory.trim()) {
@@ -70,7 +79,8 @@ function loadTasks() {
 }
 
 function saveTasks() {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
+    try { if (window.DB && DB.saveAllTasks) DB.saveAllTasks(tasks); } catch (_) {}
+    try { localStorage.setItem('tasks', JSON.stringify(tasks)); } catch (_) {}
 }
 
 function getNextId() {
@@ -133,16 +143,16 @@ function addLinesAsTasks(lines, category = 0, selectedSub = null) {
     return added;
 }
 
-// Переменные состояния
+// Переме��ные состояния
 let currentTask = null;
 let timerInterval = null;
 let timerTime = 15 * 60; // 15 мину в секундах
 let timerRunning = false;
 let selectedTaskId = null;
 let activeDropdown = null;
-let wakeLock = null; // экраны н�� засыают во время таймера (где поддержвается)
+let wakeLock = null; // экраны н�� засыают во время таймера (��де поддержвается)
 
-// Новые переменные для точного аймера
+// Новые переменные для точного айме��а
 let timerStartTime = 0;
 let timerPausedTime = 0;
 let timerAnimationFrame = null;
@@ -153,6 +163,7 @@ let timerSoundEnabled = true;
 
 // ежим отображеия архива ыолненных задач
 let showArchive = false;
+let quickAddContext = { active: false, resumeTimer: false };
 
 // Элемнты DOM
 const sections = document.querySelectorAll('.section');
@@ -194,6 +205,8 @@ const timerCompleteOptions = document.getElementById('timerCompleteOptions');
 const notifyBanner = document.getElementById('notifyBanner');
 const enableNotifyBtn = document.getElementById('enableNotifyBtn');
 const notifyToggleBtn = document.getElementById('notifyToggleBtn');
+const timerQuickAdd = document.getElementById('timerQuickAdd');
+const quickAddTaskBtn = document.getElementById('quickAddTaskBtn');
 
 function applyCategoryVisualToSelect() {
     if (!taskCategory) return;
@@ -289,7 +302,7 @@ function fixOrphans(text) {
     return res;
 }
 
-// Функция отображения сех заач
+// Функ��ия отображения сех заач
 function displayTasks() {
     tasksContainer.innerHTML = '';
 
@@ -318,7 +331,7 @@ function displayTasks() {
     const collapsedRaw = localStorage.getItem('collapsedCategories');
     const collapsedCategories = new Set(collapsedRaw ? JSON.parse(collapsedRaw) : []);
 
-    // Загружаем сохранённе пользо��ательске подкатегории
+    // Загружаем сохранённе пользо��ат��льске подкатегории
     const customSubsRaw = localStorage.getItem('customSubcategories');
     const customSubs = customSubsRaw ? JSON.parse(customSubsRaw) : {};
 
@@ -329,7 +342,7 @@ function displayTasks() {
 
         const title = document.createElement('div');
         title.className = 'category-title';
-        title.innerHTML = `<div class=\"category-title-left\"><i class=\"fas fa-folder folder-before-title\"></i><span class=\"category-heading\">${getCategoryName(cat)}</span></div><button type=\"button\" class=\"category-add-btn\" data-cat=\"${cat}\" title=\"Добавить задачу в категорию\"><i class=\"fas fa-plus\"></i></button>`;
+        title.innerHTML = `<div class=\"category-title-left\"><i class=\"fas fa-folder folder-before-title\"></i><span class=\"category-heading\">${getCategoryName(cat)}</span></div><button type=\"button\" class=\"category-add-btn\" data-cat=\"${cat}\" title=\"Добавить задачу в категории\"><i class=\"fas fa-plus\"></i></button>`;
 
         const grid = document.createElement('div');
         grid.className = 'group-grid';
@@ -342,7 +355,7 @@ function displayTasks() {
         group.appendChild(grid);
         tasksContainer.appendChild(group);
 
-        // Клик по названию категории — сворачивание/развора��ивание гру��пы
+        // Клик по названию категории — сво��ачивание/развора��ивание гру��пы
         const headSpan = title.querySelector('.category-heading');
         if (headSpan) {
             headSpan.style.cursor = 'pointer';
@@ -405,7 +418,7 @@ function displayTasks() {
             // remove soft hyphens and common HTML soft-hyphen entities
             raw = raw.replace(/&shy;|&#173;|\u00AD/g, '');
             raw = raw.replace(/\u200B/g, '');
-            // merge letters split by explicit newlines (e.g. 'Разобрат\nь' -> 'Ра��обрать')
+            // merge letters split by explicit newlines (e.g. 'Разобра��\nь' -> 'Ра��обрать')
             raw = raw.replace(/([A-Za-zА-Яа-яЁё])\s*[\r\n]+\s*([A-Za-zА-Яа-яЁё])/g, '$1$2');
             // Replace remaining explicit newlines with spaces (users may paste multi-line text)
             raw = raw.replace(/[\r\n]+/g, ' ');
@@ -422,7 +435,7 @@ function displayTasks() {
                                 ${categoryDisplay}
                                 <i class=\"fas fa-caret-down\"></i>
                             </div>
-                            <button class=\"task-control-btn complete-task-btn\" data-id=\"${task.id}\" title=\"Отметить выполненной\">
+                            <button class=\"task-control-btn complete-task-btn\" data-id=\"${task.id}\" title=\"Отме��ить выполненной\">
                                 <i class=\"fas fa-check\"></i>
                             </button>
                         </div>
@@ -481,7 +494,7 @@ function displayTasks() {
                 if (folderIcon) folderIcon.remove();
             }
 
-            // Перес��авяем элменты для мобильного: папка се��ху спраа, ниже сразу глаз и ур��а
+            // Перес��авяем элменты для моби��ьного: папка се��ху спраа, ниже сразу глаз и ур��а
             const contentWrap = taskElement.querySelector('.task-content');
             if (contentWrap) {
                 const txt = contentWrap.querySelector('.task-text');
@@ -510,7 +523,7 @@ function displayTasks() {
             }
         });
 
-        // Д��намическая группировка задач по подкатегориям для текущей категории (учитываем сохра��ё��ные подкатегории)
+        // Д��намическая группировка задач по по��категориям для текущей кате��ории (у��итываем сохра��ё��ные подкатегории)
         {
             const nodes = [...grid.querySelectorAll(':scope > .task')];
             const noneTasks = nodes.filter(el => !el.dataset.subcategory);
@@ -548,7 +561,7 @@ function displayTasks() {
                     const eyeBtn = document.createElement('button');
                     eyeBtn.className = 'task-control-btn subcategory-toggle-all';
                     eyeBtn.type = 'button';
-                    eyeBtn.setAttribute('aria-label','Скрыть/показат�� все задачи подкатегории');
+                    eyeBtn.setAttribute('aria-label','Скрыть/показать все задачи подкатегории');
                     const hasActive = tasks.some(t => t.category === cat && (normalizeSubcategoryName(cat, t.subcategory) === normKey) && t.active && !t.completed);
                     eyeBtn.innerHTML = `<i class=\"fas ${hasActive ? 'fa-eye-slash' : 'fa-eye'}\"></i>`;
                     eyeBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleSubcategoryActiveByName(cat, normKey); });
@@ -845,7 +858,7 @@ function toggleCategoryActive(category) {
     displayTasks();
 }
 
-// Переклюение акти��ности подкатегоии по им��ни для указанной категрии
+// Переклю��ние ��кти��ности подкатегоии по им��ни для указанной к��тегрии
 function toggleSubcategoryActiveByName(category, subName) {
     const hasActive = tasks.some(t => t.category === category && t.subcategory === subName && t.active);
     const newActive = !hasActive;
@@ -863,7 +876,7 @@ function deleteTask(taskId) {
         title: 'Удаление задачи',
         message: 'Удалить эту задачу?',
         confirmText: 'Удалить',
-        cancelText: 'Отмен��',
+        cancelText: 'Отмена',
         requireCheck: false,
         compact: true,
         onConfirm: () => {
@@ -874,7 +887,7 @@ function deleteTask(taskId) {
     });
 }
 
-// Ф��нкия для экспорта задач в фйл
+// Ф����кия для экспорта задач в фйл
 function exportTasks() {
     const dataStr = JSON.stringify(tasks, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
@@ -922,21 +935,26 @@ function importTasks(file) {
     reader.readAsText(file);
 }
 
+function setQuickAddVisible(visible) {
+    if (!timerQuickAdd) return;
+    timerQuickAdd.style.display = visible ? 'flex' : 'none';
+}
+
 // Функция для выбора случайной адачи из категории
 function getRandomTask(categories) {
     // Преоразуем строку категорий в масив чисел
     const categoryArray = categories.split(',').map(Number);
-    
-    // Получаем все активные задачи из указанных категорий
-    const filteredTasks = tasks.filter(task => 
-        categoryArray.includes(task.category) && task.active
+
+    // Получаем все активные задачи из указанных категорий, исключая выполненные
+    const filteredTasks = tasks.filter(task =>
+        categoryArray.includes(task.category) && task.active && !task.completed
     );
-    
+
     if (filteredTasks.length === 0) {
-        openInfoModal('Нет активных задач в этой категории!');
+        openInfoModal('Нет активных задач в этой категор��и!');
         return null;
     }
-    
+
     const randomIndex = Math.floor(Math.random() * filteredTasks.length);
     return filteredTasks[randomIndex];
 }
@@ -963,8 +981,18 @@ function showTimer(task) {
 
     timerTime = Math.max(1, parseInt(timerMinutes.value)) * 60;
     updateTimerDisplay();
+    setQuickAddVisible(false);
     timerScreen.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+
+    // Close any open dropdown to avoid it appearing above overlay
+    try {
+        if (activeDropdown) {
+            activeDropdown.classList.remove('show');
+            if (activeDropdown.parentElement) activeDropdown.parentElement.style.zIndex = '';
+            activeDropdown = null;
+        }
+    } catch (_) {}
 
     // Скрывае�� опции завершения и показыва��м управлени аймером
     timerCompleteOptions.style.display = 'none';
@@ -1002,7 +1030,7 @@ function updateTimerControlsForViewport() {
         startTimerBtn.setAttribute('aria-label','Старт');
         startTimerBtn.title = 'Старт';
         pauseTimerBtn.innerHTML = '<i class="fas fa-pause"></i>';
-        pauseTimerBtn.setAttribute('aria-label','Пауз��');
+        pauseTimerBtn.setAttribute('aria-label','Пауза');
         pauseTimerBtn.title = 'Пауза';
         resetTimerBtn.innerHTML = '<i class="fas fa-rotate-left"></i>';
         resetTimerBtn.setAttribute('aria-label','Сброс');
@@ -1019,15 +1047,15 @@ function updateTimerControlsForViewport() {
 
 window.addEventListener('resize', updateTimerControlsForViewport);
 
-// Функция для скрытия таймера
+// Функция для скрытия таймер��
 function hideTimer() {
     timerScreen.style.display = 'none';
-    document.body.style.overflow = 'auto'; // Восстанавливам прокрутку
+    document.body.style.overflow = 'auto'; // Восста��авливам прокрутку
     stopTimer(); // Останавливем таймр при закр��ти
     releaseWakeLock();
 }
 
-// Функция для обновления оображения таймера
+// Функция для обновления ��ображения та��мера
 function updateTimerDisplay() {
     const minutes = Math.floor(timerTime / 60);
     const seconds = timerTime % 60;
@@ -1164,7 +1192,7 @@ function populateTaskSubcategoryDropdown(task) {
         inline.className = 'inline-add-form';
         const input = document.createElement('input');
         input.type = 'text';
-        input.placeholder = (task.category === 2) ? 'новая сфера безопасности' : (task.category === 5) ? 'Новая сложная радость' : ((task.category === 3 || task.category === 4) ? 'новая сфера удовольствия' : 'Новая подкатегория');
+        input.placeholder = (task.category === 2) ? 'новая сфера ��езопасности' : (task.category === 5) ? 'Новая сложная р��дость' : ((task.category === 3 || task.category === 4) ? 'новая сфера удовольстви��' : 'Новая подкатегория');
         const save = document.createElement('button');
         save.type = 'button';
         save.className = 'inline-save-btn';
@@ -1302,7 +1330,7 @@ function showAddSubcategoriesFor(cat, targetContainer = null) {
     plusBtn.innerHTML = '<i class="fas fa-plus"></i>';
     controls.appendChild(plusBtn);
 
-    // 4) Скрытый инлайн-редактор, показывается по клику на «+»
+    // 4) Скрытый инлайн-редактор, показывает��я по клику на «+»
     const editor = document.createElement('div');
     editor.className = 'subcat-inline-editor';
     const inp = document.createElement('input');
@@ -1350,7 +1378,12 @@ function showAddSubcategoriesFor(cat, targetContainer = null) {
 }
 
 window.addEventListener('load', async () => {
-    loadTasks();
+    await loadTasks();
+
+    // Register Service Worker for PWA/offline
+    if ('serviceWorker' in navigator) {
+        try { await navigator.serviceWorker.register('/sw.js'); } catch (e) {}
+    }
 
     setupAddCategorySelector();
 
@@ -1377,7 +1410,7 @@ window.addEventListener('load', async () => {
 
 // НОВАЯ РЕАЛИЗАЦИЯ ТАЙЕРА (точный и работающий в фоне)
 
-// П��ддержка Wake Lock API, чтобы экран не засыпа�� во врея тайме��а
+// П��ддержка Wake Lock API, чтобы экран не засыпа���� во врея тайме��а
 async function requestWakeLock() {
     try {
         if ('wakeLock' in navigator && !wakeLock) {
@@ -1424,18 +1457,19 @@ function playBeep() {
     } catch (_) {}
 }
 
-// Функция для запуска таймера
+// Функция для запуска ��аймера
 function startTimer() {
     if (timerRunning) return;
     requestWakeLock();
 
     timerRunning = true;
+    setQuickAddVisible(true);
     // при возобновлении с паузы
     if (timerPausedTime > 0) {
         timerEndAt = Date.now() + (timerPausedTime * 1000);
         timerPausedTime = 0;
     }
-    // при перво зауске
+    // ��ри перво зауске
     if (!timerEndAt) {
         const total = Math.max(1, parseInt(timerMinutes.value)) * 60;
         timerEndAt = Date.now() + total * 1000;
@@ -1458,7 +1492,7 @@ function startTimer() {
     const delay = Math.max(0, timerEndAt - Date.now());
     timerEndTimeoutId = setTimeout(() => {
         if (!timerRunning) return;
-        const msg = currentTask ? `Задача: ${currentTask.text}` : undefined;
+        const msg = currentTask ? `За��ача: ${currentTask.text}` : undefined;
         stopTimer();
         showNotification(msg);
         timerCompleteOptions.style.display = 'flex';
@@ -1466,7 +1500,7 @@ function startTimer() {
         if (controls) controls.style.display = 'none';
     }, delay);
     
-    // Использем Web Worker для тчного отсета времени в фоне
+    // Использем Web Worker для тчно��о отсета времени в ��оне
     if (typeof(Worker) !== "undefined") {
         if (timerWorker === null) {
             timerWorker = new Worker(URL.createObjectURL(new Blob([`
@@ -1528,6 +1562,7 @@ function pauseTimer() {
 // Функция для остановки таймра
 function stopTimer() {
     timerRunning = false;
+    setQuickAddVisible(false);
     releaseWakeLock();
 
     if (timerEndTimeoutId) {
@@ -1631,6 +1666,7 @@ const modalSubcategories = document.getElementById('modalSubcategories');
 const modalAddTaskBtn = document.getElementById('modalAddTaskBtn');
 const modalCancelBtn = document.getElementById('modalCancelBtn');
 const modalCloseBtn = document.getElementById('modalCloseBtn');
+const modalTaskTextDefaultPlaceholder = modalTaskText ? modalTaskText.getAttribute('placeholder') : '';
 
 function getCategoryColor(cat) {
     switch (Number(cat)) {
@@ -1704,7 +1740,7 @@ function renderModalCategoryOptions(allowedCategories = null) {
     if (!container) return;
     container.innerHTML = '';
     const cats = [0,1,2,5,3,4];
-    const labels = {0: 'Категория не определена',1: 'Обязательные',2: 'Система безо��асности',3: 'Простые радости',4: 'Эго-радости',5: 'Доступность простых радостей'};
+    const labels = {0: 'Категория не определена',1: 'Обязательные',2: 'Система безопасности',3: 'Простые радости',4: 'Эго-радости',5: 'Доступность простых радостей'};
     cats.forEach(c => {
         if (allowedCategories && !allowedCategories.map(String).includes(String(c))) return;
         const btn = document.createElement('button');
@@ -1767,7 +1803,7 @@ function renderCategoryButtons(container, allowed=null) {
     if (!container) return;
     container.innerHTML = '';
     const cats = [0,1,2,5,3,4];
-    const labels = {0: 'Категория не определена',1: 'Обязательные',2: 'Система безопасности',3: 'Простые радос��и',4: 'Эго-радости',5: 'Доступность простых радостей'};
+    const labels = {0: 'Категория не определена',1: 'Обязательные',2: 'Система безопасности',3: 'Простые радости',4: 'Эго-радос��и',5: 'Доступность простых радостей'};
     cats.forEach(c => {
         if (allowed && !allowed.map(String).includes(String(c))) return;
         const btn = document.createElement('button'); btn.type='button'; btn.className=`modal-category-btn cat-${c}`; btn.dataset.category=String(c); btn.textContent = labels[c] || String(c);
@@ -1882,6 +1918,13 @@ try {
 
 
 function openAddModal(initialCategory, options = {}) {
+    // capture quick-add context flags as a fallback
+    if (options && options.quick) {
+        if (typeof quickAddContext === 'object') {
+            quickAddContext.active = true;
+            quickAddContext.resumeTimer = !!options.reopenTimer;
+        }
+    }
     if (showArchive) { openInfoModal('Нельзя добавлять задачи в списке выполненных'); return; }
     if (!addTaskModal) return;
     addTaskModal.setAttribute('aria-hidden', 'false');
@@ -1940,6 +1983,14 @@ function closeAddModal() {
     addTaskModal.setAttribute('aria-hidden', 'true');
     addTaskModal.style.display = 'none';
     if (modalSubcategories) { modalSubcategories.classList.remove('show'); modalSubcategories.style.display = 'none'; }
+    // If opened from timer quick-add and timer was running, resume automatically
+    try {
+        const shouldResume = quickAddContext && quickAddContext.active && quickAddContext.resumeTimer;
+        if (quickAddContext) { quickAddContext.active = false; quickAddContext.resumeTimer = false; }
+        if (shouldResume) {
+            startTimer();
+        }
+    } catch (_) {}
 }
 
 modalBackdrop && modalBackdrop.addEventListener('click', () => closeAddModal());
@@ -1961,7 +2012,7 @@ modalAddTaskBtn && modalAddTaskBtn.addEventListener('click', () => {
     if (lines.length > 1) {
         openConfirmModal({
             title: 'Подтверждение',
-            message: `Добавить ${lines.length} задач?`,
+            message: `Д��бавить ${lines.length} задач?`,
             confirmText: 'Добавить',
             cancelText: 'Отмена',
             requireCheck: false,
@@ -2050,6 +2101,33 @@ if (pasteTasksAddBtn) pasteTasksAddBtn.addEventListener('click', () => {
     }
 });
 
+
+// About modal
+const infoFab = document.getElementById('infoFab');
+const infoModal = document.getElementById('infoModal');
+const infoBackdrop = document.getElementById('infoBackdrop');
+const infoCloseBtn = document.getElementById('infoCloseBtn');
+function openAboutModal() { if (!infoModal) return; infoModal.setAttribute('aria-hidden','false'); infoModal.style.display='flex'; }
+function closeAboutModal() { if (!infoModal) return; infoModal.setAttribute('aria-hidden','true'); infoModal.style.display='none'; }
+if (infoFab) infoFab.addEventListener('click', openAboutModal);
+[infoBackdrop, infoCloseBtn].forEach(el => { if (el) el.addEventListener('click', closeAboutModal); });
+
+if (quickAddTaskBtn) {
+    quickAddTaskBtn.addEventListener('click', () => {
+        if (!timerRunning && timerPausedTime <= 0) return;
+        const wasRunning = timerRunning;
+        if (timerRunning) {
+            pauseTimer();
+        }
+        showArchive = false;
+        // mark quick-add context to resume timer after modal closes if it was running
+        if (typeof quickAddContext === 'object') {
+            quickAddContext.active = true;
+            quickAddContext.resumeTimer = !!wasRunning;
+        }
+        openAddModal(0, { quick: true, reopenTimer: wasRunning });
+    });
+}
 
 startTimerBtn.addEventListener('click', startTimer);
 pauseTimerBtn.addEventListener('click', pauseTimer);
@@ -2179,12 +2257,12 @@ function hideToastNotification() {
 if (notifyToggleBtn) {
     notifyToggleBtn.addEventListener('click', async () => {
         if (!('Notification' in window)) {
-            openInfoModal('Уве��омления не по��держиваются этим бра��зером');
+            openInfoModal('Уведомления не поддерживаются этим браузером');
             return;
         }
         if (Notification.permission === 'granted') {
             await ensurePushSubscribed();
-            createBrowserNotification('Уведомлен��я включены');
+            createBrowserNotification('Уведомления включены');
             updateNotifyToggle();
             return;
         }
@@ -2194,12 +2272,12 @@ if (notifyToggleBtn) {
                 await ensurePushSubscribed();
                 createBrowserNotification('Уведомления включены');
             } else if (result === 'default') {
-                openInfoModal('Ув��домления не включены. Подтвердите запрос браузера или разрешите их в настройках сайта.');
+                openInfoModal('Уведомления не включены. Подтвердите запрос браузера или разрешите их в настройках сайта.');
             } else if (result === 'denied') {
-                openInfoModal('Уведомления з��блок��рованы в настройк��х браузера. Разрешите их вручную.');
+                openInfoModal('Уведомления заблокированы в настройках браузера. Разрешите их вручную.');
             }
         } catch (e) {
-            openInfoModal('Не удалось запросить разрешение на уведомления. Откройте сайт напрям��ю и попробуйте снова.');
+            openInfoModal('Не удалось запросить разрешение на уведомления. Откройте сайт напрямую и попробуйте снова.');
         }
         updateNotifyToggle();
     });

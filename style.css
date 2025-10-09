@@ -24,6 +24,36 @@ body {
     margin: 0 auto;
 }
 
+.dashboard-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.task-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.task-column .controls {
+    margin-bottom: 0;
+}
+
+.random-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.random-column .sections {
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 header {
     text-align: center;
     margin-bottom: 15px;
@@ -71,7 +101,7 @@ h1 {
     height: 10px;
     background-color: rgba(0, 0, 0, 0.15);
 }
-/* Цвет полоски секций  соответствии с цветами категорий */
+/* Цвет полоски секций  соответствии с цветами ка��егорий */
 .mandatory::before { background-color: #FFD54F; }
 .security::before { background-color: #64B5F6; }
 .joys::before { background-color: #81C784; }
@@ -499,7 +529,7 @@ textarea {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 100;
+    z-index: 10050;
     padding: 15px;
     overflow-y: auto;
 }
@@ -538,6 +568,92 @@ textarea {
     gap: 10px;
     margin-bottom: 15px;
 }
+
+.timer-quick-add {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 20px auto 0;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(93, 64, 55, 0.25);
+    text-align: center;
+}
+
+.timer-new-task-label {
+    font-size: 0.95rem;
+    color: rgba(93, 64, 55, 0.75);
+}
+
+.timer-quick-add-btn {
+    width: 42px;
+    height: 42px;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(93, 64, 55, 0.1);
+    color: #5d4037;
+    font-size: 1.2rem;
+    line-height: 1;
+    box-shadow: none;
+    border: 1px dashed rgba(93, 64, 55, 0.4);
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+/* Combined variant inside timer quick-add section */
+.timer-quick-add .timer-quick-add-btn {
+    width: auto;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background-color: transparent;
+    color: #9E9E9E;
+    border: 1px solid rgba(93, 64, 55, 0.15);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 1rem;
+}
+
+.timer-quick-add-btn i {
+    pointer-events: none;
+    font-size: 1rem;
+}
+
+.timer-quick-add-btn:hover {
+    background-color: rgba(93, 64, 55, 0.16);
+}
+
+.timer-quick-add .timer-quick-add-btn:hover {
+    background-color: rgba(93, 64, 55, 0.06);
+}
+
+.timer-quick-add-btn:active {
+    transform: scale(0.96);
+    background-color: rgba(93, 64, 55, 0.22);
+}
+
+.timer-quick-add .timer-quick-add-btn:active {
+    background-color: rgba(93, 64, 55, 0.12);
+}
+
+.timer-quick-add-btn:focus-visible {
+    outline: 2px solid rgba(93, 64, 55, 0.35);
+    outline-offset: 2px;
+}
+
+.timer-close-action {
+    margin-top: 18px;
+}
+
 .timer-primary-actions { display: flex; justify-content: center; margin-bottom: 10px; }
 
 .timer-btn {
@@ -576,7 +692,7 @@ textarea {
 #soundToggleBtn.is-muted { opacity: 0.45; }
 
 #completeTaskBtn {
-    background-color: #388E3C; /* темно-зеленый */
+    background-color: #388E3C; /* темно-з��леный */
 }
 #completeNowBtn { background-color: #388E3C; }
 #completeNowBtn:active { background-color: #2E7D32; }
@@ -656,7 +772,7 @@ textarea {
     margin-top: 15px;
 }
 
-/* Мобильная весия — компактное отображение */
+/* Мобильная весия — ��омпактное отображение */
 @media (max-width: 480px) {
     .task {
         position: relative;
@@ -737,6 +853,8 @@ textarea {
         min-width: 100px;
     }
 
+    .timer-settings-row, .timer-action-row { display: contents; }
+
     .import-export {
         flex-direction: row;
     }
@@ -765,7 +883,7 @@ textarea {
 @media (min-width: 1024px) {
     /* Make sections flex columns so .section-actions with margin-top:auto aligns to bottom */
     .section { display: flex; flex-direction: column; }
-    /* Выровнять элементы задачи в сетку: текст слева, справа сверху категория, снизу под ней кнопки */
+    /* Выровнять элементы задачи в сетку: текст слева, справа сверху кат��гория, снизу под ней кнопки */
     .task {
         display: grid;
         grid-template-columns: 1fr auto;
@@ -805,14 +923,47 @@ textarea {
         min-height: 140px; /* reserve vertical space so action buttons remain aligned across sections */
     }
 
-    .sections {
+    .dashboard-layout {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-        align-items: stretch; /* make all section tiles equal height */
+        grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+        column-gap: 24px;
+        align-items: start;
     }
 
-    /* Кноки действий выравниваем п етке (3 колонки) */
+    .task-column {
+        max-width: 760px;
+        width: 100%;
+        gap: 24px;
+        grid-column: 1;
+        grid-row: 1;
+        justify-self: start;
+    }
+
+    .random-column {
+        position: sticky;
+        top: 20px;
+        align-self: start;
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: stretch;
+    }
+
+    .random-column .section {
+        width: 100%;
+    }
+
+    .sections {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 0;
+    }
+
+    .tasks {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+
+    /* Кноки действий вырав��иваем п етке (3 колонки) */
     .controls {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -947,7 +1098,7 @@ textarea {
 
 .category-badge .category-name { font-family: 'Caveat', cursive; }
 
-/* Позаголов��и категорий для мобильной группировки */
+/* Позаголов��и категорий для мобильной группи��овки */
 .category-title {
     margin: 10px 0 6px;
     color: #5d4037;
@@ -960,7 +1111,7 @@ textarea {
     font-size: 1.4rem;
 }
 
-/* Показыв��ем подзаго��овки на всех экран��х */
+/* Показыв��ем подзаго����овки на всех экран����х */
 @media (min-width: 481px) {
     .category-title { display: flex; }
 }
@@ -1177,7 +1328,7 @@ textarea {
 /* Редактор текста задачи */
 .task-edit { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 1.1rem; }
 
-/* Цветизация вбранной категории при доба��лении задачи */
+/* Цветизация вбранной кат��гории при доба��лении задачи */
 .add-category-badge[data-category="0"] { background-color: #f5f5f5; border-left: 2px solid #9E9E9E; }
 .add-category-badge[data-category="1"] { background-color: #fff9c4; border-left: 2px solid #FFD54F; }
 .add-category-badge[data-category="2"] { background-color: #bbdefb; border-left: 2px solid #64B5F6; }
@@ -1213,7 +1364,7 @@ textarea {
 .joys .section-add-subcat-btn { background: rgba(129,199,132,0.18); }
 .section-add-subcat-btn:active { transform: scale(0.97); }
 
-/* Верхняя панель действий задачи (категория + галочка) */
+/* Верхняя па��ель действий задачи (категория + галочка) */
 .task-top-actions { display: inline-flex; align-items: center; gap: 6px; }
 .task-top-actions .task-control-btn { padding: 4px; }
 
@@ -1256,6 +1407,21 @@ textarea {
 .modal-close:active { transform: scale(0.98); }
 .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
 
+/* Floating info button */
+.info-fab { position: fixed; top: 12px; left: 12px; width: 48px; height: 48px; border-radius: 50%; background: rgba(93, 64, 55, 0.12); color: #5d4037; border: 1px solid rgba(93, 64, 55, 0.2); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; box-shadow: 0 2px 6px rgba(0,0,0,0.12); z-index: 11000; transition: background-color 0.18s, transform 0.06s; }
+.info-fab:active { transform: scale(0.96); background: rgba(93, 64, 55, 0.18); }
+@media (hover:hover) { .info-fab:hover { background: rgba(93, 64, 55, 0.16); } }
+
+/* Info modal content */
+#infoModal .info-modal-content { max-width: 760px; padding: 24px 18px 16px; background: #fffaf0; border: 1px solid rgba(93, 64, 55, 0.12); color: #5d4037; }
+#infoModal h2 { font-family: 'Caveat', cursive; color: #5d4037; font-size: 2rem; margin-bottom: 8px; text-align: center; }
+#infoModal h3 { margin-top: 10px; }
+#infoModal h4 { margin-top: 8px; color: #5d4037; }
+#infoModal .info-section { margin: 10px 0; }
+#infoModal .psychology-points p { margin: 6px 0; }
+#infoModal .categories-list, #infoModal .features-list, #infoModal .usage-steps { margin: 8px 0 8px 18px; }
+#infoModal .footer-note { margin-top: 12px; opacity: 0.9; text-align: center; }
+
 /* Compact confirm modal variant */
 #confirmModal .modal-content.compact { padding: 16px 12px 12px; max-width: 380px; }
 #confirmModal .modal-content.compact h3 { font-size: 1.3rem; margin-bottom: 6px; }
@@ -1273,10 +1439,14 @@ textarea {
   #pasteTasksModal .modal-actions { flex-direction: column-reverse; }
   #pasteTasksModal .modal-actions button { width: 100%; }
 
-  .timer-controls { flex-direction: row; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .timer-controls { flex-direction: column; align-items: center; gap: 10px; }
+  .timer-settings-row, .timer-action-row { display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: nowrap; }
   #timerMinutes { width: 72px; padding: 6px 8px; font-size: 0.95rem; }
   .timer-btn { min-height: 36px; padding: 8px 10px; font-size: 0.95rem; }
   #soundToggleBtn, .timer-btn.icon-only { width: 40px; height: 40px; padding: 0; }
+  .timer-quick-add { margin: 20px auto 0; padding-top: 12px; }
+  .timer-new-task-label { font-size: 0.9rem; }
+  .timer-quick-add-btn { width: 40px; height: 40px; font-size: 1.1rem; }
 }
 
 /* Make add-task modal actions responsive so they don't overlap the input and are fully visible */
@@ -1333,7 +1503,7 @@ textarea {
 .category-dropdown .category-option { background: transparent; color: inherit; border-radius: 6px; padding: 6px 8px; display: block; width: 100%; text-align: left; }
 
 /* category + button near category title: match section + style but colored per category */
-.category-add-btn { border: none; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 8px; padding: 6px; cursor: pointer; box-shadow: none; color: #5d4037; font-size: 1.2rem; font-weight: 700; transition: background-color 0.18s, transform 0.06s; }
+.category-add-btn { border: none; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; min-height: 0; aspect-ratio: 1 / 1; border-radius: 8px; padding: 6px; cursor: pointer; box-shadow: none; color: #5d4037; font-size: 1.2rem; font-weight: 700; transition: background-color 0.18s, transform 0.06s; line-height: 1; }
 .category-add-btn i, .category-add-btn > * { color: #5d4037 !important; font-size: 1.2rem; line-height:1; }
 /* category-specific backgrounds matching section sticker backgrounds */
 .category-group.category-1 .category-add-btn { background-color: rgba(255,213,79,0.20); }
@@ -1378,7 +1548,7 @@ textarea {
   .section-action-btn { gap: 6px; padding: 6px 10px; }
   .section-action-btn .action-text { font-size: 0.85rem; }
   .category-title { gap: 6px; }
-  .category-title .category-add-btn { width: 36px; height: 36px; }
+  .category-title .category-add-btn { width: 36px; height: 36px; min-height: 36px; padding: 0; aspect-ratio: auto; }
   .category-title .subcategory-toggle-all { padding: 4px; font-size: 0.95rem; }
   .task-control-btn { padding: 3px; font-size: 0.9rem; }
   .category-dropdown { max-height: 60vh; }
@@ -1576,6 +1746,8 @@ textarea {
         min-width: 100px;
     }
 
+    .timer-settings-row, .timer-action-row { display: contents; }
+
     .import-export {
         flex-direction: row;
     }
@@ -1591,7 +1763,7 @@ textarea {
         justify-content: flex-end;
     }
 
-    /* Десктоп/планшет: тот же компактный макет с двумя рядами иконок справа */
+    /* Десктоп/пл��ншет: тот же компактный макет с двумя рядами иконок справа */
     .group-grid .task-content { display: contents; }
     .group-grid .task-content::after { content: ""; display: block; clear: both; }
     .group-grid .category-selector { float: none; width: auto; margin: 0 0 6px 0; grid-column: 2 / 3; grid-row: 1 / 2; }
@@ -1617,7 +1789,7 @@ textarea {
     }
     .task-text {
         grid-column: 1 / 2;
-        grid-row: 1 / 3; /* занимает обе строки слева */
+        grid-row: 1 / 3; /* ��анимает обе строки слева */
         padding-right: 0;
         margin: 0;
     }
@@ -1635,23 +1807,68 @@ textarea {
         margin: 0;
         gap: 6px;
     }
-    .container {
-        max-width: 1000px;
+    body {
+        padding: 12px 12px 24px;
     }
-    
+
+    .container {
+        max-width: none;
+        width: 100%;
+    }
+
     .section {
         max-width: none;
-        min-height: 140px; /* reserve vertical space so action buttons remain aligned across sections */
+        min-height: 140px;
+    }
+
+    .dashboard-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
+        column-gap: 20px;
+        align-items: start;
+    }
+
+    .task-column {
+        max-width: none;
+        width: 100%;
+        gap: 24px;
+        grid-column: 1;
+        grid-row: 1;
+        justify-self: stretch;
+    }
+
+    .random-column {
+        position: sticky;
+        top: 20px;
+        align-self: start;
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: stretch;
+    }
+
+    .random-column .sections {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .random-column .section {
+        width: 100%;
     }
 
     .sections {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        display: flex;
+        flex-direction: column;
         gap: 12px;
-        align-items: stretch; /* make all section tiles equal height */
+        margin-bottom: 0;
     }
 
-    /* Кно��ки действий выравниваем п сетке (3 колонки) */
+    .tasks {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+    }
+
     .controls {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -1724,7 +1941,7 @@ textarea {
 
 .category-badge .category-name { font-family: 'Caveat', cursive; }
 
-/* Поза��оловки ка��егорий для мобильной группировки */
+/* Поза���оловки ка��егорий для мобильной группировки */
 .category-title {
     margin: 10px 0 6px;
     color: #5d4037;
