@@ -2373,6 +2373,7 @@ textarea {
     font-weight: 500;
     transition: all 0.2s;
     position: relative;
+    color: #333;
 }
 
 .calendar-day:hover {
