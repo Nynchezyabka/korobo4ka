@@ -2379,6 +2379,7 @@ textarea {
 .calendar-day:hover {
     background: #f5f5f5;
     border-color: #999;
+    color: #333;
 }
 
 .calendar-day.other-month {
