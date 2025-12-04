@@ -2309,8 +2309,9 @@ textarea {
 
 .calendar-section h3 {
     margin: 0 0 12px 0;
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     font-weight: 600;
+    text-align: center;
 }
 
 .calendar-widget {
