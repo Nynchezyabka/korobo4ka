@@ -2889,7 +2889,7 @@ function renderCalendarWidget() {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
+    startDate.setDate(startDate.getDate() - (firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1));
 
     const monthYear = document.createElement('div');
     monthYear.className = 'calendar-month-year';
@@ -2915,7 +2915,7 @@ function renderCalendarWidget() {
     daysContainer.className = 'calendar-days';
 
     let currentDate = new Date(startDate);
-    while (currentDate <= lastDay || currentDate.getDay() !== 1) {
+    while (currentDate <= lastDay || currentDate.getDay() !== 0) {
         const dayEl = document.createElement('button');
         dayEl.className = 'calendar-day';
 
@@ -2951,11 +2951,13 @@ function renderCalendarWidget() {
     document.getElementById('calendarPrevBtn').addEventListener('click', () => {
         selectedDailyDate.setMonth(selectedDailyDate.getMonth() - 1);
         renderCalendarWidget();
+        updateDailyView();
     });
 
     document.getElementById('calendarNextBtn').addEventListener('click', () => {
         selectedDailyDate.setMonth(selectedDailyDate.getMonth() + 1);
         renderCalendarWidget();
+        updateDailyView();
     });
 }
 
