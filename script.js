@@ -2939,8 +2939,9 @@ function renderCalendarWidget() {
             dayEl.setAttribute('data-count', completedCount);
         }
 
+        const clickedDate = new Date(currentDate);
         dayEl.addEventListener('click', () => {
-            selectedDailyDate = new Date(currentDate);
+            selectedDailyDate = new Date(clickedDate);
             selectedDailyDate.setHours(0, 0, 0, 0);
             renderCalendarWidget();
             updateDailyView();
