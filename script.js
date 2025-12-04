@@ -3127,6 +3127,9 @@ function updatePastTaskCategoryButton() {
 document.addEventListener('DOMContentLoaded', () => {
     const dailyActivityCloseBtn = document.getElementById('dailyActivityCloseBtn');
     const dailyActivityBackdrop = document.getElementById('dailyActivityBackdrop');
+    const pastTaskCategoryBtn = document.getElementById('pastTaskCategoryBtn');
+    const pastTaskCategoryClose = document.getElementById('pastTaskCategoryClose');
+    const pastTaskCategoryBackdrop = document.getElementById('pastTaskCategoryBackdrop');
     const addPastTaskBtn = document.getElementById('addPastTaskBtn');
 
     if (dailyActivityCloseBtn) {
@@ -3137,10 +3140,39 @@ document.addEventListener('DOMContentLoaded', () => {
         dailyActivityBackdrop.addEventListener('click', closeDailyActivityModal);
     }
 
+    if (pastTaskCategoryBtn) {
+        pastTaskCategoryBtn.addEventListener('click', () => {
+            openPastTaskCategoryModal();
+        });
+    }
+
+    if (pastTaskCategoryClose) {
+        pastTaskCategoryClose.addEventListener('click', () => {
+            const modal = document.getElementById('pastTaskCategoryModal');
+            if (modal) {
+                modal.setAttribute('aria-hidden', 'true');
+                modal.style.display = 'none';
+            }
+            const backdrop = document.getElementById('pastTaskCategoryBackdrop');
+            if (backdrop) backdrop.style.display = 'none';
+        });
+    }
+
+    if (pastTaskCategoryBackdrop) {
+        pastTaskCategoryBackdrop.addEventListener('click', () => {
+            const modal = document.getElementById('pastTaskCategoryModal');
+            if (modal) {
+                modal.setAttribute('aria-hidden', 'true');
+                modal.style.display = 'none';
+            }
+            pastTaskCategoryBackdrop.style.display = 'none';
+        });
+    }
+
     if (addPastTaskBtn) {
         addPastTaskBtn.addEventListener('click', () => {
             const input = document.getElementById('pastTaskInput');
-            const category = parseInt(document.getElementById('pastTaskCategory').value) || 0;
+            const category = selectedPastTaskCategory;
             const durationMinutes = parseInt(document.getElementById('pastTaskDuration').value) || 0;
 
             if (!input || !input.value.trim()) {
