@@ -90,6 +90,8 @@ h1 {
     transition: transform 0.3s, box-shadow 0.3s;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .section::before {
@@ -101,7 +103,7 @@ h1 {
     height: 10px;
     background-color: rgba(0, 0, 0, 0.15);
 }
-/* Цвет полоски секций  соответствии с цветами ка��егорий */
+/* Цвет полоски секций в соответствии с цветами категорий */
 .mandatory::before { background-color: #FFD54F; }
 .security::before { background-color: #64B5F6; }
 .joys::before { background-color: #81C784; }
@@ -113,14 +115,44 @@ h1 {
 
 .section h2 {
     font-family: 'Caveat', cursive;
-    margin-bottom: 8px;
-    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    font-size: 1.6rem;
     text-align: center;
     line-height: 1.2;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: calc(1.2em * 2);
+    min-height: 31px;
+    flex-shrink: 0;
+}
+
+.section.security h2 {
+    min-height: 61px;
+}
+
+.section-task-count {
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #5d4037;
+    padding: 2px 0;
+    margin: 8px 0;
+    background: none;
+    box-shadow: none;
+    border: none;
+    cursor: default;
+    opacity: 0.8;
+    line-height: 1.2;
+}
+
+@media (max-width: 480px) {
+    .section-task-count {
+        font-size: 0.9rem;
+        margin: 2px 0 6px 0;
+    }
 }
 
 .section p {
@@ -169,11 +201,10 @@ button:active {
     transform: scale(0.98);
 }
 
-/* Кнопка-колокольчик уведомлений в шапке */
-.notify-toggle {
+/* Кнопки в верхней части интерфейса */
+.header-icon-button {
     position: absolute;
     top: 4px;
-    right: 6px;
     width: 36px;
     height: 36px;
     border-radius: 18px;
@@ -186,8 +217,18 @@ button:active {
     min-height: auto;
     padding: 0;
 }
-.notify-toggle:active { background: rgba(0,0,0,0.08); }
+.header-icon-button:active { background: rgba(0,0,0,0.08); }
+
+.notify-toggle {
+    right: 6px;
+}
 .notify-toggle i { font-size: 1.2rem; }
+
+.app-info-button {
+    left: 6px;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
 
 .task-list {
     background-color: white;
@@ -220,7 +261,7 @@ textarea, select, input {
     width: 100%;
 }
 
-/* Цветная индикация катгории при добавлении задачи */
+/* Цветная индикация категории при добавлении задачи */
 #taskCategory {
     border-left-width: 4px;
     border-left-style: solid;
@@ -275,7 +316,7 @@ textarea, select, input {
 .add-category-option:active { transform: scale(0.98); }
 .add-category-option:last-child { margin-bottom: 0; }
 
-/* Цвета для опций категорий (как в списке за��ач) */
+/* Цвета для опций категорий (как в списке задач) */
 .add-category-option[data-category="0"] { background-color: #f5f5f5; border-left: 2px solid #9E9E9E; }
 .add-category-option[data-category="1"] { background-color: #fff9c4; border-left: 2px solid #FFD54F; }
 .add-category-option[data-category="2"] { background-color: #bbdefb; border-left: 2px solid #64B5F6; }
@@ -292,7 +333,7 @@ textarea {
     margin-top: 15px;
 }
 
-/* Компактный пре��ью-список в несколько столбцов на широих экранах */
+/* Компактный превью-список в несколько столбцов на широих экранах */
 @media (min-width: 768px) {
     .tasks {
         display: grid;
@@ -539,27 +580,112 @@ textarea {
     width: 100%;
     max-width: 350px;
     padding: 20px 15px;
-    background-color: white;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: scroll;
+    background-repeat: no-repeat;
     border-radius: 8px;
     box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
 }
-.timer-content h2 { font-family: 'Caveat', cursive; color: #5d4037; font-size: 2rem; }
+
+.timer-content::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: none;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+.timer-content > * {
+    position: relative;
+    z-index: 2;
+}
+.timer-content h2 {
+    font-family: 'Caveat', cursive;
+    color: #5d4037;
+    font-size: 2rem;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
+}
 
 .timer-display {
+    font-family: 'Roboto Mono', monospace;
     font-size: 2.5rem;
     margin: 15px 0;
     font-weight: bold;
     color: #5d4037;
+    position: relative;
+    z-index: 2;
+    letter-spacing: 0.05em;
+    min-height: 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    text-shadow: 0 1px 4px rgba(255, 255, 255, 0.9);
+}
+
+.timer-digit {
+    display: inline-block;
+    min-width: 0.6em;
+}
+
+.timer-separator {
+    display: inline-block;
+    padding: 0 0.1em;
 }
 
 .timer-task {
     font-size: 1.3rem;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     padding: 12px;
     border-radius: 6px;
-    background-color: #f5f5f5;
     word-break: break-word;
     line-height: 1.3;
+    position: relative;
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.timer-category-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+    padding: 8px 0;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.timer-category-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin: 0 auto;
+}
+
+.timer-subcategory-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin: 0 auto;
 }
 
 .timer-controls {
@@ -567,6 +693,8 @@ textarea {
     flex-direction: column;
     gap: 10px;
     margin-bottom: 15px;
+    position: relative;
+    z-index: 2;
 }
 
 .timer-quick-add {
@@ -579,6 +707,8 @@ textarea {
     padding-top: 12px;
     border-top: 1px dashed rgba(93, 64, 55, 0.25);
     text-align: center;
+    position: relative;
+    z-index: 2;
 }
 
 .timer-new-task-label {
@@ -652,9 +782,17 @@ textarea {
 
 .timer-close-action {
     margin-top: 18px;
+    position: relative;
+    z-index: 2;
 }
 
-.timer-primary-actions { display: flex; justify-content: center; margin-bottom: 10px; }
+.timer-primary-actions {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 2;
+}
 
 .timer-btn {
     padding: 10px 15px;
@@ -663,7 +801,7 @@ textarea {
     transition: all 0.3s;
 }
 
-/* ��вые цвета для кнопок таймера */
+/* Новые цвета для кнопок таймера */
 #startTimerBtn {
     background-color: #9CCC65; /* желто-зеленый */
 }
@@ -673,7 +811,7 @@ textarea {
 }
 
 #pauseTimerBtn {
-    background-color: #ff9800; /* оранжевы */
+    background-color: #ff9800; /* оранжевый */
 }
 
 #pauseTimerBtn:active {
@@ -692,7 +830,7 @@ textarea {
 #soundToggleBtn.is-muted { opacity: 0.45; }
 
 #completeTaskBtn {
-    background-color: #388E3C; /* темно-з��леный */
+    background-color: #388E3C; /* темно-зеленый */
 }
 #completeNowBtn { background-color: #388E3C; }
 #completeNowBtn:active { background-color: #2E7D32; }
@@ -710,7 +848,7 @@ textarea {
 }
 
 #closeTimerBtn {
-    background-color: #9E9E9E; /* ��ерый */
+    background-color: #9E9E9E; /* серый */
 }
 
 #closeTimerBtn:active {
@@ -770,10 +908,20 @@ textarea {
     flex-direction: column;
     gap: 10px;
     margin-top: 15px;
+    position: relative;
+    z-index: 2;
 }
 
-/* Мобильная весия — ��омпактное отображение */
+/* Мобильная весия — компактное отображение */
 @media (max-width: 480px) {
+    .section h2 {
+        font-size: 1.8rem;
+    }
+
+    .task-list h2 {
+        font-size: 2.1rem;
+    }
+
     .task {
         position: relative;
         align-items: start;
@@ -831,7 +979,7 @@ textarea {
     }
 }
 
-/* Медиа-��апрос ля планшетов и больших телефонов */
+/* Медиа-запрос для планшетов и больших телефонов */
 @media (min-width: 481px) {
     body {
         padding: 15px;
@@ -883,7 +1031,7 @@ textarea {
 @media (min-width: 1024px) {
     /* Make sections flex columns so .section-actions with margin-top:auto aligns to bottom */
     .section { display: flex; flex-direction: column; }
-    /* Выровнять элементы задачи в сетку: текст слева, справа сверху кат��гория, снизу под ней кнопки */
+    /* Выровнять элементы з��дачи в сетку: текст слева, справа ��верху кат��гория, с������у под ней кнопки */
     .task {
         display: grid;
         grid-template-columns: 1fr auto;
@@ -892,7 +1040,7 @@ textarea {
         align-items: start;
     }
     .task-content {
-        display: contents; /* позволяет дочерним участвовать в сетке родителя */
+        display: contents; /* позволяет доче����ним участв��ват�� в сетке роди��еля */
     }
     .task-text {
         grid-column: 1 / 2;
@@ -1084,7 +1232,7 @@ textarea {
     transform: scale(0.9);
 }
 
-/* Адаптивность для мобильных устр��йств */
+/* Адаптивность для мобильных устройств */
 @media (max-width: 480px) {
     .toast-notification {
         bottom: 10px;
@@ -1094,11 +1242,14 @@ textarea {
     }
 }
 
-.category-heading { font-family: inherit; }
+.category-heading {
+    font-family: 'Caveat', cursive;
+    font-size: 1.4rem;
+}
 
 .category-badge .category-name { font-family: 'Caveat', cursive; }
 
-/* Позаголов��и категорий для мобильной группи��овки */
+/* Позаголовки категорий для мобильной группировки */
 .category-title {
     margin: 10px 0 6px;
     color: #5d4037;
@@ -1106,18 +1257,14 @@ textarea {
     padding: 6px 10px;
     border-radius: 8px;
 }
-.category-heading {
-    font-family: 'Caveat', cursive;
-    font-size: 1.4rem;
-}
 
-/* Показыв��ем подзаго����овки на всех экран����х */
+/* Показываем подзаголовки на всех экранах */
 @media (min-width: 481px) {
     .category-title { display: flex; }
 }
 .folder-before-title { color: #5d4037; margin-right: 6px; }
 
-/* Компактный режим "стиеров" для мобильных */
+/* Компактный режим "стикеров" для мобильных */
 @media (max-width: 480px) {
     .tasks.mobile-compact {
         display: grid;
@@ -1177,7 +1324,7 @@ textarea {
     .tasks.mobile-compact .sticker-wide { grid-column: 1 / -1; }
 }
 
-/* Сикерная сетка для план��етов и десктопов */
+/* Стикерная сетка для планшетов и десктопов */
 .tasks.sticker-grid {
     display: grid;
     gap: 6px;
@@ -1231,7 +1378,7 @@ textarea {
     .tasks.sticker-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 }
 
-/* Группы задч по категории с фоновым боком */
+/* Группы задач по категории с фоновым блоком */
 .category-group {
     border-radius: 10px;
     padding: 8px;
@@ -1251,7 +1398,7 @@ textarea {
     cursor: pointer;
 }
 
-/* Сетка стикеров внутр�� группы */
+/* Сетка стикеров внутри группы */
 .group-grid {
     display: grid;
     gap: 6px;
@@ -1279,7 +1426,7 @@ textarea {
     .group-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 }
 
-/* Сетка колонок подкатег��ри�� внутри "Обязательные" */
+/* Сетка колонок подкатегории внутри "Обязательные" */
 .subcategory-columns { display: grid; gap: 6px; grid-auto-flow: dense; }
 @media (max-width: 480px) {
     .subcategory-columns { grid-template-columns: 1fr; gap: 4px; }
@@ -1301,7 +1448,7 @@ textarea {
 .group-grid .category-badge .category-name { display: none; }
 .group-grid .category-title { grid-column: 1 / -1; }
 
-/* ��ереопределяем сару десктопную раскладку в��утри групп */
+/* ���ереопреде��яем сару десктопную ра����кладку ����утри груп�� */
 @media (min-width: 1024px) {
     .group-grid .task { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto; column-gap: 10px; align-items: start; }
     .group-grid .task-content { display: contents; }
@@ -1310,13 +1457,13 @@ textarea {
     .group-grid .task-controls { grid-column: 2 / 3; grid-row: 2 / 3; margin: 0; justify-content: flex-end; }
 }
 
-/* Скрыт�� з��дач при свёрнутой группе */
+/* Скрытие задач при свёрнутой группе */
 .category-group.collapsed .group-grid { display: none; }
 
 /* Цвет и иконка caret на бейдже категории задач */
 .category-badge i { color: #5d4037; }
 
-/* Группиро��к опций в выпадающих списках категорий */
+/* Группировка опций в выпадающих списках категорий */
 .category-option-group { padding-top: 6px; }
 .category-option-group { margin-top: 4px; margin-bottom: 4px; position: relative; }
 .category-option-group > .category-option { width: 100%; border-bottom-left-radius: 0; border-bottom-right-radius: 0; padding: 3px 8px; font-size: 0.9rem; line-height: 1.1; min-height: 28px; display: flex; align-items: center; justify-content: center; }
@@ -1328,7 +1475,7 @@ textarea {
 /* Редактор текста задачи */
 .task-edit { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 1.1rem; }
 
-/* Цветизация вбранной кат��гории при доба��лении задачи */
+/* Цвет выбранной категории при добавлении задачи */
 .add-category-badge[data-category="0"] { background-color: #f5f5f5; border-left: 2px solid #9E9E9E; }
 .add-category-badge[data-category="1"] { background-color: #fff9c4; border-left: 2px solid #FFD54F; }
 .add-category-badge[data-category="2"] { background-color: #bbdefb; border-left: 2px solid #64B5F6; }
@@ -1336,14 +1483,110 @@ textarea {
 .add-category-badge[data-category="4"] { background-color: #ffcdd2; border-left: 2px solid #E57373; }
 .add-category-badge[data-category="5"] { background-color: #d1c4e9; border-left: 2px solid #9575CD; }
 
-/* Кн��пка активаии/деактивации всей категории в зголовке группы */
+/* Кн��пка акти��аии/д��активации всей ��атегории в зголовке группы */
 .category-title .subcategory-toggle-all { margin-left: 6px; }
 
-/* ��нопки на секциях главного экрана */
+
+@keyframes marquee-scroll {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+@keyframes digit-fall {
+    0% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    60% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.digit-animate {
+    animation: digit-fall 0.3s ease-out forwards;
+}
+
+/* Mobile compact subcategory title */
+@media (max-width: 480px) {
+    .category-title.subcategory-title {
+        flex-wrap: nowrap;
+        gap: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 32px;
+    }
+
+    .subcategory-title-left {
+        flex-wrap: nowrap;
+        gap: 2px;
+        min-width: 0;
+        flex-shrink: 1;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        height: 32px;
+    }
+
+    .subcategory-title-left .category-heading {
+        font-family: 'Caveat', cursive;
+        white-space: nowrap;
+        min-width: 0;
+        flex-shrink: 1;
+        display: inline-block;
+    }
+
+    .subcategory-title-left .category-heading.marquee {
+        animation: marquee-scroll 3s linear infinite;
+        padding-right: 20px;
+    }
+
+    .subcategory-title-left .subcategory-toggle-all {
+        flex-shrink: 0;
+        padding: 4px;
+        font-size: 0.9rem;
+        margin-left: 4px;
+    }
+
+    .subcategory-title-left .subcategory-menu-btn {
+        flex-shrink: 0;
+        padding: 4px;
+        margin-right: 4px;
+        font-size: 0.9rem;
+        min-width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Subcategory title styling */
+.category-title.subcategory-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+}
+
+.subcategory-title-left {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ���нопки на секциях главного экрана */
 .section-actions { display: flex; gap: 10px; justify-content: center; margin-top: auto; }
 .section-action-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 12px; border-radius: 10px; font-weight: 600; color: #5d4037; box-shadow: none; border: none; cursor: pointer; transition: background-color 0.18s, transform 0.06s; }
 .section-action-btn i { font-size: 1.2rem; }
-.section-action-btn .action-text { font-size: 0.9rem; opacity: 0.95; }
+.section-action-btn .action-text { font-size: 0.95rem; opacity: 0.95; }
 .section-action-btn:active { transform: scale(0.98); }
 .section-action-btn:focus { outline: 2px solid rgba(0,0,0,0.08); outline-offset: 2px; }
 
@@ -1355,7 +1598,7 @@ textarea {
 .joys .section-action-btn { background-color: rgba(129,199,132,0.18); }
 .joys .section-action-btn:hover { background-color: rgba(129,199,132,0.28); }
 
-/* Специальный стиль для к��углой кнопки "+" */
+/* Специальный стиль для круглой кнопки "+" */
 .section-action-btn.section-add-btn { padding: 8px; width: 40px; height: 40px; border-radius: 10px; }
 
 .section-add-subcat-btn { padding: 6px 8px; border-radius: 8px; border: none; cursor: pointer; background: rgba(0,0,0,0.06); color: #5d4037; font-weight: 700; min-width: 36px; }
@@ -1406,11 +1649,7 @@ textarea {
 .modal-close { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; min-width: 32px; min-height: 32px; aspect-ratio: 1 / 1; display: inline-flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.04); border-radius: 8px; border: none; font-size: 1.0rem; line-height: 1; padding: 0; cursor: pointer; color: #5d4037; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 .modal-close:active { transform: scale(0.98); }
 .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
-
-/* Floating info button */
-.info-fab { position: fixed; top: 12px; left: 12px; width: 48px; height: 48px; border-radius: 50%; background: rgba(93, 64, 55, 0.12); color: #5d4037; border: 1px solid rgba(93, 64, 55, 0.2); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; box-shadow: 0 2px 6px rgba(0,0,0,0.12); z-index: 11000; transition: background-color 0.18s, transform 0.06s; }
-.info-fab:active { transform: scale(0.96); background: rgba(93, 64, 55, 0.18); }
-@media (hover:hover) { .info-fab:hover { background: rgba(93, 64, 55, 0.16); } }
+.info-modal-actions { justify-content: center; }
 
 /* Info modal content */
 #infoModal .info-modal-content { max-width: 760px; padding: 24px 18px 16px; background: #fffaf0; border: 1px solid rgba(93, 64, 55, 0.12); color: #5d4037; }
@@ -1461,11 +1700,20 @@ textarea {
 
 /* Subcategory actions modal — nicer layout and spacing */
 .subcat-actions { display: flex; flex-direction: column; gap: 10px; padding: 8px 0; }
-.subcat-action-btn { padding: 10px 12px; border-radius: 8px; border: none; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer; text-align: left; color: #333; font-weight: 600; }
-.subcat-action-btn:hover { background: rgba(0,0,0,0.03); transform: translateY(-1px); }
-.subcat-action-btn.destructive { background: #ffcdd2; color: #8B0000; }
+.subcat-action-btn { padding: 12px 14px; border-radius: 8px; border: none; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer; text-align: left; color: #333; font-weight: 600; transition: all 0.2s ease; font-size: 0.95rem; }
+.subcat-action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+.subcat-action-btn:active { transform: translateY(0); }
+
+/* Different styles for different actions */
+.subcat-action-btn[data-action="rename"] { background: #E3F2FD; color: #1565C0; }
+.subcat-action-btn[data-action="rename"]:hover { background: #BBDEFB; }
+.subcat-action-btn[data-action="move"] { background: #F3E5F5; color: #6A1B9A; }
+.subcat-action-btn[data-action="move"]:hover { background: #E1BEE7; }
+.subcat-action-btn.destructive { background: #FFEBEE; color: #C62828; }
+.subcat-action-btn.destructive:hover { background: #FFCDD2; }
 #subcatActionsModal .modal-content { max-width: 640px; padding: 20px; max-height: none; overflow: visible; }
 #subcatActionsModal .modal-actions { justify-content: center; }
+#moveTasksModal .modal-content { max-width: 640px; padding: 20px; max-height: none; overflow: visible; }
 @media (min-width:481px) {
     #subcatActionsModal .subcat-actions { flex-direction: row; flex-wrap: wrap; gap: 12px; }
     #subcatActionsModal .subcat-action-btn { flex: 1; }
@@ -1492,7 +1740,7 @@ textarea {
 .category-title { display: flex; align-items: center; gap: 8px; justify-content: space-between; flex-wrap: nowrap; }
 .category-title-left { display: inline-flex; align-items: center; gap: 8px; flex: 1 1 auto; min-width: 0; }
 .category-title .category-heading { white-space: normal; overflow: visible; text-overflow: clip; max-width: none; overflow-wrap: anywhere; }
-.category-heading { font-family: 'Caveat', cursive; font-size: 1.2rem; }
+.category-heading { font-family: 'Caveat', cursive; font-size: 1.5rem; }
 
 /* Make add-category options readable; allow wrapping of long labels */
 .add-category-option, .add-category-badge, .add-category-badge button { white-space: normal; overflow: visible; text-overflow: clip; max-width: none; font-size: 0.95rem; }
@@ -1524,7 +1772,7 @@ textarea {
 .category-add-btn.small { width: 36px; height: 36px; font-size: 1.1rem; }
 
 /* Three dots button for subcategory titles (use vertical dots icon, minimal visual chrome) */
-.category-title .subcategory-menu-btn { margin-left: 12px; background: transparent; border: none; border-radius: 6px; padding: 6px; color: #5d4037; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 1.05rem; line-height: 1; }
+.category-title .subcategory-menu-btn { margin-right: 8px; background: transparent; border: none; border-radius: 6px; padding: 6px; color: #5d4037; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 1.05rem; line-height: 1; }
 .category-title .subcategory-menu-btn i { display: block; width: 1em; text-align: center; }
 .category-title .subcategory-menu-btn:active { transform: scale(0.97); background: transparent; }
 /* Make three-dots button appear as icon only, with no visible border/background in any state */
@@ -1533,10 +1781,10 @@ textarea {
 .category-title .subcategory-menu-btn:active,
 .category-title .subcategory-menu-btn:focus,
 .category-title .subcategory-menu-btn:focus-visible { background: transparent !important; border: none !important; box-shadow: none !important; outline: none !important; }
-@media (max-width:480px) { .category-title .subcategory-menu-btn { margin-left: 8px; padding: 4px; } }
+@media (max-width:480px) { .category-title .subcategory-menu-btn { margin-right: 4px; padding: 4px; } }
 
 /* Compact wrapper for subcategory title and eye button to avoid overflow */
-.subcategory-title-left { display: inline-flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; }
+.subcategory-title-left { display: inline-flex; align-items: center; gap: 2px; flex: 1 1 auto; min-width: 0; }
 
 /* Prevent horizontal scroll inside main grids */
 .tasks, .group-grid { overflow-x: hidden; }
@@ -1546,7 +1794,6 @@ textarea {
   .section { padding: 16px 10px 12px; }
   .section h2 { font-size: 1.3rem; }
   .section-action-btn { gap: 6px; padding: 6px 10px; }
-  .section-action-btn .action-text { font-size: 0.85rem; }
   .category-title { gap: 6px; }
   .category-title .category-add-btn { width: 36px; height: 36px; min-height: 36px; padding: 0; aspect-ratio: auto; }
   .category-title .subcategory-toggle-all { padding: 4px; font-size: 0.95rem; }
@@ -1601,6 +1848,21 @@ textarea {
 /* Cancel button should be slightly muted - use opacity overlay */
 #modalCancelBtn.modal-btn { opacity: 0.95; box-shadow: none; }
 #modalCancelBtn.modal-btn:hover { opacity: 1; }
+
+/* Move task modal buttons - primary action is always brown, secondary is always gray */
+#moveTaskOk.modal-btn { background-color: #5d4037 !important; color: #fff !important; }
+#moveTaskOk.modal-btn:hover { filter: brightness(0.95); }
+#moveTaskCancel.modal-btn { background-color: #9E9E9E !important; color: #fff !important; opacity: 1; box-shadow: none; }
+#moveTaskCancel.modal-btn:hover { filter: brightness(0.95); }
+
+/* Cancel buttons in various modals - grey styling */
+#pasteTasksCancelBtn,
+#confirmCancelBtn,
+#renameSubcatCancel,
+#subcatActionsCancel {
+    background-color: #9E9E9E;
+    color: #fff;
+}
 
 /* Responsive subcategory controls — compact, grouped, no scroll */
 .add-subcategory-controls { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; align-items: center; justify-content: flex-start; }
@@ -1665,7 +1927,7 @@ textarea {
     white-space: normal !important;
 }
 
-/* Адаптивность д��я мобильных устройств */
+/* Адаптивность д��я мобильных устро��ств */
 @media (max-width: 480px) {
     .task {
         position: relative;
@@ -1763,7 +2025,7 @@ textarea {
         justify-content: flex-end;
     }
 
-    /* Десктоп/пл��ншет: тот же компактный макет с двумя рядами иконок справа */
+    /* Десктоп/��л��ншет: тот же компактный макет с двумя рядами иконок справа */
     .group-grid .task-content { display: contents; }
     .group-grid .task-content::after { content: ""; display: block; clear: both; }
     .group-grid .category-selector { float: none; width: auto; margin: 0 0 6px 0; grid-column: 2 / 3; grid-row: 1 / 2; }
@@ -1772,11 +2034,9 @@ textarea {
     .group-grid .category-dropdown { right: 0; left: auto; }
 }
 
-/* Медиа-зпрос для дес��топов */
+/* Медиа-зпрос для дес���топов */
 @media (min-width: 1024px) {
-    /* Make sections flex columns so .section-actions with margin-top:auto aligns to bottom */
-    .section { display: flex; flex-direction: column; }
-    /* Выронять элементы задачи в сетку: ����кст сле��а, справа сверх категория, снизу под ней кнопки */
+    /* Выронять элеме��ты задачи в сетку: ����кст сле��а, справа сверх кат��гория, снизу под ней кнопки */
     .task {
         display: grid;
         grid-template-columns: 1fr auto;
@@ -1927,7 +2187,7 @@ textarea {
 }
 
 
-/* Адаптивность для мобильных устройств */
+/* Адаптивн��сть для мобильных устройств */
 @media (max-width: 480px) {
     .toast-notification {
         bottom: 10px;
@@ -2021,3 +2281,335 @@ textarea {
 }
 
 /* end of restored CSS */
+
+/* ============ DAILY ACTIVITY CALENDAR ============ */
+
+.daily-activity-modal {
+    flex-direction: column;
+    max-width: 90vw;
+    max-height: 90vh;
+    padding: 0;
+    border-radius: 12px;
+}
+
+.daily-activity-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 24px;
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.calendar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.calendar-section h3 {
+    margin: 0 0 12px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.calendar-widget {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.calendar-month-year {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.calendar-nav-btn {
+    background: #f0f0f0;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.calendar-nav-btn:hover {
+    background: #e0e0e0;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    color: #666;
+}
+
+.calendar-weekday {
+    padding: 4px;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.calendar-day:hover {
+    background: #f5f5f5;
+    border-color: #999;
+}
+
+.calendar-day.other-month {
+    color: #ccc;
+    background: #fafafa;
+}
+
+.calendar-day.today {
+    border: 2px solid #FF6B6B;
+    color: #FF6B6B;
+    font-weight: bold;
+}
+
+.calendar-day.selected {
+    background: #5d4037;
+    color: white;
+    border-color: #5d4037;
+}
+
+.calendar-day[data-count]::after {
+    content: attr(data-count);
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #FF6B6B;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: bold;
+}
+
+.daily-view-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.daily-view-section h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.selected-date-display {
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.daily-tasks-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.no-tasks-message {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+    font-style: italic;
+}
+
+.daily-category-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.daily-category-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    border-left: 4px solid #999;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.category-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.daily-tasks-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 12px;
+}
+
+.daily-task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.daily-task-content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.daily-task-text {
+    flex: 1;
+    font-size: 0.95rem;
+    word-break: break-word;
+}
+
+.daily-task-duration {
+    flex-shrink: 0;
+    padding: 4px 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #666;
+}
+
+.daily-task-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.daily-task-undo-btn {
+    background: #f0f0f0;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+
+.daily-task-undo-btn:hover {
+    background: #FF6B6B;
+    color: white;
+}
+
+.add-past-task-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: #fafafa;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.past-task-textarea {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: vertical;
+    min-height: 60px;
+}
+
+.past-task-textarea:focus {
+    outline: none;
+    border-color: #5d4037;
+    box-shadow: 0 0 0 2px rgba(93, 64, 55, 0.1);
+}
+
+.past-task-category,
+.past-task-duration {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+.past-task-category:focus,
+.past-task-duration:focus {
+    outline: none;
+    border-color: #5d4037;
+    box-shadow: 0 0 0 2px rgba(93, 64, 55, 0.1);
+}
+
+.past-task-duration {
+    width: 100px;
+}
+
+.add-past-task-btn {
+    padding: 8px 16px;
+    background: #5d4037;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.add-past-task-btn:hover {
+    background: #4a302a;
+}
+
+/* Mobile layout for calendar */
+@media (max-width: 768px) {
+    .daily-activity-modal {
+        max-width: 95vw;
+    }
+
+    .daily-activity-container {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .calendar-days {
+        grid-template-columns: repeat(7, 1fr);
+    }
+}

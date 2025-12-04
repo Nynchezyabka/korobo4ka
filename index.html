@@ -3,21 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎁 КОРОБОЧКА 4.0</title>
+    <title>🎁 КОРОБОЧКА 4.4</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 	<meta name="theme-color" content="#5d4037">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="default">
 	<link rel="manifest" href="/manifest.json">
+	<script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🎁 КОРОБОЧКА 4.0</h1>
-            <button class="notify-toggle" id="notifyToggleBtn" aria-label="Уведомления">
+            <button class="app-info-button header-icon-button" id="infoFab" aria-label="О приложении">i</button>
+            <h1>🎁 КОРОБОЧКА 4.4</h1>
+            <button class="notify-toggle header-icon-button" id="notifyToggleBtn" aria-label="Уведомления">
                 <i class="fas fa-bell-slash"></i>
             </button>
         </header>
@@ -114,7 +120,10 @@
         <div class="timer-content">
             <h2>Ваша задача:</h2>
             <div class="timer-task" id="timerTaskText"></div>
-            <div class="timer-display" id="timerDisplay">15:00</div>
+            <div class="timer-category-info" id="timerCategoryInfo"></div>
+            <div class="timer-display" id="timerDisplay">
+                <span class="timer-digit" data-digit="0">1</span><span class="timer-digit" data-digit="1">5</span><span class="timer-separator">:</span><span class="timer-digit" data-digit="2">0</span><span class="timer-digit" data-digit="3">0</span>
+            </div>
             
             <div class="timer-controls">
                 <div class="timer-settings-row">
@@ -215,17 +224,32 @@
         </div>
     </div>
 
-    <!-- Move Tasks Modal -->
+    <!-- Move Task Modal -->
+    <div class="modal" id="moveTaskModal" aria-hidden="true" role="dialog">
+        <div class="modal-backdrop" id="moveTaskBackdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="moveTaskClose" aria-label="Закрыть">&times;</button>
+            <h3>Выбрать категорию и подкатегорию</h3>
+            <div id="moveCategoryOptions" class="modal-category-options" aria-label="Выбор категории"></div>
+            <div class="add-subcategory-controls" id="moveSubcategories" style="display:none;"></div>
+            <div class="modal-actions">
+                <button id="moveTaskOk" class="modal-btn">Перенести</button>
+                <button id="moveTaskCancel" class="modal-btn">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Move Subcategory Tasks Modal -->
     <div class="modal" id="moveTasksModal" aria-hidden="true" role="dialog">
         <div class="modal-backdrop" id="moveTasksBackdrop"></div>
         <div class="modal-content">
             <button class="modal-close" id="moveTasksClose" aria-label="Закрыть">&times;</button>
-            <h3>Перенос задач</h3>
-            <div class="modal-category-options" id="moveCategoryOptions"></div>
-            <div class="add-subcategory-controls" id="moveSubcategories" style="display:none;"></div>
+            <h3>Выбрать новую категорию и подкатегорию</h3>
+            <div id="moveTasksCategoryOptions" class="modal-category-options" aria-label="Выбор категории"></div>
+            <div class="add-subcategory-controls" id="moveTasksSubcategories" style="display:none;"></div>
             <div class="modal-actions">
-                <button id="moveTasksOk">Перенести</button>
-                <button id="moveTasksCancel">Отмена</button>
+                <button id="moveTasksOk" class="modal-btn">Перенести задачи</button>
+                <button id="moveTasksCancel" class="modal-btn">Отмена</button>
             </div>
         </div>
     </div>
@@ -248,8 +272,37 @@
         </div>
     </div>
 
-    <!-- Floating info button -->
-    <button class="info-fab" id="infoFab" aria-label="О приложении">i</button>
+    <!-- Daily Activity Calendar Modal -->
+    <div class="modal" id="dailyActivityModal" aria-hidden="true" role="dialog">
+        <div class="modal-backdrop" id="dailyActivityBackdrop"></div>
+        <div class="modal-content daily-activity-modal">
+            <button class="modal-close" id="dailyActivityCloseBtn" aria-label="Закрыть">&times;</button>
+            <div class="daily-activity-container">
+                <div class="calendar-section">
+                    <h3>Календарь</h3>
+                    <div id="calendarWidget" class="calendar-widget"></div>
+                </div>
+                <div class="daily-view-section">
+                    <h3>Активность за день</h3>
+                    <div id="selectedDateDisplay" class="selected-date-display"></div>
+                    <div id="dailyTasksList" class="daily-tasks-list"></div>
+                    <div class="add-past-task-controls" id="addPastTaskControls">
+                        <textarea id="pastTaskInput" placeholder="Введите задачу, которую вы делали этот день..." class="past-task-textarea"></textarea>
+                        <select id="pastTaskCategory" class="past-task-category">
+                            <option value="0">Категория не определена</option>
+                            <option value="1">Обязательные дела</option>
+                            <option value="2">Система безопасности</option>
+                            <option value="5">Доступность простых радостей</option>
+                            <option value="3">Простые радости</option>
+                            <option value="4">Эго-радости</option>
+                        </select>
+                        <input type="number" id="pastTaskDuration" placeholder="Минуты" min="1" max="480" class="past-task-duration">
+                        <button id="addPastTaskBtn" class="add-past-task-btn">Добавить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- App Info Modal -->
     <div class="modal" id="infoModal" aria-hidden="true" role="dialog">
@@ -260,7 +313,7 @@
 
             <div class="info-section">
                 <h3>📖 История и цель создания</h3>
-                <p><strong>КОРОБОЧКА</strong> создана по мотивам методики психолога <a href="https://youtube.com/@violettamakeeva?si=q4H_89OUukUyGv3t" target="_blank" title="Перейти на YouTube-канал">Виолетты Макеевой</a> как инструмент мотивационной гигиены. Я делала её для себя с целью оптимизировать процесс и не быть привязанной к физической коробочке. Это был мой первый опыт создания приложений и мне очень помог ИИ, прототип написал DeepSeek, а дальше я продолжила с помощью builder.io. Хоть изначально это и было прокрастинацией, чтобы не приступать непосредственно к делу, но в итоге приложение очень помогает мне и стало любимым хобби. </p>
+                <p><strong>КОРОБОЧКА</strong> создана по мотивам методики психолога <a href="https://youtube.com/@violettamakeeva?si=q4H_89OUukUyGv3t" target="_blank" title="Перейти на YouTube-канал">Виолетты Макеевой</a> как инструмент мотивационной гигиены. Я делала её для себя с целью оптимизировать процесс и не быть привязанной к физической коробочке. Это был мой первый опыт создания приложений и мне очень помог ИИ, прототип написал DeepSeek, а дальше я продолжила с помощью builder.io. Хоть изначально это и было прокрастинацией, чтобы не приступать непосредственно к делу, но в итоге приложение очень помогает мне и стало любимым хобби</p>
                 <div class="psychology-points">
                     <p>🛡️ <strong>Даёт шанс задачам с низкой мотивацией</strong> — безопасность, рутины, несрочные дела получают возможность быть выполненными</p>
                     <p>🎯 <strong>Создаёт пространство для радостей</strong> — искусственно "внедряет" простые и эго-радости в ежедневную практику</p>
@@ -279,28 +332,26 @@
                     <li>🟦 <strong>Система безопасности и доступность простых радостей</strong> — забота о базовых потребностях и условиях</li>
                     <li>🟩 <strong>Простые радости</strong> — приятные мелочи</li>
                     <li>🟥 <strong>Эго-радости</strong> — дела, связанные с социальными ожиданиями, статусом или внешним признанием.
-						<p>
 						<em>
-						После психологической проработки мы учимся отличать настоящие потребности от навязанных и можем осознанно выбирать, какие из этих задач действительно приносят нам радость, а не просто обслуживают чужие ожидания.
-						</em>
-						</p>
+            После психологической проработки мы учимся отличать настоящие потребности от навязанных и можем осознанно выбирать, какие из этих задач действительно приносят нам радость, а не просто обслуживают чужие ожидания.
+       	</em>
 					</li>
                 </ul>
 
                 <h4>🔧 Ключевые функции</h4>
                 <ul class="features-list">
-                    <li>✅ <strong>Случайный выбор задач</strong> — как вытягивание бумажки из коробки вслепую</li>
+                    <li>✅ <strong>Случайный выбор задач</strong> — как вытягивание бумажки из коробочки вслепую</li>
                     <li>⏱️ <strong>Таймер для фокусировки</strong> — настраиваемое время работы без отвлечений</li>
                     <li>📝 <strong>Гибкое управление</strong> — добавляйте, перемещайте, временно скрывайте задачи</li>
                     <li>💾 <strong>Автономная работа</strong> — всё сохраняется на вашем устройстве, работает без интернета</li>
-                    <li>📱 <strong>Установка на устройство</strong> — работает как полноценное приложение</li>
+                    <li>📱 <strong>Установка на устройство</strong> — Работает как полноценное приложение</li>
                     <li>📤 <strong>Резервное копирование</strong> — сохраняйте задачи в файл и загружайте обратно</li>
                 </ul>
 
                 <h4>🔄 Как пользоваться</h4>
                 <ol class="usage-steps">
-                    <li><strong>Добавьте задачи</strong> в общий список или в категорию</li>
-                    <li><strong>Распределите по категориям</strong> — как бумажки по отделениям коробки</li>
+                    <li><strong>Добавьте задачи</strong> в общий список</li>
+                    <li><strong>Распределите по категориям</strong> — как бумажки по отделениям коробочки</li>
                     <li><strong>Выберите категорию</strong> — получите случайную задачу</li>
                     <li><strong>Работайте по таймеру</strong> — сфокусируйтесь на выполнении</li>
                     <li><strong>Отметьте результат:</strong>
@@ -315,10 +366,13 @@
             <div class="footer-note">
                 <p><em>Приложение не требует регистрации, полностью бесплатно и конфиденциально. Все данные хранятся только на вашем устройстве.</em></p>
             </div>
+            <div class="modal-actions info-modal-actions">
+                <button id="infoCloseAction">Закрыть</button>
+            </div>
         </div>
     </div>
 
     <script src="db.js"></script>
     <script src="script.js"></script>
-</body>
+	</body>
 </html>

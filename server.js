@@ -91,6 +91,45 @@ function toJson(res, obj, status=200) {
 }
 
 async function handleApi(req, res, pathname) {
+  if (req.method === 'GET' && pathname === '/api/assets/list') {
+    try {
+      const assetsDir = path.join(root, 'Assets');
+      const categories = {};
+
+      if (fs.existsSync(assetsDir)) {
+        const dirs = fs.readdirSync(assetsDir, { withFileTypes: true })
+          .filter(f => f.isDirectory())
+          .map(f => f.name);
+
+        for (const dir of dirs) {
+          const categoryPath = path.join(assetsDir, dir);
+          try {
+            const files = fs.readdirSync(categoryPath)
+              .filter(f => {
+                const ext = path.extname(f).toLowerCase();
+                return ['.jpg', '.jpeg', '.png', '.webp', '.gif'].includes(ext);
+              })
+              .map(f => `Assets/${dir}/${f}`)
+              .sort();
+            if (files.length > 0) {
+              categories[dir] = files;
+            }
+          } catch (_) {}
+        }
+      }
+
+      const headers = {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'public, max-age=86400, immutable'
+      };
+      send(res, 200, Buffer.from(JSON.stringify(categories)), headers);
+      return true;
+    } catch (e) {
+      toJson(res, { error: 'Failed to list assets' }, 500);
+      return true;
+    }
+  }
+
   if (req.method === 'GET' && pathname === '/api/push/public-key') {
     return toJson(res, { publicKey: VAPID_PUBLIC_KEY });
   }

@@ -1,6 +1,7 @@
 // sw.js
 const CACHE_VERSION = 'v5';
 const STATIC_CACHE = `korobochka-static-${CACHE_VERSION}`;
+const ASSETS_CACHE = `korobochka-assets-${CACHE_VERSION}`;
 const ASSETS = [
   '/',
   '/index.html',
@@ -22,7 +23,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
       const keys = await caches.keys();
-      await Promise.all(keys.filter(k => k !== STATIC_CACHE).map(k => caches.delete(k)));
+      await Promise.all(keys.filter(k => k !== STATIC_CACHE && k !== ASSETS_CACHE).map(k => caches.delete(k)));
       await self.clients.claim();
     })()
   );
@@ -66,10 +67,18 @@ self.addEventListener('fetch', (event) => {
     if (cached) return cached;
     try {
       const net = await fetch(req);
-      const cache = await caches.open(STATIC_CACHE);
+      // Determine which cache to use
+      const isAssetImage = req.url.includes('/Assets/');
+      const cacheToUse = isAssetImage ? ASSETS_CACHE : STATIC_CACHE;
+      const cache = await caches.open(cacheToUse);
       cache.put(req, net.clone()).catch(() => {});
       return net;
     } catch (_) {
+      // Fallback to cached assets if available
+      try {
+        const assetsCached = await caches.match(req.url, { cacheName: ASSETS_CACHE });
+        if (assetsCached) return assetsCached;
+      } catch (__) {}
       // last resort: if requesting index parts, return index
       if (req.destination === 'document') return caches.match('/index.html');
       return new Response('', { status: 504 });
