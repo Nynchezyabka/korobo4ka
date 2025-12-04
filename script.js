@@ -2847,6 +2847,7 @@ if (notifyToggleBtn) {
 // ============= DAILY ACTIVITY CALENDAR =============
 
 let selectedDailyDate = null;
+let selectedPastTaskCategory = 0;
 
 function openDailyActivityModal() {
     const modal = document.getElementById('dailyActivityModal');
