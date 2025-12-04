@@ -2382,8 +2382,8 @@ textarea {
 }
 
 .calendar-day.other-month {
-    color: #ccc;
-    background: #fafafa;
+    color: #999;
+    background: #f5f5f5;
 }
 
 .calendar-day.today {
