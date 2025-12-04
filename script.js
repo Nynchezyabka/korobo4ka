@@ -2847,6 +2847,7 @@ if (notifyToggleBtn) {
 // ============= DAILY ACTIVITY CALENDAR =============
 
 let selectedDailyDate = null;
+let selectedPastTaskCategory = 0;
 
 function openDailyActivityModal() {
     const modal = document.getElementById('dailyActivityModal');
@@ -2860,6 +2861,9 @@ function openDailyActivityModal() {
 
     selectedDailyDate = new Date();
     selectedDailyDate.setHours(0, 0, 0, 0);
+
+    selectedPastTaskCategory = 0;
+    updatePastTaskCategoryButton();
 
     renderCalendarWidget();
     updateDailyView();
@@ -2889,7 +2893,7 @@ function renderCalendarWidget() {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
+    startDate.setDate(startDate.getDate() - (firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1));
 
     const monthYear = document.createElement('div');
     monthYear.className = 'calendar-month-year';
@@ -2915,7 +2919,7 @@ function renderCalendarWidget() {
     daysContainer.className = 'calendar-days';
 
     let currentDate = new Date(startDate);
-    while (currentDate <= lastDay || currentDate.getDay() !== 1) {
+    while (currentDate <= lastDay || currentDate.getDay() !== 0) {
         const dayEl = document.createElement('button');
         dayEl.className = 'calendar-day';
 
@@ -2935,8 +2939,9 @@ function renderCalendarWidget() {
             dayEl.setAttribute('data-count', completedCount);
         }
 
+        const clickedDate = new Date(currentDate);
         dayEl.addEventListener('click', () => {
-            selectedDailyDate = new Date(currentDate);
+            selectedDailyDate = new Date(clickedDate);
             selectedDailyDate.setHours(0, 0, 0, 0);
             renderCalendarWidget();
             updateDailyView();
@@ -2951,11 +2956,13 @@ function renderCalendarWidget() {
     document.getElementById('calendarPrevBtn').addEventListener('click', () => {
         selectedDailyDate.setMonth(selectedDailyDate.getMonth() - 1);
         renderCalendarWidget();
+        updateDailyView();
     });
 
     document.getElementById('calendarNextBtn').addEventListener('click', () => {
         selectedDailyDate.setMonth(selectedDailyDate.getMonth() + 1);
         renderCalendarWidget();
+        updateDailyView();
     });
 }
 
@@ -3060,10 +3067,73 @@ function getCategoryIndicatorColor(catId) {
     return colors[catId] || '#999999';
 }
 
+function openPastTaskCategoryModal() {
+    const categoryOptions = document.createElement('div');
+    categoryOptions.className = 'modal-category-options';
+
+    const categories = [
+        { value: 0, label: 'Категория не определена' },
+        { value: 1, label: 'Обязательные дела' },
+        { value: 2, label: 'Система безопасности' },
+        { value: 5, label: 'Доступность простых радостей' },
+        { value: 3, label: 'Простые радости' },
+        { value: 4, label: 'Эго-радости' }
+    ];
+
+    categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'modal-category-btn';
+        btn.setAttribute('data-category', cat.value);
+        btn.textContent = cat.label;
+        btn.style.backgroundColor = getCategoryColor(cat.value);
+        btn.addEventListener('click', () => {
+            selectedPastTaskCategory = cat.value;
+            updatePastTaskCategoryButton();
+            const modal = document.getElementById('pastTaskCategoryModal');
+            if (modal) {
+                modal.setAttribute('aria-hidden', 'true');
+                modal.style.display = 'none';
+                const backdrop = document.getElementById('pastTaskCategoryBackdrop');
+                if (backdrop) backdrop.style.display = 'none';
+            }
+        });
+        categoryOptions.appendChild(btn);
+    });
+
+    const modal = document.getElementById('pastTaskCategoryModal');
+    if (!modal) return;
+
+    const modalContent = modal.querySelector('.modal-content');
+    const existingOptions = modalContent.querySelector('.modal-category-options');
+    if (existingOptions) existingOptions.remove();
+
+    const title = modalContent.querySelector('h3');
+    if (title) {
+        title.insertAdjacentElement('afterend', categoryOptions);
+    }
+
+    modal.setAttribute('aria-hidden', 'false');
+    modal.style.display = 'flex';
+
+    const backdrop = document.getElementById('pastTaskCategoryBackdrop');
+    if (backdrop) backdrop.style.display = 'block';
+}
+
+function updatePastTaskCategoryButton() {
+    const btn = document.getElementById('pastTaskCategoryBtn');
+    if (btn) {
+        btn.textContent = getCategoryName(selectedPastTaskCategory);
+    }
+}
+
 // Add modal event listeners
 document.addEventListener('DOMContentLoaded', () => {
     const dailyActivityCloseBtn = document.getElementById('dailyActivityCloseBtn');
     const dailyActivityBackdrop = document.getElementById('dailyActivityBackdrop');
+    const pastTaskCategoryBtn = document.getElementById('pastTaskCategoryBtn');
+    const pastTaskCategoryClose = document.getElementById('pastTaskCategoryClose');
+    const pastTaskCategoryBackdrop = document.getElementById('pastTaskCategoryBackdrop');
     const addPastTaskBtn = document.getElementById('addPastTaskBtn');
 
     if (dailyActivityCloseBtn) {
@@ -3074,10 +3144,39 @@ document.addEventListener('DOMContentLoaded', () => {
         dailyActivityBackdrop.addEventListener('click', closeDailyActivityModal);
     }
 
+    if (pastTaskCategoryBtn) {
+        pastTaskCategoryBtn.addEventListener('click', () => {
+            openPastTaskCategoryModal();
+        });
+    }
+
+    if (pastTaskCategoryClose) {
+        pastTaskCategoryClose.addEventListener('click', () => {
+            const modal = document.getElementById('pastTaskCategoryModal');
+            if (modal) {
+                modal.setAttribute('aria-hidden', 'true');
+                modal.style.display = 'none';
+            }
+            const backdrop = document.getElementById('pastTaskCategoryBackdrop');
+            if (backdrop) backdrop.style.display = 'none';
+        });
+    }
+
+    if (pastTaskCategoryBackdrop) {
+        pastTaskCategoryBackdrop.addEventListener('click', () => {
+            const modal = document.getElementById('pastTaskCategoryModal');
+            if (modal) {
+                modal.setAttribute('aria-hidden', 'true');
+                modal.style.display = 'none';
+            }
+            pastTaskCategoryBackdrop.style.display = 'none';
+        });
+    }
+
     if (addPastTaskBtn) {
         addPastTaskBtn.addEventListener('click', () => {
             const input = document.getElementById('pastTaskInput');
-            const category = parseInt(document.getElementById('pastTaskCategory').value) || 0;
+            const category = selectedPastTaskCategory;
             const durationMinutes = parseInt(document.getElementById('pastTaskDuration').value) || 0;
 
             if (!input || !input.value.trim()) {

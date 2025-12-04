@@ -272,6 +272,15 @@
         </div>
     </div>
 
+    <!-- Past Task Category Modal -->
+    <div class="modal" id="pastTaskCategoryModal" aria-hidden="true" role="dialog">
+        <div class="modal-backdrop" id="pastTaskCategoryBackdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="pastTaskCategoryClose" aria-label="Закрыть">&times;</button>
+            <h3>Выбрать категорию</h3>
+        </div>
+    </div>
+
     <!-- Daily Activity Calendar Modal -->
     <div class="modal" id="dailyActivityModal" aria-hidden="true" role="dialog">
         <div class="modal-backdrop" id="dailyActivityBackdrop"></div>
@@ -288,15 +297,10 @@
                     <div id="dailyTasksList" class="daily-tasks-list"></div>
                     <div class="add-past-task-controls" id="addPastTaskControls">
                         <textarea id="pastTaskInput" placeholder="Введите задачу, которую вы делали этот день..." class="past-task-textarea"></textarea>
-                        <select id="pastTaskCategory" class="past-task-category">
-                            <option value="0">Категория не определена</option>
-                            <option value="1">Обязательные дела</option>
-                            <option value="2">Система безопасности</option>
-                            <option value="5">Доступность простых радостей</option>
-                            <option value="3">Простые радости</option>
-                            <option value="4">Эго-радости</option>
-                        </select>
-                        <input type="number" id="pastTaskDuration" placeholder="Минуты" min="1" max="480" class="past-task-duration">
+                        <div class="past-task-controls-row">
+                            <button id="pastTaskCategoryBtn" class="past-task-category-btn">Выбрать категорию</button>
+                            <input type="number" id="pastTaskDuration" placeholder="Минуты" min="1" max="480" class="past-task-duration">
+                        </div>
                         <button id="addPastTaskBtn" class="add-past-task-btn">Добавить</button>
                     </div>
                 </div>

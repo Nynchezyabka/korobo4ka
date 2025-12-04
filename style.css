@@ -2299,6 +2299,8 @@ textarea {
     padding: 20px;
     height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 .calendar-section {
@@ -2309,14 +2311,17 @@ textarea {
 
 .calendar-section h3 {
     margin: 0 0 12px 0;
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     font-weight: 600;
+    text-align: center;
 }
 
 .calendar-widget {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 .calendar-month-year {
@@ -2361,6 +2366,7 @@ textarea {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 4px;
+    width: 100%;
 }
 
 .calendar-day {
@@ -2373,16 +2379,18 @@ textarea {
     font-weight: 500;
     transition: all 0.2s;
     position: relative;
+    color: #333;
 }
 
 .calendar-day:hover {
     background: #f5f5f5;
     border-color: #999;
+    color: #333;
 }
 
 .calendar-day.other-month {
-    color: #ccc;
-    background: #fafafa;
+    color: #999;
+    background: #f5f5f5;
 }
 
 .calendar-day.today {
@@ -2422,8 +2430,9 @@ textarea {
 
 .daily-view-section h3 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     font-weight: 600;
+    text-align: center;
 }
 
 .selected-date-display {
@@ -2562,24 +2571,50 @@ textarea {
     box-shadow: 0 0 0 2px rgba(93, 64, 55, 0.1);
 }
 
-.past-task-category,
+.past-task-controls-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.past-task-category-btn {
+    flex: 1;
+    padding: 8px 12px;
+    background: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: auto;
+    box-shadow: none;
+}
+
+.past-task-category-btn:hover {
+    background: #efefef;
+    border-color: #999;
+}
+
+.past-task-category-btn:active {
+    background: #e5e5e5;
+    transform: scale(0.98);
+}
+
 .past-task-duration {
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-family: inherit;
     font-size: 0.9rem;
+    width: 100px;
 }
 
-.past-task-category:focus,
 .past-task-duration:focus {
     outline: none;
     border-color: #5d4037;
     box-shadow: 0 0 0 2px rgba(93, 64, 55, 0.1);
-}
-
-.past-task-duration {
-    width: 100px;
 }
 
 .add-past-task-btn {
@@ -2602,14 +2637,37 @@ textarea {
 @media (max-width: 768px) {
     .daily-activity-modal {
         max-width: 95vw;
+        margin: auto;
     }
 
     .daily-activity-container {
         grid-template-columns: 1fr;
         gap: 16px;
+        padding: 16px;
+        overflow-x: hidden;
+    }
+
+    .calendar-section {
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .calendar-widget {
+        width: 100%;
+        overflow-x: hidden;
     }
 
     .calendar-days {
         grid-template-columns: repeat(7, 1fr);
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .calendar-day {
+        font-size: 0.8rem;
+    }
+
+    .calendar-month-year {
+        font-size: 0.95rem;
     }
 }
