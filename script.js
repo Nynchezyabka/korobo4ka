@@ -3063,6 +3063,66 @@ function getCategoryIndicatorColor(catId) {
     return colors[catId] || '#999999';
 }
 
+function openPastTaskCategoryModal() {
+    const categoryOptions = document.createElement('div');
+    categoryOptions.className = 'modal-category-options';
+
+    const categories = [
+        { value: 0, label: 'Категория не определена' },
+        { value: 1, label: 'Обязательные дела' },
+        { value: 2, label: 'Система безопасности' },
+        { value: 5, label: 'Доступность простых радостей' },
+        { value: 3, label: 'Простые радости' },
+        { value: 4, label: 'Эго-радости' }
+    ];
+
+    categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'modal-category-btn';
+        btn.setAttribute('data-category', cat.value);
+        btn.textContent = cat.label;
+        btn.style.backgroundColor = getCategoryColor(cat.value);
+        btn.addEventListener('click', () => {
+            selectedPastTaskCategory = cat.value;
+            updatePastTaskCategoryButton();
+            const modal = document.getElementById('pastTaskCategoryModal');
+            if (modal) {
+                modal.setAttribute('aria-hidden', 'true');
+                modal.style.display = 'none';
+                const backdrop = document.getElementById('pastTaskCategoryBackdrop');
+                if (backdrop) backdrop.style.display = 'none';
+            }
+        });
+        categoryOptions.appendChild(btn);
+    });
+
+    const modal = document.getElementById('pastTaskCategoryModal');
+    if (!modal) return;
+
+    const modalContent = modal.querySelector('.modal-content');
+    const existingOptions = modalContent.querySelector('.modal-category-options');
+    if (existingOptions) existingOptions.remove();
+
+    const title = modalContent.querySelector('h3');
+    if (title) {
+        title.insertAdjacentElement('afterend', categoryOptions);
+    }
+
+    modal.setAttribute('aria-hidden', 'false');
+    modal.style.display = 'flex';
+
+    const backdrop = document.getElementById('pastTaskCategoryBackdrop');
+    if (backdrop) backdrop.style.display = 'block';
+}
+
+function updatePastTaskCategoryButton() {
+    const btn = document.getElementById('pastTaskCategoryBtn');
+    if (btn) {
+        btn.textContent = getCategoryName(selectedPastTaskCategory);
+    }
+}
+
 // Add modal event listeners
 document.addEventListener('DOMContentLoaded', () => {
     const dailyActivityCloseBtn = document.getElementById('dailyActivityCloseBtn');
