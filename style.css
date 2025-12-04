@@ -2299,6 +2299,8 @@ textarea {
     padding: 20px;
     height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 .calendar-section {
