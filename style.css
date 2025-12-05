@@ -1643,8 +1643,8 @@ textarea {
 /* Modal for adding tasks */
 .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 10050; }
 .modal[aria-hidden="false"] { display: flex; }
-.modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.35); }
-.modal-content { position: relative; background: white; border-radius: 10px; padding: 28px 16px 16px; width: 92%; max-width: 520px; max-height: 88vh; overflow-y: auto; box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: 0; }
+.modal-content { position: relative; background: white; border-radius: 10px; padding: 28px 16px 16px; width: 92%; max-width: 520px; max-height: 88vh; overflow-y: auto; box-shadow: 0 6px 20px rgba(0,0,0,0.25); z-index: 1; }
 .modal-content h3 { font-family: 'Caveat', cursive; font-size: 1.6rem; color: #5d4037; margin-bottom: 8px; }
 .modal-close { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; min-width: 32px; min-height: 32px; aspect-ratio: 1 / 1; display: inline-flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.04); border-radius: 8px; border: none; font-size: 1.0rem; line-height: 1; padding: 0; cursor: pointer; color: #5d4037; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 .modal-close:active { transform: scale(0.98); }
@@ -2644,23 +2644,26 @@ textarea {
         grid-template-columns: 1fr;
         gap: 16px;
         padding: 16px;
-        overflow-x: hidden;
+        overflow-x: auto;
     }
 
     .calendar-section {
         width: 100%;
-        overflow-x: hidden;
+        overflow-x: auto;
+        min-width: 0;
     }
 
     .calendar-widget {
         width: 100%;
-        overflow-x: hidden;
+        overflow-x: auto;
+        min-width: 0;
     }
 
     .calendar-days {
         grid-template-columns: repeat(7, 1fr);
         width: 100%;
-        overflow-x: hidden;
+        overflow-x: auto;
+        min-width: 0;
     }
 
     .calendar-day {
