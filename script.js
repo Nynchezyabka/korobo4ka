@@ -3115,6 +3115,7 @@ function openPastTaskCategoryModal() {
 
     modal.setAttribute('aria-hidden', 'false');
     modal.style.display = 'flex';
+    modal.style.zIndex = '10200';
 
     const backdrop = document.getElementById('pastTaskCategoryBackdrop');
     if (backdrop) backdrop.style.display = 'block';
