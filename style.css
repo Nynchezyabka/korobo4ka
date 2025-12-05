@@ -2642,35 +2642,41 @@ textarea {
 
     .daily-activity-container {
         grid-template-columns: 1fr;
-        gap: 16px;
-        padding: 16px;
-        overflow-x: auto;
+        gap: 12px;
+        padding: 12px;
+        overflow-x: hidden;
     }
 
     .calendar-section {
         width: 100%;
-        overflow-x: auto;
-        min-width: 0;
+        overflow-x: hidden;
     }
 
     .calendar-widget {
         width: 100%;
-        overflow-x: auto;
-        min-width: 0;
+        overflow-x: hidden;
+        font-size: 0.85rem;
     }
 
     .calendar-days {
         grid-template-columns: repeat(7, 1fr);
         width: 100%;
-        overflow-x: auto;
-        min-width: 0;
+        overflow-x: hidden;
+        gap: 2px;
     }
 
     .calendar-day {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
+        padding: 4px 2px;
+        min-height: 32px;
     }
 
     .calendar-month-year {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
+    }
+
+    .calendar-nav-btn {
+        font-size: 0.9rem;
+        padding: 4px 8px;
     }
 }
