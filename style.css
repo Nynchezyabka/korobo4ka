@@ -765,7 +765,8 @@ textarea {
 }
 
 .timer-quick-add .timer-quick-add-btn:hover {
-    background-color: rgba(93, 64, 55, 0.06);
+    background-color: #4d3229;
+    box-shadow: 0 3px 12px rgba(93, 64, 55, 0.4);
 }
 
 .timer-quick-add-btn:active {
@@ -774,7 +775,8 @@ textarea {
 }
 
 .timer-quick-add .timer-quick-add-btn:active {
-    background-color: rgba(93, 64, 55, 0.12);
+    background-color: #3d2620;
+    box-shadow: 0 2px 6px rgba(93, 64, 55, 0.3);
 }
 
 .timer-quick-add-btn:focus-visible {
