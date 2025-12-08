@@ -2864,6 +2864,7 @@ function openDailyActivityModal() {
     selectedDailyDate.setHours(0, 0, 0, 0);
 
     selectedPastTaskCategory = 0;
+    selectedPastTaskSubcategory = null;
     updatePastTaskCategoryButton();
 
     renderCalendarWidget();
