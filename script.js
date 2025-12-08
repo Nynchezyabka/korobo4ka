@@ -2848,6 +2848,7 @@ if (notifyToggleBtn) {
 
 let selectedDailyDate = null;
 let selectedPastTaskCategory = 0;
+let selectedPastTaskSubcategory = null;
 
 function openDailyActivityModal() {
     const modal = document.getElementById('dailyActivityModal');
