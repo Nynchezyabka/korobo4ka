@@ -3171,7 +3171,12 @@ function showPastTaskSubcategoriesFor(cat) {
         b.type = 'button';
         b.dataset.sub = item.key;
         b.textContent = getSubcategoryLabel(catNum, item.key);
+        if (selectedPastTaskSubcategory === item.key) {
+            b.classList.add('selected');
+        }
         b.addEventListener('click', () => {
+            subcatsContainer.querySelectorAll('.add-subcategory-btn:not(.add-subcategory-plus)').forEach(x => x.classList.remove('selected'));
+            b.classList.add('selected');
             selectedPastTaskSubcategory = item.key;
             updatePastTaskCategoryButton();
             closePastTaskCategoryModal();
