@@ -741,16 +741,18 @@ textarea {
     height: auto;
     min-width: 0;
     min-height: 0;
-    padding: 8px 12px;
+    padding: 10px 16px;
     border-radius: 10px;
-    background-color: transparent;
-    color: #9E9E9E;
-    border: 1px solid rgba(93, 64, 55, 0.15);
+    background-color: #5d4037;
+    color: #ffffff;
+    border: 2px solid #5d4037;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     font-size: 1rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(93, 64, 55, 0.3);
 }
 
 .timer-quick-add-btn i {
