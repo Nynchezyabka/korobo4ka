@@ -3240,7 +3240,11 @@ function closePastTaskCategoryModal() {
 function updatePastTaskCategoryButton() {
     const btn = document.getElementById('pastTaskCategoryBtn');
     if (btn) {
-        btn.textContent = getCategoryName(selectedPastTaskCategory);
+        let text = getCategoryName(selectedPastTaskCategory);
+        if (selectedPastTaskSubcategory && selectedPastTaskCategory === 1) {
+            text += ` → ${getSubcategoryLabel(selectedPastTaskCategory, selectedPastTaskSubcategory)}`;
+        }
+        btn.textContent = text;
     }
 }
 
