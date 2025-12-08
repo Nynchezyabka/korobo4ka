@@ -3310,6 +3310,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusChangedAt: Date.now()
             };
 
+            if (selectedPastTaskSubcategory && category === 1) {
+                newTask.subcategory = selectedPastTaskSubcategory;
+            }
+
             tasks.push(newTask);
             saveTasks();
 
