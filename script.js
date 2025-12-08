@@ -2721,6 +2721,24 @@ if (completeNowBtn) {
 }
 
 returnTaskBtn.addEventListener('click', async () => {
+    if (currentTask) {
+        const taskIndex = tasks.findIndex(t => t.id === currentTask.id);
+        if (taskIndex !== -1) {
+            const now = Date.now();
+            const durationMs = timerStartTime > 0 ? Math.max(0, now - timerStartTime) : 0;
+
+            tasks[taskIndex].completed = true;
+            tasks[taskIndex].active = false;
+            tasks[taskIndex].completedAt = now;
+            tasks[taskIndex].duration = durationMs;
+
+            const completedDate = new Date(now);
+            completedDate.setHours(0, 0, 0, 0);
+            tasks[taskIndex].completedDate = completedDate.toISOString().split('T')[0];
+
+            saveTasks();
+        }
+    }
     await cancelServerSchedule();
     stopTimer();
     timerEndAt = 0;
