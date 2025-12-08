@@ -3091,9 +3091,11 @@ function openAddModalFromArchive(initialCategory) {
 }
 
 function openPastTaskCategoryModal() {
-    const categoryOptions = document.createElement('div');
-    categoryOptions.className = 'modal-category-options';
+    const modal = document.getElementById('pastTaskCategoryModal');
+    const categoryOptionsContainer = document.getElementById('pastTaskCategoryOptions');
+    if (!modal || !categoryOptionsContainer) return;
 
+    categoryOptionsContainer.innerHTML = '';
     const categories = [
         { value: 0, label: 'Категория не определена' },
         { value: 1, label: 'Обязательные дела' },
@@ -3112,35 +3114,127 @@ function openPastTaskCategoryModal() {
         btn.style.backgroundColor = getCategoryColor(cat.value);
         btn.addEventListener('click', () => {
             selectedPastTaskCategory = cat.value;
+            selectedPastTaskSubcategory = null;
             updatePastTaskCategoryButton();
-            const modal = document.getElementById('pastTaskCategoryModal');
-            if (modal) {
-                modal.setAttribute('aria-hidden', 'true');
-                modal.style.display = 'none';
-                const backdrop = document.getElementById('pastTaskCategoryBackdrop');
-                if (backdrop) backdrop.style.display = 'none';
+            const subcatsContainer = document.getElementById('pastTaskSubcategories');
+            if (subcatsContainer) {
+                subcatsContainer.style.display = 'none';
+            }
+            if (cat.value === 1) {
+                showPastTaskSubcategoriesFor(cat.value);
+            } else {
+                closePastTaskCategoryModal();
             }
         });
-        categoryOptions.appendChild(btn);
+        categoryOptionsContainer.appendChild(btn);
     });
-
-    const modal = document.getElementById('pastTaskCategoryModal');
-    if (!modal) return;
-
-    const modalContent = modal.querySelector('.modal-content');
-    const existingOptions = modalContent.querySelector('.modal-category-options');
-    if (existingOptions) existingOptions.remove();
-
-    const title = modalContent.querySelector('h3');
-    if (title) {
-        title.insertAdjacentElement('afterend', categoryOptions);
-    }
 
     modal.setAttribute('aria-hidden', 'false');
     modal.style.display = 'flex';
+}
 
-    const backdrop = document.getElementById('pastTaskCategoryBackdrop');
-    if (backdrop) backdrop.style.display = 'block';
+function showPastTaskSubcategoriesFor(cat) {
+    const catNum = Number(cat);
+    const subcatsContainer = document.getElementById('pastTaskSubcategories');
+    if (!subcatsContainer) return;
+
+    subcatsContainer.innerHTML = '';
+
+    const existing = new Map();
+    tasks
+        .filter(t => t.category === catNum && t.subcategory)
+        .forEach(t => {
+            const key = normalizeSubcategoryName(catNum, t.subcategory) || t.subcategory.trim();
+            const tag = key.toLowerCase();
+            if (!existing.has(tag)) existing.set(tag, key);
+        });
+
+    const customSubs = JSON.parse(localStorage.getItem('customSubcategories') || '{}');
+    const saved = Array.isArray(customSubs[catNum]) ? customSubs[catNum] : [];
+    saved.forEach(s => {
+        const norm = normalizeSubcategoryName(catNum, s);
+        const key = norm || s;
+        const tag = key.toLowerCase();
+        if (!existing.has(tag)) existing.set(tag, key);
+    });
+
+    const items = Array.from(existing.values()).map(key => ({
+        key: normalizeSubcategoryName(catNum, key) || key,
+        label: key
+    }));
+
+    items.forEach(item => {
+        const b = document.createElement('button');
+        b.className = 'add-subcategory-btn modal-subcat-chip cat-' + String(cat);
+        b.type = 'button';
+        b.dataset.sub = item.key;
+        b.textContent = getSubcategoryLabel(catNum, item.key);
+        b.addEventListener('click', () => {
+            selectedPastTaskSubcategory = item.key;
+            updatePastTaskCategoryButton();
+            closePastTaskCategoryModal();
+        });
+        subcatsContainer.appendChild(b);
+    });
+
+    const plusBtn = document.createElement('button');
+    plusBtn.type = 'button';
+    plusBtn.className = 'add-subcategory-btn modal-subcat-chip cat-' + String(cat);
+    plusBtn.setAttribute('aria-label', 'Добавить подкатегорию');
+    plusBtn.innerHTML = '<i class="fas fa-plus"></i>';
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = 'новая сфера';
+    const actions = document.createElement('div');
+    actions.className = 'inline-add-form-wrapper';
+
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'inline-save-btn';
+    saveBtn.type = 'button';
+    saveBtn.textContent = 'Добавить';
+    saveBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const value = inp.value.trim();
+        if (value) {
+            const customSubs = JSON.parse(localStorage.getItem('customSubcategories') || '{}');
+            customSubs[catNum] = Array.from(new Set([...(customSubs[catNum] || []), value]));
+            localStorage.setItem('customSubcategories', JSON.stringify(customSubs));
+            selectedPastTaskSubcategory = normalizeSubcategoryName(catNum, value) || value;
+            updatePastTaskCategoryButton();
+            closePastTaskCategoryModal();
+        }
+    });
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'inline-cancel-btn';
+    cancelBtn.type = 'button';
+    cancelBtn.textContent = 'Отмена';
+    cancelBtn.addEventListener('click', (e) => { e.stopPropagation(); });
+
+    actions.appendChild(inp);
+    actions.appendChild(saveBtn);
+    actions.appendChild(cancelBtn);
+
+    let showForm = false;
+    plusBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showForm = !showForm;
+        actions.style.display = showForm ? 'flex' : 'none';
+        if (showForm) inp.focus();
+    });
+
+    subcatsContainer.appendChild(plusBtn);
+    subcatsContainer.appendChild(actions);
+    actions.style.display = 'none';
+    subcatsContainer.style.display = 'flex';
+}
+
+function closePastTaskCategoryModal() {
+    const modal = document.getElementById('pastTaskCategoryModal');
+    if (modal) {
+        modal.setAttribute('aria-hidden', 'true');
+        modal.style.display = 'none';
+    }
 }
 
 function updatePastTaskCategoryButton() {
