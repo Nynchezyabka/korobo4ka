@@ -3072,7 +3072,7 @@ function openAddModalFromArchive(initialCategory) {
     addTaskModal.setAttribute('aria-hidden', 'false');
     addTaskModal.style.display = 'flex';
     addTaskModal.style.position = 'fixed';
-    addTaskModal.style.zIndex = '10200';
+    addTaskModal.style.zIndex = '10300';
     modalTaskText.value = '';
     modalPrimaryCategory = null;
 
