@@ -3273,24 +3273,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (pastTaskCategoryClose) {
         pastTaskCategoryClose.addEventListener('click', () => {
-            const modal = document.getElementById('pastTaskCategoryModal');
-            if (modal) {
-                modal.setAttribute('aria-hidden', 'true');
-                modal.style.display = 'none';
-            }
-            const backdrop = document.getElementById('pastTaskCategoryBackdrop');
-            if (backdrop) backdrop.style.display = 'none';
-        });
-    }
-
-    if (pastTaskCategoryBackdrop) {
-        pastTaskCategoryBackdrop.addEventListener('click', () => {
-            const modal = document.getElementById('pastTaskCategoryModal');
-            if (modal) {
-                modal.setAttribute('aria-hidden', 'true');
-                modal.style.display = 'none';
-            }
-            pastTaskCategoryBackdrop.style.display = 'none';
+            closePastTaskCategoryModal();
         });
     }
 
