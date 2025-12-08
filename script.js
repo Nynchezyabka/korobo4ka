@@ -3109,11 +3109,12 @@ function openPastTaskCategoryModal() {
     categories.forEach(cat => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'modal-category-btn';
+        btn.className = `modal-category-btn cat-${cat.value}`;
         btn.setAttribute('data-category', cat.value);
         btn.textContent = cat.label;
-        btn.style.backgroundColor = getCategoryColor(cat.value);
         btn.addEventListener('click', () => {
+            categoryOptionsContainer.querySelectorAll('.modal-category-btn').forEach(x => x.classList.remove('selected'));
+            btn.classList.add('selected');
             selectedPastTaskCategory = cat.value;
             selectedPastTaskSubcategory = null;
             updatePastTaskCategoryButton();
