@@ -3187,7 +3187,7 @@ function showPastTaskSubcategoriesFor(cat) {
     inp.type = 'text';
     inp.placeholder = 'новая сфера';
     const actions = document.createElement('div');
-    actions.className = 'inline-add-form-wrapper';
+    actions.className = 'inline-add-form';
 
     const saveBtn = document.createElement('button');
     saveBtn.className = 'inline-save-btn';
