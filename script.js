@@ -3067,6 +3067,28 @@ function getCategoryIndicatorColor(catId) {
     return colors[catId] || '#999999';
 }
 
+function openAddModalFromArchive(initialCategory) {
+    if (!addTaskModal) return;
+    addTaskModal.setAttribute('aria-hidden', 'false');
+    addTaskModal.style.display = 'flex';
+    addTaskModal.style.position = 'fixed';
+    addTaskModal.style.zIndex = '10300';
+    modalTaskText.value = '';
+    modalPrimaryCategory = null;
+
+    renderModalCategoryOptions();
+    if (modalCategoryOptions && typeof initialCategory !== 'undefined' && initialCategory !== null) {
+        const btn = modalCategoryOptions.querySelector(`.modal-category-btn[data-category="${initialCategory}"]`);
+        if (btn) btn.click();
+        else applyModalBackground(initialCategory);
+    } else {
+        applyModalBackground(initialCategory || 0);
+    }
+    showAddSubcategoriesFor(parseInt(initialCategory) || 0, modalSubcategories);
+
+    setTimeout(() => modalTaskText.focus(), 50);
+}
+
 function openPastTaskCategoryModal() {
     const categoryOptions = document.createElement('div');
     categoryOptions.className = 'modal-category-options';
