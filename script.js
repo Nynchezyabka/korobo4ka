@@ -3168,7 +3168,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (pastTaskCategoryBtn) {
         pastTaskCategoryBtn.addEventListener('click', () => {
-            openAddModalFromArchive();
+            openPastTaskCategoryModal();
         });
     }
 
