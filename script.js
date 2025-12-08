@@ -2425,12 +2425,18 @@ modalAddTaskBtn && modalAddTaskBtn.addEventListener('click', () => {
             compact: true,
             onConfirm: () => {
                 const added = addLinesAsTasks(lines, category, selectedSub);
-                if (added > 0) showToastNotification('Задачи добавлены', `Добавлено ${added} задач`);
+                if (added > 0) {
+                    showToastNotification('Задачи добавлены', `Добавлено ${added} задач`);
+                    closeAddModal();
+                }
             }
         });
         return;
     }
-    addLinesAsTasks(lines, category, selectedSub);
+    const added = addLinesAsTasks(lines, category, selectedSub);
+    if (added > 0) {
+        closeAddModal();
+    }
 });
 
 // Move Task Modal
