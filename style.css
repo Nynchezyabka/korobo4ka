@@ -3040,4 +3040,10 @@ textarea {
         align-items: center;
         justify-content: center;
     }
+
+    .timeline-menu-btn {
+        font-size: 1.8rem;
+        padding: 6px 8px;
+        margin-right: 4px;
+    }
 }
