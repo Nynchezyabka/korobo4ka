@@ -3325,6 +3325,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const input = document.getElementById('pastTaskInput');
             const category = selectedPastTaskCategory;
             const durationMinutes = parseInt(document.getElementById('pastTaskDuration').value) || 0;
+            const hoursInput = document.getElementById('pastTaskHours');
+            const minutesInput = document.getElementById('pastTaskMinutes');
+            const hours = parseInt(hoursInput.value) || 0;
+            const minutes = parseInt(minutesInput.value) || 0;
 
             if (!input || !input.value.trim()) {
                 openInfoModal('Введите описание задачи');
@@ -3341,13 +3345,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            const taskDate = new Date(selectedDailyDate);
+            taskDate.setHours(hours, minutes, 0, 0);
+
             const newTask = {
                 id: getNextId(),
                 text: input.value.trim(),
                 category,
                 completed: true,
                 active: false,
-                completedAt: selectedDailyDate.getTime() + 12 * 3600000,
+                completedAt: taskDate.getTime(),
                 duration: durationMinutes * 60000,
                 completedDate: selectedDailyDate.toISOString().split('T')[0],
                 statusChangedAt: Date.now()
@@ -3362,9 +3369,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             input.value = '';
             document.getElementById('pastTaskDuration').value = '';
+            hoursInput.value = '';
+            minutesInput.value = '';
 
             updateDailyView();
-            openInfoModal('Задача добавлена');
         });
     }
 });
