@@ -3076,6 +3076,18 @@ function getCategoryIndicatorColor(catId) {
     return colors[catId] || '#999999';
 }
 
+function getCategoryTagTextColor(catId) {
+    const textColors = {
+        0: '#666666',
+        1: '#8B7500',
+        2: '#0D47A1',
+        3: '#1B5E20',
+        4: '#B71C1C',
+        5: '#0277BD'
+    };
+    return textColors[catId] || '#666666';
+}
+
 function openAddModalFromArchive(initialCategory) {
     if (!addTaskModal) return;
     addTaskModal.setAttribute('aria-hidden', 'false');
