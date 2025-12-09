@@ -2885,6 +2885,12 @@ function openDailyActivityModal() {
     selectedPastTaskSubcategory = null;
     updatePastTaskCategoryButton();
 
+    const now = new Date();
+    const hoursInput = document.getElementById('pastTaskHours');
+    const minutesInput = document.getElementById('pastTaskMinutes');
+    if (hoursInput) hoursInput.value = String(now.getHours()).padStart(2, '0');
+    if (minutesInput) minutesInput.value = String(now.getMinutes()).padStart(2, '0');
+
     renderCalendarWidget();
     updateDailyView();
 }
@@ -3005,74 +3011,69 @@ function updateDailyView() {
         return;
     }
 
-    const categoryGroups = new Map();
-    completedTasks.forEach(task => {
-        const cat = getCategoryName(task.category);
-        if (!categoryGroups.has(task.category)) {
-            categoryGroups.set(task.category, []);
-        }
-        categoryGroups.get(task.category).push(task);
+    const sortedTasks = completedTasks.sort((a, b) => (a.completedAt || 0) - (b.completedAt || 0));
+
+    const timelineEl = document.createElement('div');
+    timelineEl.className = 'timeline-view';
+
+    sortedTasks.forEach((task, index) => {
+        const taskEl = document.createElement('div');
+        taskEl.className = 'timeline-item';
+
+        const categoryColor = getCategoryIndicatorColor(task.category);
+        const categoryName = getCategoryName(task.category);
+        const durationMinutes = Math.round((task.duration || 0) / 60000);
+        const durationText = durationMinutes > 0 ? `${durationMinutes} мин` : 'нет времени';
+
+        const startDate = new Date(task.completedAt || Date.now());
+        const startTimeStr = startDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+        const endDate = new Date(startDate.getTime() + (task.duration || 0));
+        const endTimeStr = endDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+        const timeRangeStr = `${startTimeStr} - ${endTimeStr}`;
+
+        const isLastItem = index === sortedTasks.length - 1;
+
+        taskEl.innerHTML = `
+            <div class="timeline-dot" style="background-color: ${categoryColor};" title="${categoryName}"></div>
+            <div class="timeline-connector${isLastItem ? ' timeline-connector-last' : ''}"></div>
+            <div class="timeline-content">
+                <div class="timeline-header">
+                    <span class="timeline-time">${timeRangeStr}</span>
+                    <span class="timeline-duration">[${durationText}]</span>
+                </div>
+                <div class="timeline-text">${escapeHtml(task.text)}</div>
+                <div class="timeline-footer">
+                    <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}">⋯</button>
+                    <span class="timeline-category-tag" style="background-color: ${categoryColor}; color: ${getCategoryTagTextColor(task.category)};">${categoryName}</span>
+                </div>
+            </div>
+        `;
+
+        taskEl.querySelector('.timeline-menu-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            openTimelineTaskMenu(task.id);
+        });
+
+        timelineEl.appendChild(taskEl);
     });
 
-    Array.from(categoryGroups.entries())
-        .sort((a, b) => a[0] - b[0])
-        .forEach(([catId, catTasks]) => {
-            const groupEl = document.createElement('div');
-            groupEl.className = 'daily-category-group';
-
-            const categoryColor = getCategoryIndicatorColor(catId);
-            const categoryName = getCategoryName(catId);
-
-            const header = document.createElement('div');
-            header.className = 'daily-category-header';
-            header.style.borderLeftColor = categoryColor;
-            header.innerHTML = `<span style="background-color: ${categoryColor};" class="category-indicator"></span> ${categoryName}`;
-            groupEl.appendChild(header);
-
-            const listEl = document.createElement('div');
-            listEl.className = 'daily-tasks-group';
-
-            catTasks.forEach(task => {
-                const taskEl = document.createElement('div');
-                taskEl.className = 'daily-task-item';
-
-                const durationMinutes = Math.round((task.duration || 0) / 60000);
-                const durationText = durationMinutes > 0 ? `${durationMinutes}м` : 'нет времени';
-
-                taskEl.innerHTML = `
-                    <div class="daily-task-content">
-                        <div class="daily-task-text">${escapeHtml(task.text)}</div>
-                        <div class="daily-task-duration">${durationText}</div>
-                    </div>
-                    <div class="daily-task-actions">
-                        <button class="daily-task-undo-btn" title="Отменить выполнение" data-task-id="${task.id}">↺</button>
-                    </div>
-                `;
-
-                taskEl.querySelector('.daily-task-undo-btn').addEventListener('click', () => {
-                    undoCompleteTask(task.id);
-                });
-
-                listEl.appendChild(taskEl);
-            });
-
-            groupEl.appendChild(listEl);
-            tasksList.appendChild(groupEl);
-        });
+    tasksList.appendChild(timelineEl);
 }
 
-function undoCompleteTask(taskId) {
+function deleteCompletedTask(taskId) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex !== -1) {
-        tasks[taskIndex].completed = false;
-        tasks[taskIndex].active = true;
-        delete tasks[taskIndex].completedAt;
-        delete tasks[taskIndex].duration;
-        delete tasks[taskIndex].completedDate;
+        tasks.splice(taskIndex, 1);
         saveTasks();
         updateDailyView();
         renderCalendarWidget();
     }
+}
+
+function undoCompleteTask(taskId) {
+    deleteCompletedTask(taskId);
 }
 
 function getCategoryIndicatorColor(catId) {
@@ -3085,6 +3086,18 @@ function getCategoryIndicatorColor(catId) {
         5: '#B3E5FC'
     };
     return colors[catId] || '#999999';
+}
+
+function getCategoryTagTextColor(catId) {
+    const textColors = {
+        0: '#666666',
+        1: '#8B7500',
+        2: '#0D47A1',
+        3: '#1B5E20',
+        4: '#B71C1C',
+        5: '#0277BD'
+    };
+    return textColors[catId] || '#666666';
 }
 
 function openAddModalFromArchive(initialCategory) {
@@ -3270,6 +3283,23 @@ function updatePastTaskCategoryButton() {
             text += ` → ${getSubcategoryLabel(selectedPastTaskCategory, selectedPastTaskSubcategory)}`;
         }
         btn.textContent = text;
+
+        btn.className = 'past-task-category-btn category-' + selectedPastTaskCategory;
+        const categoryColor = getCategoryIndicatorColor(selectedPastTaskCategory);
+        btn.style.backgroundColor = categoryColor;
+        btn.style.borderColor = categoryColor;
+
+        if (selectedPastTaskCategory === 0 || selectedPastTaskCategory === 5) {
+            btn.style.color = '#666';
+        } else if (selectedPastTaskCategory === 1) {
+            btn.style.color = '#8B7500';
+        } else if (selectedPastTaskCategory === 2) {
+            btn.style.color = '#0D47A1';
+        } else if (selectedPastTaskCategory === 3) {
+            btn.style.color = '#1B5E20';
+        } else if (selectedPastTaskCategory === 4) {
+            btn.style.color = '#B71C1C';
+        }
     }
 }
 
@@ -3307,6 +3337,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const input = document.getElementById('pastTaskInput');
             const category = selectedPastTaskCategory;
             const durationMinutes = parseInt(document.getElementById('pastTaskDuration').value) || 0;
+            const hoursInput = document.getElementById('pastTaskHours');
+            const minutesInput = document.getElementById('pastTaskMinutes');
+            const hours = parseInt(hoursInput.value) || 0;
+            const minutes = parseInt(minutesInput.value) || 0;
 
             if (!input || !input.value.trim()) {
                 openInfoModal('Введите описание задачи');
@@ -3323,13 +3357,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            const taskDate = new Date(selectedDailyDate);
+            taskDate.setHours(hours, minutes, 0, 0);
+
             const newTask = {
                 id: getNextId(),
                 text: input.value.trim(),
                 category,
                 completed: true,
                 active: false,
-                completedAt: selectedDailyDate.getTime() + 12 * 3600000,
+                completedAt: taskDate.getTime(),
                 duration: durationMinutes * 60000,
                 completedDate: selectedDailyDate.toISOString().split('T')[0],
                 statusChangedAt: Date.now()
@@ -3344,9 +3381,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             input.value = '';
             document.getElementById('pastTaskDuration').value = '';
+            hoursInput.value = '';
+            minutesInput.value = '';
 
             updateDailyView();
-            openInfoModal('Задача добавлена');
         });
     }
 });
