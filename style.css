@@ -2574,6 +2574,24 @@ textarea {
     color: #888;
 }
 
+.timeline-menu-btn {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 4px;
+    min-height: auto;
+    min-width: auto;
+    box-shadow: none;
+    transition: color 0.2s;
+}
+
+.timeline-menu-btn:active {
+    color: #5d4037;
+    transform: scale(0.9);
+}
+
 .timeline-footer {
     display: flex;
     align-items: center;
