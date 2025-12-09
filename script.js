@@ -3056,18 +3056,18 @@ function updateDailyView() {
     tasksList.appendChild(timelineEl);
 }
 
-function undoCompleteTask(taskId) {
+function deleteCompletedTask(taskId) {
     const taskIndex = tasks.findIndex(t => t.id === taskId);
     if (taskIndex !== -1) {
-        tasks[taskIndex].completed = false;
-        tasks[taskIndex].active = true;
-        delete tasks[taskIndex].completedAt;
-        delete tasks[taskIndex].duration;
-        delete tasks[taskIndex].completedDate;
+        tasks.splice(taskIndex, 1);
         saveTasks();
         updateDailyView();
         renderCalendarWidget();
     }
+}
+
+function undoCompleteTask(taskId) {
+    deleteCompletedTask(taskId);
 }
 
 function getCategoryIndicatorColor(catId) {
