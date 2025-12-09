@@ -3025,11 +3025,13 @@ function updateDailyView() {
         const durationMinutes = Math.round((task.duration || 0) / 60000);
         const durationText = durationMinutes > 0 ? `${durationMinutes} мин` : 'нет времени';
 
-        const completedDate = new Date(task.completedAt || Date.now());
-        const timeStr = completedDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        const startDate = new Date(task.completedAt || Date.now());
+        const startTimeStr = startDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
-        const addedDate = new Date(task.statusChangedAt || Date.now());
-        const addedTimeStr = addedDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        const endDate = new Date(startDate.getTime() + (task.duration || 0));
+        const endTimeStr = endDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+        const timeRangeStr = `${startTimeStr} - ${endTimeStr}`;
 
         const isLastItem = index === sortedTasks.length - 1;
 
@@ -3038,23 +3040,20 @@ function updateDailyView() {
             <div class="timeline-connector${isLastItem ? ' timeline-connector-last' : ''}"></div>
             <div class="timeline-content">
                 <div class="timeline-header">
-                    <span class="timeline-time">${timeStr}</span>
+                    <span class="timeline-time">${timeRangeStr}</span>
                     <span class="timeline-duration">[${durationText}]</span>
                 </div>
                 <div class="timeline-text">${escapeHtml(task.text)}</div>
-                <div class="timeline-timestamps">
-                    <span class="timeline-added-time">Добавлена: ${addedTimeStr}</span>
-                    <span class="timeline-completed-time">Завершена: ${timeStr}</span>
-                </div>
                 <div class="timeline-footer">
+                    <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}">⋯</button>
                     <span class="timeline-category-tag" style="background-color: ${categoryColor}; color: ${getCategoryTagTextColor(task.category)};">${categoryName}</span>
-                    <button class="timeline-undo-btn" title="Удалить" data-task-id="${task.id}">🗑</button>
                 </div>
             </div>
         `;
 
-        taskEl.querySelector('.timeline-undo-btn').addEventListener('click', () => {
-            deleteCompletedTask(task.id);
+        taskEl.querySelector('.timeline-menu-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            openTimelineTaskMenu(task.id);
         });
 
         timelineEl.appendChild(taskEl);
