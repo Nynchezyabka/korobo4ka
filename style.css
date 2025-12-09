@@ -2710,6 +2710,41 @@ textarea {
     align-items: center;
 }
 
+.past-task-time-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.past-task-time-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.past-task-time-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #666;
+}
+
+.past-task-time-input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 1rem;
+    text-align: center;
+    width: 100%;
+}
+
+.past-task-time-input:focus {
+    outline: none;
+    border-color: #5d4037;
+    box-shadow: 0 0 0 2px rgba(93, 64, 55, 0.1);
+}
+
 .past-task-category-btn {
     flex: 1;
     padding: 8px 12px;
