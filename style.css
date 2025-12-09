@@ -2556,6 +2556,24 @@ textarea {
     color: #333;
 }
 
+.timeline-timestamps {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.85rem;
+    color: #666;
+    padding: 6px 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+    margin: 4px 0;
+}
+
+.timeline-added-time,
+.timeline-completed-time {
+    font-size: 0.85rem;
+    color: #888;
+}
+
 .timeline-footer {
     display: flex;
     align-items: center;
