@@ -2768,7 +2768,7 @@ textarea {
     padding: 8px 12px;
     background: #f5f5f5;
     color: #333;
-    border: 1px solid #ddd;
+    border: 2px solid #ddd;
     border-radius: 4px;
     font-family: inherit;
     font-size: 0.9rem;
@@ -2776,7 +2776,15 @@ textarea {
     transition: all 0.2s;
     min-height: auto;
     box-shadow: none;
+    font-weight: 600;
 }
+
+.past-task-category-btn.category-0 { background-color: #f5f5f5; color: #666; border-color: #999999; }
+.past-task-category-btn.category-1 { background-color: #fff9c4; color: #8B7500; border-color: #FFD54F; }
+.past-task-category-btn.category-2 { background-color: #bbdefb; color: #0D47A1; border-color: #2196F3; }
+.past-task-category-btn.category-3 { background-color: #c8e6c9; color: #1B5E20; border-color: #4CAF50; }
+.past-task-category-btn.category-4 { background-color: #ffcdd2; color: #B71C1C; border-color: #F44336; }
+.past-task-category-btn.category-5 { background-color: #d1c4e9; color: #0277BD; border-color: #B3E5FC; }
 
 .past-task-category-btn:hover {
     background: #efefef;
