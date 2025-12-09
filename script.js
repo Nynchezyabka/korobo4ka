@@ -3005,60 +3005,49 @@ function updateDailyView() {
         return;
     }
 
-    const categoryGroups = new Map();
-    completedTasks.forEach(task => {
-        const cat = getCategoryName(task.category);
-        if (!categoryGroups.has(task.category)) {
-            categoryGroups.set(task.category, []);
-        }
-        categoryGroups.get(task.category).push(task);
+    const sortedTasks = completedTasks.sort((a, b) => (a.completedAt || 0) - (b.completedAt || 0));
+
+    const timelineEl = document.createElement('div');
+    timelineEl.className = 'timeline-view';
+
+    sortedTasks.forEach((task, index) => {
+        const taskEl = document.createElement('div');
+        taskEl.className = 'timeline-item';
+
+        const categoryColor = getCategoryIndicatorColor(task.category);
+        const categoryName = getCategoryName(task.category);
+        const durationMinutes = Math.round((task.duration || 0) / 60000);
+        const durationText = durationMinutes > 0 ? `${durationMinutes} мин` : 'нет времени';
+
+        const completedDate = new Date(task.completedAt || Date.now());
+        const timeStr = completedDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+        const isLastItem = index === sortedTasks.length - 1;
+
+        taskEl.innerHTML = `
+            <div class="timeline-dot" style="background-color: ${categoryColor};" title="${categoryName}"></div>
+            <div class="timeline-connector${isLastItem ? ' timeline-connector-last' : ''}"></div>
+            <div class="timeline-content">
+                <div class="timeline-header">
+                    <span class="timeline-time">${timeStr}</span>
+                    <span class="timeline-duration">[${durationText}]</span>
+                </div>
+                <div class="timeline-text">${escapeHtml(task.text)}</div>
+                <div class="timeline-footer">
+                    <span class="timeline-category-tag" style="background-color: ${categoryColor}; color: ${getCategoryTagTextColor(task.category)};">${categoryName}</span>
+                    <button class="timeline-undo-btn" title="Отменить выполнение" data-task-id="${task.id}">↺</button>
+                </div>
+            </div>
+        `;
+
+        taskEl.querySelector('.timeline-undo-btn').addEventListener('click', () => {
+            undoCompleteTask(task.id);
+        });
+
+        timelineEl.appendChild(taskEl);
     });
 
-    Array.from(categoryGroups.entries())
-        .sort((a, b) => a[0] - b[0])
-        .forEach(([catId, catTasks]) => {
-            const groupEl = document.createElement('div');
-            groupEl.className = 'daily-category-group';
-
-            const categoryColor = getCategoryIndicatorColor(catId);
-            const categoryName = getCategoryName(catId);
-
-            const header = document.createElement('div');
-            header.className = 'daily-category-header';
-            header.style.borderLeftColor = categoryColor;
-            header.innerHTML = `<span style="background-color: ${categoryColor};" class="category-indicator"></span> ${categoryName}`;
-            groupEl.appendChild(header);
-
-            const listEl = document.createElement('div');
-            listEl.className = 'daily-tasks-group';
-
-            catTasks.forEach(task => {
-                const taskEl = document.createElement('div');
-                taskEl.className = 'daily-task-item';
-
-                const durationMinutes = Math.round((task.duration || 0) / 60000);
-                const durationText = durationMinutes > 0 ? `${durationMinutes}м` : 'нет времени';
-
-                taskEl.innerHTML = `
-                    <div class="daily-task-content">
-                        <div class="daily-task-text">${escapeHtml(task.text)}</div>
-                        <div class="daily-task-duration">${durationText}</div>
-                    </div>
-                    <div class="daily-task-actions">
-                        <button class="daily-task-undo-btn" title="Отменить выполнение" data-task-id="${task.id}">↺</button>
-                    </div>
-                `;
-
-                taskEl.querySelector('.daily-task-undo-btn').addEventListener('click', () => {
-                    undoCompleteTask(task.id);
-                });
-
-                listEl.appendChild(taskEl);
-            });
-
-            groupEl.appendChild(listEl);
-            tasksList.appendChild(groupEl);
-        });
+    tasksList.appendChild(timelineEl);
 }
 
 function undoCompleteTask(taskId) {
