@@ -2885,6 +2885,12 @@ function openDailyActivityModal() {
     selectedPastTaskSubcategory = null;
     updatePastTaskCategoryButton();
 
+    const now = new Date();
+    const hoursInput = document.getElementById('pastTaskHours');
+    const minutesInput = document.getElementById('pastTaskMinutes');
+    if (hoursInput) hoursInput.value = String(now.getHours()).padStart(2, '0');
+    if (minutesInput) minutesInput.value = String(now.getMinutes()).padStart(2, '0');
+
     renderCalendarWidget();
     updateDailyView();
 }
