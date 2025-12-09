@@ -2806,4 +2806,68 @@ textarea {
     .calendar-month-year {
         font-size: 0.95rem;
     }
+
+    .timeline-view {
+        padding-left: 16px;
+    }
+
+    .timeline-view::before {
+        left: 5px;
+    }
+
+    .timeline-item {
+        min-height: 100px;
+        padding: 12px 0 12px 0;
+        gap: 12px;
+    }
+
+    .timeline-dot {
+        width: 14px;
+        height: 14px;
+        left: -21px;
+        top: 18px;
+    }
+
+    .timeline-connector {
+        left: -14px;
+        top: 28px;
+    }
+
+    .timeline-content {
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .timeline-header {
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .timeline-time {
+        font-size: 1.05rem;
+    }
+
+    .timeline-duration {
+        font-size: 0.9rem;
+    }
+
+    .timeline-text {
+        font-size: 0.95rem;
+    }
+
+    .timeline-footer {
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .timeline-category-tag {
+        padding: 4px 10px;
+        font-size: 0.8rem;
+    }
+
+    .timeline-undo-btn {
+        padding: 8px 12px;
+        font-size: 0.95rem;
+        min-height: 44px;
+    }
 }
