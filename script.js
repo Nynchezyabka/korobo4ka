@@ -3271,6 +3271,23 @@ function updatePastTaskCategoryButton() {
             text += ` → ${getSubcategoryLabel(selectedPastTaskCategory, selectedPastTaskSubcategory)}`;
         }
         btn.textContent = text;
+
+        btn.className = 'past-task-category-btn category-' + selectedPastTaskCategory;
+        const categoryColor = getCategoryIndicatorColor(selectedPastTaskCategory);
+        btn.style.backgroundColor = categoryColor;
+        btn.style.borderColor = categoryColor;
+
+        if (selectedPastTaskCategory === 0 || selectedPastTaskCategory === 5) {
+            btn.style.color = '#666';
+        } else if (selectedPastTaskCategory === 1) {
+            btn.style.color = '#8B7500';
+        } else if (selectedPastTaskCategory === 2) {
+            btn.style.color = '#0D47A1';
+        } else if (selectedPastTaskCategory === 3) {
+            btn.style.color = '#1B5E20';
+        } else if (selectedPastTaskCategory === 4) {
+            btn.style.color = '#B71C1C';
+        }
     }
 }
 
