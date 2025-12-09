@@ -2980,6 +2980,17 @@ textarea {
         line-height: 1.5;
     }
 
+    .timeline-timestamps {
+        gap: 6px;
+        margin: 8px 0;
+        padding: 8px 0;
+    }
+
+    .timeline-added-time,
+    .timeline-completed-time {
+        font-size: 0.9rem;
+    }
+
     .timeline-footer {
         flex-direction: row;
         align-items: center;
