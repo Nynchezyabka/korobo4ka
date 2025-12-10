@@ -2781,6 +2781,24 @@ function closeEditTaskModal() {
                 const newCategory = parseInt(selectedBtn.dataset.category);
                 if (!Number.isNaN(newCategory)) {
                     task.category = newCategory;
+
+                    // Handle subcategory if category 1 is selected
+                    if (newCategory === 1) {
+                        const subcategoryContainer = document.getElementById('editTaskSubcategories');
+                        const selectedSubBtn = subcategoryContainer ? subcategoryContainer.querySelector('.subcat-badge.selected, [data-subcategory].selected') : null;
+                        if (selectedSubBtn) {
+                            const subName = selectedSubBtn.getAttribute('data-subcategory') || selectedSubBtn.textContent.trim();
+                            if (subName && subName !== 'Без подкатегории') {
+                                task.subcategory = normalizeSubcategoryName(newCategory, subName);
+                            } else {
+                                delete task.subcategory;
+                            }
+                        } else {
+                            delete task.subcategory;
+                        }
+                    } else {
+                        delete task.subcategory;
+                    }
                 }
             }
 
