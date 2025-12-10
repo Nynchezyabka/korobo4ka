@@ -2624,6 +2624,177 @@ function closePasteModal() {
     pasteTasksModal.style.display = 'none';
 }
 
+// Task actions modal (for completed tasks)
+let currentTaskActionsContext = null;
+
+function openTaskActionsModal(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task || !task.completed) return;
+
+    currentTaskActionsContext = { taskId };
+    const m = document.getElementById('taskActionsModal');
+    if (!m) return;
+
+    m.setAttribute('aria-hidden', 'false');
+    m.style.display = 'flex';
+}
+
+function closeTaskActionsModal() {
+    const m = document.getElementById('taskActionsModal');
+    if (!m) return;
+    m.setAttribute('aria-hidden', 'true');
+    m.style.display = 'none';
+    currentTaskActionsContext = null;
+}
+
+// Edit task modal setup
+(function setupTaskActionsModal() {
+    const m = document.getElementById('taskActionsModal');
+    if (!m) return;
+
+    const backdrop = document.getElementById('taskActionsBackdrop');
+    const closeBtn = document.getElementById('taskActionsClose');
+    const cancelBtn = document.getElementById('taskActionsCancel');
+
+    const closeModal = () => closeTaskActionsModal();
+
+    if (backdrop) backdrop.addEventListener('click', closeModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+    m.querySelectorAll('.task-action-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const action = btn.dataset.action;
+            const ctx = currentTaskActionsContext;
+            if (!ctx) return;
+
+            if (action === 'edit') {
+                closeModal();
+                openEditTaskModal(ctx.taskId);
+            } else if (action === 'delete') {
+                closeModal();
+                deleteTask(ctx.taskId);
+            }
+        });
+    });
+})();
+
+// Edit task modal
+let currentEditTaskContext = null;
+
+function openEditTaskModal(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    currentEditTaskContext = { taskId };
+    const m = document.getElementById('editTaskModal');
+    if (!m) return;
+
+    m.setAttribute('aria-hidden', 'false');
+    m.style.display = 'flex';
+
+    // Populate form fields
+    const nameInput = document.getElementById('editTaskNameInput');
+    if (nameInput) nameInput.value = task.text || '';
+
+    // Set time inputs
+    const completedDate = new Date(task.completedAt || Date.now());
+    const hoursInput = document.getElementById('editTaskHours');
+    const minutesInput = document.getElementById('editTaskMinutes');
+    const durationInput = document.getElementById('editTaskDuration');
+
+    if (hoursInput) hoursInput.value = completedDate.getHours();
+    if (minutesInput) minutesInput.value = completedDate.getMinutes();
+    if (durationInput) durationInput.value = Math.round((task.duration || 0) / 60000);
+
+    // Render category options
+    const categoryContainer = document.getElementById('editTaskCategoryOptions');
+    if (categoryContainer) {
+        renderCategoryButtons(categoryContainer);
+        const catBtn = categoryContainer.querySelector(`[data-category="${task.category}"]`);
+        if (catBtn) catBtn.click();
+    }
+
+    // Focus on the task name input
+    if (nameInput) setTimeout(() => nameInput.focus(), 50);
+}
+
+function closeEditTaskModal() {
+    const m = document.getElementById('editTaskModal');
+    if (!m) return;
+    m.setAttribute('aria-hidden', 'true');
+    m.style.display = 'none';
+    currentEditTaskContext = null;
+}
+
+// Edit task modal setup
+(function setupEditTaskModal() {
+    const m = document.getElementById('editTaskModal');
+    if (!m) return;
+
+    const backdrop = document.getElementById('editTaskBackdrop');
+    const closeBtn = document.getElementById('editTaskClose');
+    const cancelBtn = document.getElementById('editTaskCancel');
+    const okBtn = document.getElementById('editTaskOk');
+
+    const closeModal = () => closeEditTaskModal();
+
+    if (backdrop) backdrop.addEventListener('click', closeModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+    if (okBtn) {
+        okBtn.addEventListener('click', () => {
+            const ctx = currentEditTaskContext;
+            if (!ctx) return;
+
+            const taskId = ctx.taskId;
+            const idx = tasks.findIndex(t => t.id === taskId);
+            if (idx === -1) return;
+
+            const task = tasks[idx];
+
+            // Update task name
+            const nameInput = document.getElementById('editTaskNameInput');
+            if (nameInput && nameInput.value.trim()) {
+                task.text = nameInput.value.trim();
+            }
+
+            // Update category
+            const categoryContainer = document.getElementById('editTaskCategoryOptions');
+            const selectedBtn = categoryContainer ? categoryContainer.querySelector('.modal-category-btn.selected') : null;
+            if (selectedBtn) {
+                const newCategory = parseInt(selectedBtn.dataset.category);
+                if (!Number.isNaN(newCategory)) {
+                    task.category = newCategory;
+                }
+            }
+
+            // Update time
+            const hoursInput = document.getElementById('editTaskHours');
+            const minutesInput = document.getElementById('editTaskMinutes');
+            const durationInput = document.getElementById('editTaskDuration');
+
+            if (hoursInput && minutesInput) {
+                const hours = parseInt(hoursInput.value) || 0;
+                const minutes = parseInt(minutesInput.value) || 0;
+                const completedDate = new Date(task.completedAt || Date.now());
+                completedDate.setHours(hours, minutes, 0, 0);
+                task.completedAt = completedDate.getTime();
+            }
+
+            if (durationInput) {
+                const durationMinutes = parseInt(durationInput.value) || 0;
+                task.duration = durationMinutes * 60000;
+            }
+
+            saveTasks();
+            closeModal();
+            displayTasks();
+        });
+    }
+})();
+
 if (pasteTasksBtn) {
     pasteTasksBtn.addEventListener('click', openPasteModal);
 }
