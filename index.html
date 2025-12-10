@@ -283,6 +283,63 @@
         </div>
     </div>
 
+    <!-- Task Actions Menu Modal (for completed tasks) -->
+    <div class="modal" id="taskActionsModal" aria-hidden="true" role="dialog">
+        <div class="modal-backdrop" id="taskActionsBackdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="taskActionsClose" aria-label="Закрыть">&times;</button>
+            <h3>Действия с задачей</h3>
+            <div class="task-actions-list">
+                <button type="button" class="task-action-btn" data-action="edit">Изменить</button>
+                <button type="button" class="task-action-btn destructive" data-action="delete">Удалить</button>
+            </div>
+            <div class="modal-actions">
+                <button id="taskActionsCancel">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div class="modal" id="editTaskModal" aria-hidden="true" role="dialog">
+        <div class="modal-backdrop" id="editTaskBackdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="editTaskClose" aria-label="Закрыть">&times;</button>
+            <h3>Изменить задачу</h3>
+            <div class="edit-task-container">
+                <div class="edit-task-section">
+                    <label for="editTaskNameInput" class="modal-label">Название задачи</label>
+                    <textarea id="editTaskNameInput" placeholder="Введите название задачи"></textarea>
+                </div>
+                <div class="edit-task-section">
+                    <label class="modal-label">Категория</label>
+                    <div id="editTaskCategoryOptions" class="modal-category-options" aria-label="Выбор категории"></div>
+                    <div class="add-subcategory-controls" id="editTaskSubcategories" style="display:none;"></div>
+                </div>
+                <div class="edit-task-section">
+                    <label class="modal-label">Время завершения</label>
+                    <div class="edit-task-time-controls">
+                        <div class="time-group">
+                            <label for="editTaskHours">Час:</label>
+                            <input type="number" id="editTaskHours" min="0" max="23" class="time-input">
+                        </div>
+                        <div class="time-group">
+                            <label for="editTaskMinutes">Минуты:</label>
+                            <input type="number" id="editTaskMinutes" min="0" max="59" class="time-input">
+                        </div>
+                    </div>
+                    <div class="edit-task-duration">
+                        <label for="editTaskDuration">Продолжительность (минуты):</label>
+                        <input type="number" id="editTaskDuration" min="0" max="480" placeholder="0">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="editTaskOk">Сохранить</button>
+                <button id="editTaskCancel">Отмена</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Daily Activity Calendar Modal -->
     <div class="modal" id="dailyActivityModal" aria-hidden="true" role="dialog">
         <div class="modal-backdrop" id="dailyActivityBackdrop"></div>
