@@ -872,6 +872,14 @@ function displayTasks() {
         });
     });
 
+    document.querySelectorAll('.task-kebab-menu-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = parseInt(btn.dataset.id);
+            openTaskActionsModal(id);
+        });
+    });
+
     document.querySelectorAll('.start-timer-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
