@@ -2709,8 +2709,22 @@ function openEditTaskModal(taskId) {
 
     // Render category options
     const categoryContainer = document.getElementById('editTaskCategoryOptions');
+    const subcategoryContainer = document.getElementById('editTaskSubcategories');
+
     if (categoryContainer) {
         renderCategoryButtons(categoryContainer);
+
+        // Set up category button click handlers to show subcategories
+        categoryContainer.querySelectorAll('.modal-category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const cat = parseInt(this.dataset.category);
+                if (subcategoryContainer) {
+                    showAddSubcategoriesFor(cat, subcategoryContainer);
+                }
+            });
+        });
+
+        // Select the task's current category
         const catBtn = categoryContainer.querySelector(`[data-category="${task.category}"]`);
         if (catBtn) catBtn.click();
     }
