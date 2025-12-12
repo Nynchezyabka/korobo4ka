@@ -3266,7 +3266,7 @@ function updateDailyView() {
                 </div>
                 <div class="timeline-text">${escapeHtml(task.text)}</div>
                 <div class="timeline-footer">
-                    <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}">⋯</button>
+                    <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}"><i class="fas fa-ellipsis-v"></i></button>
                     <span class="timeline-category-tag" style="background-color: ${categoryColor}; color: ${getCategoryTagTextColor(task.category)};">${categoryName}</span>
                 </div>
             </div>
