@@ -2692,6 +2692,12 @@ function openEditTaskModal(taskId) {
 
     m.setAttribute('aria-hidden', 'false');
     m.style.display = 'flex';
+    m.style.zIndex = '10600';
+
+    const backdrop = document.getElementById('editTaskBackdrop');
+    if (backdrop) {
+        backdrop.style.zIndex = '10599';
+    }
 
     // Populate form fields
     const nameInput = document.getElementById('editTaskNameInput');
