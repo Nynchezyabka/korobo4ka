@@ -1649,6 +1649,9 @@ textarea {
 .modal[aria-hidden="false"] { display: flex; }
 #addTaskModal { z-index: 10300; }
 #pastTaskCategoryModal { z-index: 10400; }
+#taskActionsModal { z-index: 10500; }
+#editTaskModal { z-index: 10500; }
+#dailyActivityModal { z-index: 10200; }
 #addTaskModal .modal-backdrop { z-index: 1; }
 #pastTaskCategoryBackdrop { display: none; }
 .modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: 0; }
