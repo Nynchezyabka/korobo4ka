@@ -2727,6 +2727,17 @@ function openEditTaskModal(taskId) {
         // Select the task's current category
         const catBtn = categoryContainer.querySelector(`[data-category="${task.category}"]`);
         if (catBtn) catBtn.click();
+
+        // Select the task's subcategory if present
+        if (task.subcategory && subcategoryContainer) {
+            setTimeout(() => {
+                const subBtn = subcategoryContainer.querySelector(`[data-sub="${task.subcategory}"]`);
+                if (subBtn) {
+                    subcategoryContainer.querySelectorAll('.add-subcategory-btn').forEach(btn => btn.classList.remove('selected'));
+                    subBtn.classList.add('selected');
+                }
+            }, 50);
+        }
     }
 
     // Focus on the task name input
