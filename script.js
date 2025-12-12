@@ -2629,7 +2629,7 @@ let currentTaskActionsContext = null;
 
 function openTaskActionsModal(taskId) {
     const task = tasks.find(t => t.id === taskId);
-    if (!task || !task.completed) return;
+    if (!task) return;
 
     currentTaskActionsContext = { taskId };
     const m = document.getElementById('taskActionsModal');
