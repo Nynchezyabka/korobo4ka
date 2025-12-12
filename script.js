@@ -3602,3 +3602,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Timeline task menu - opens taskActionsModal for completed tasks in History
+function openTimelineTaskMenu(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    currentTaskActionsContext = { taskId };
+    const m = document.getElementById('taskActionsModal');
+    if (!m) return;
+
+    m.setAttribute('aria-hidden', 'false');
+    m.style.display = 'flex';
+}
