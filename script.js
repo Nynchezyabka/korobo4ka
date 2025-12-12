@@ -2637,6 +2637,12 @@ function openTaskActionsModal(taskId) {
 
     m.setAttribute('aria-hidden', 'false');
     m.style.display = 'flex';
+    m.style.zIndex = '10500';
+
+    const backdrop = document.getElementById('taskActionsBackdrop');
+    if (backdrop) {
+        backdrop.style.zIndex = '10499';
+    }
 }
 
 function closeTaskActionsModal() {
