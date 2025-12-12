@@ -2629,7 +2629,7 @@ let currentTaskActionsContext = null;
 
 function openTaskActionsModal(taskId) {
     const task = tasks.find(t => t.id === taskId);
-    if (!task || !task.completed) return;
+    if (!task) return;
 
     currentTaskActionsContext = { taskId };
     const m = document.getElementById('taskActionsModal');
@@ -2637,6 +2637,12 @@ function openTaskActionsModal(taskId) {
 
     m.setAttribute('aria-hidden', 'false');
     m.style.display = 'flex';
+    m.style.zIndex = '10500';
+
+    const backdrop = document.getElementById('taskActionsBackdrop');
+    if (backdrop) {
+        backdrop.style.zIndex = '10499';
+    }
 }
 
 function closeTaskActionsModal() {
@@ -2644,6 +2650,12 @@ function closeTaskActionsModal() {
     if (!m) return;
     m.setAttribute('aria-hidden', 'true');
     m.style.display = 'none';
+    m.style.zIndex = '';
+
+    const backdrop = document.getElementById('taskActionsBackdrop');
+    if (backdrop) {
+        backdrop.style.zIndex = '';
+    }
     currentTaskActionsContext = null;
 }
 
@@ -2692,6 +2704,12 @@ function openEditTaskModal(taskId) {
 
     m.setAttribute('aria-hidden', 'false');
     m.style.display = 'flex';
+    m.style.zIndex = '10600';
+
+    const backdrop = document.getElementById('editTaskBackdrop');
+    if (backdrop) {
+        backdrop.style.zIndex = '10599';
+    }
 
     // Populate form fields
     const nameInput = document.getElementById('editTaskNameInput');
@@ -2727,6 +2745,17 @@ function openEditTaskModal(taskId) {
         // Select the task's current category
         const catBtn = categoryContainer.querySelector(`[data-category="${task.category}"]`);
         if (catBtn) catBtn.click();
+
+        // Select the task's subcategory if present
+        if (task.subcategory && subcategoryContainer) {
+            setTimeout(() => {
+                const subBtn = subcategoryContainer.querySelector(`[data-sub="${task.subcategory}"]`);
+                if (subBtn) {
+                    subcategoryContainer.querySelectorAll('.add-subcategory-btn').forEach(btn => btn.classList.remove('selected'));
+                    subBtn.classList.add('selected');
+                }
+            }, 50);
+        }
     }
 
     // Focus on the task name input
@@ -2738,6 +2767,12 @@ function closeEditTaskModal() {
     if (!m) return;
     m.setAttribute('aria-hidden', 'true');
     m.style.display = 'none';
+    m.style.zIndex = '';
+
+    const backdrop = document.getElementById('editTaskBackdrop');
+    if (backdrop) {
+        backdrop.style.zIndex = '';
+    }
     currentEditTaskContext = null;
 }
 
@@ -2782,17 +2817,13 @@ function closeEditTaskModal() {
                 if (!Number.isNaN(newCategory)) {
                     task.category = newCategory;
 
-                    // Handle subcategory if category 1 is selected
-                    if (newCategory === 1) {
-                        const subcategoryContainer = document.getElementById('editTaskSubcategories');
-                        const selectedSubBtn = subcategoryContainer ? subcategoryContainer.querySelector('.subcat-badge.selected, [data-subcategory].selected') : null;
-                        if (selectedSubBtn) {
-                            const subName = selectedSubBtn.getAttribute('data-subcategory') || selectedSubBtn.textContent.trim();
-                            if (subName && subName !== 'Без подкатегории') {
-                                task.subcategory = normalizeSubcategoryName(newCategory, subName);
-                            } else {
-                                delete task.subcategory;
-                            }
+                    // Handle subcategory for all categories that support them
+                    const subcategoryContainer = document.getElementById('editTaskSubcategories');
+                    const selectedSubBtn = subcategoryContainer ? subcategoryContainer.querySelector('.add-subcategory-btn.selected') : null;
+                    if (selectedSubBtn && selectedSubBtn.dataset.sub) {
+                        const subName = selectedSubBtn.dataset.sub;
+                        if (subName && subName !== 'Без подкатегории') {
+                            task.subcategory = normalizeSubcategoryName(newCategory, subName) || subName;
                         } else {
                             delete task.subcategory;
                         }
@@ -3259,7 +3290,7 @@ function updateDailyView() {
                 </div>
                 <div class="timeline-text">${escapeHtml(task.text)}</div>
                 <div class="timeline-footer">
-                    <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}">⋯</button>
+                    <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}"><i class="fas fa-ellipsis-v"></i></button>
                     <span class="timeline-category-tag" style="background-color: ${categoryColor}; color: ${getCategoryTagTextColor(task.category)};">${categoryName}</span>
                 </div>
             </div>
@@ -3602,3 +3633,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Timeline task menu - opens taskActionsModal for completed tasks in History
+function openTimelineTaskMenu(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    currentTaskActionsContext = { taskId };
+    const m = document.getElementById('taskActionsModal');
+    if (!m) return;
+
+    m.setAttribute('aria-hidden', 'false');
+    m.style.display = 'flex';
+}
