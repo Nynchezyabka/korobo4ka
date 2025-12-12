@@ -2650,6 +2650,12 @@ function closeTaskActionsModal() {
     if (!m) return;
     m.setAttribute('aria-hidden', 'true');
     m.style.display = 'none';
+    m.style.zIndex = '';
+
+    const backdrop = document.getElementById('taskActionsBackdrop');
+    if (backdrop) {
+        backdrop.style.zIndex = '';
+    }
     currentTaskActionsContext = null;
 }
 
