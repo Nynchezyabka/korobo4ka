@@ -2761,6 +2761,12 @@ function closeEditTaskModal() {
     if (!m) return;
     m.setAttribute('aria-hidden', 'true');
     m.style.display = 'none';
+    m.style.zIndex = '';
+
+    const backdrop = document.getElementById('editTaskBackdrop');
+    if (backdrop) {
+        backdrop.style.zIndex = '';
+    }
     currentEditTaskContext = null;
 }
 
