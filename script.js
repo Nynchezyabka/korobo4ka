@@ -1,6 +1,20 @@
 // Переменная для хранения задач
 let tasks = [];
 
+// Z-index manager for proper modal stacking
+let currentMaxZIndex = 10100;
+const modalZIndexManager = {
+    getNextZIndex() {
+        return ++currentMaxZIndex;
+    },
+    applyToModal(modalElement, backdropElement) {
+        const zIndex = this.getNextZIndex();
+        if (modalElement) modalElement.style.zIndex = zIndex;
+        if (backdropElement) backdropElement.style.zIndex = zIndex - 1;
+        return zIndex;
+    }
+};
+
 // Dynamically loaded assets from API
 let loadedAssets = {};
 
