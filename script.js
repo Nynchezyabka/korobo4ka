@@ -2179,6 +2179,7 @@ function openConfirmModal({ title='Подтверждение', message='', conf
     const m = document.getElementById('confirmModal'); if (!m) return;
     const backdrop = document.getElementById('confirmBackdrop');
     m.setAttribute('aria-hidden','false'); m.style.display = 'flex';
+    modalZIndexManager.applyToModal(m, backdrop);
     const contentEl = m.querySelector('.modal-content');
     if (contentEl) contentEl.classList.toggle('compact', !!compact);
     const titleEl = m.querySelector('#confirmTitle'); const msgEl = m.querySelector('#confirmMessage');
