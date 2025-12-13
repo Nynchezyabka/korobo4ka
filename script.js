@@ -2873,6 +2873,12 @@ function closeEditTaskModal() {
             saveTasks();
             closeModal();
             displayTasks();
+            // Refresh history view if it's currently open
+            const dailyActivityModal = document.getElementById('dailyActivityModal');
+            if (dailyActivityModal && dailyActivityModal.style.display === 'flex') {
+                updateDailyView();
+                renderCalendarWidget();
+            }
         });
     }
 })();
@@ -3300,6 +3306,7 @@ function updateDailyView() {
         const isLastItem = index === sortedTasks.length - 1;
 
         taskEl.innerHTML = `
+            <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}"><i class="fas fa-ellipsis-v"></i></button>
             <div class="timeline-dot" style="background-color: ${categoryColor};" title="${categoryName}"></div>
             <div class="timeline-connector${isLastItem ? ' timeline-connector-last' : ''}"></div>
             <div class="timeline-content">
@@ -3309,7 +3316,6 @@ function updateDailyView() {
                 </div>
                 <div class="timeline-text">${escapeHtml(task.text)}</div>
                 <div class="timeline-footer">
-                    <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}"><i class="fas fa-ellipsis-v"></i></button>
                     <span class="timeline-category-tag" style="background-color: ${categoryColor}; color: ${getCategoryTagTextColor(task.category)};">${categoryName}</span>
                 </div>
             </div>
