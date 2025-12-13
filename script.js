@@ -2388,8 +2388,10 @@ function openAddModal(initialCategory, options = {}) {
     }
     if (showArchive) { openInfoModal('Нельзя добавлять задачи в списке выполненных'); return; }
     if (!addTaskModal) return;
+    const modalBackdrop = document.getElementById('modalBackdrop');
     addTaskModal.setAttribute('aria-hidden', 'false');
     addTaskModal.style.display = 'flex';
+    openModalWithZIndex(addTaskModal, modalBackdrop);
     modalTaskText.value = '';
     modalPrimaryCategory = null;
 
