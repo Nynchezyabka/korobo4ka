@@ -2535,7 +2535,7 @@ textarea {
 
 .timeline-header {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 8px;
     flex-wrap: wrap;
     font-weight: 500;
