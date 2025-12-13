@@ -2270,8 +2270,9 @@ function openSubcategoryActions(category, subName) {
 // Setup subcategory actions modal behavior: rename, move, delete
 (function setupSubcatActions(){
     const m = document.getElementById('subcatActionsModal'); if (!m) return;
-    const close = () => { m.setAttribute('aria-hidden','true'); m.style.display='none'; };
-    const closeBtn = document.getElementById('subcatActionsClose'); const cancelBtn = document.getElementById('subcatActionsCancel'); const backdrop = document.getElementById('subcatActionsBackdrop');
+    const backdrop = document.getElementById('subcatActionsBackdrop');
+    const close = () => { m.setAttribute('aria-hidden','true'); m.style.display='none'; closeModalWithZIndex(m, backdrop); };
+    const closeBtn = document.getElementById('subcatActionsClose'); const cancelBtn = document.getElementById('subcatActionsCancel');
     [closeBtn,cancelBtn,backdrop].forEach(el => el && el.addEventListener('click', close));
 
     const renameOk = document.getElementById('renameSubcatOk'); const renameCancel = document.getElementById('renameSubcatCancel'); const renameClose = document.getElementById('renameSubcatClose');
