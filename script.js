@@ -2346,7 +2346,7 @@ try {
                 // wire ok/cancel
                 const okBtn = document.getElementById('moveTasksOk'); const cancel = document.getElementById('moveTasksCancel'); const closeBtn = document.getElementById('moveTasksClose'); const backdrop2 = document.getElementById('moveTasksBackdrop');
                 if (okBtn) okBtn.disabled = false;
-                const closeMove = () => { mv.setAttribute('aria-hidden','true'); mv.style.display='none'; };
+                const closeMove = () => { mv.setAttribute('aria-hidden','true'); mv.style.display='none'; closeModalWithZIndex(mv, backdrop2); };
                 if (cancel) cancel.onclick = closeMove; if (closeBtn) closeBtn.addEventListener('click', closeMove); if (backdrop2) backdrop2.addEventListener('click', closeMove);
 
                 // Handle category selection
