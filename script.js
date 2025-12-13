@@ -3665,4 +3665,6 @@ function openTimelineTaskMenu(taskId) {
 
     m.setAttribute('aria-hidden', 'false');
     m.style.display = 'flex';
+    const backdrop = document.getElementById('taskActionsBackdrop');
+    modalZIndexManager.applyToModal(m, backdrop);
 }
