@@ -2873,6 +2873,12 @@ function closeEditTaskModal() {
             saveTasks();
             closeModal();
             displayTasks();
+            // Refresh history view if it's currently open
+            const dailyActivityModal = document.getElementById('dailyActivityModal');
+            if (dailyActivityModal && dailyActivityModal.style.display === 'flex') {
+                updateDailyView();
+                renderCalendarWidget();
+            }
         });
     }
 })();
