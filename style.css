@@ -2581,13 +2581,17 @@ textarea {
     background: none;
     border: none;
     color: #999;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     cursor: pointer;
-    padding: 0 4px;
+    padding: 4px 4px;
     min-height: auto;
     min-width: auto;
     box-shadow: none;
     transition: color 0.2s;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .timeline-menu-btn:active {
