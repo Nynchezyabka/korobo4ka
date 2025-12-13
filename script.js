@@ -2443,8 +2443,10 @@ function openAddModal(initialCategory, options = {}) {
 
 function closeAddModal() {
     if (!addTaskModal) return;
+    const modalBackdrop = document.getElementById('modalBackdrop');
     addTaskModal.setAttribute('aria-hidden', 'true');
     addTaskModal.style.display = 'none';
+    closeModalWithZIndex(addTaskModal, modalBackdrop);
     if (modalSubcategories) { modalSubcategories.classList.remove('show'); modalSubcategories.style.display = 'none'; }
     // If opened from timer quick-add and timer was running, resume automatically
     try {
