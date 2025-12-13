@@ -2262,7 +2262,9 @@ let currentSubcatContext = null;
 function openSubcategoryActions(category, subName) {
     currentSubcatContext = { category: parseInt(category), subName };
     const m = document.getElementById('subcatActionsModal'); if (!m) return;
+    const backdrop = document.getElementById('subcatActionsBackdrop');
     m.setAttribute('aria-hidden','false'); m.style.display='flex';
+    openModalWithZIndex(m, backdrop);
 }
 
 // Setup subcategory actions modal behavior: rename, move, delete
