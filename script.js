@@ -10,7 +10,9 @@ const modalZIndexManager = {
     applyToModal(modalElement, backdropElement) {
         const zIndex = this.getNextZIndex();
         if (modalElement) modalElement.style.zIndex = zIndex;
-        if (backdropElement) backdropElement.style.zIndex = zIndex - 1;
+        // Don't set backdrop z-index - it's position:absolute inside the modal,
+        // so its z-index is relative to the modal, not the viewport. The content
+        // (z-index: 1) should stay on top of backdrop (z-index: 0).
         return zIndex;
     }
 };
