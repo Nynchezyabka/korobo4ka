@@ -2311,7 +2311,7 @@ try {
     }
 } catch (_) {} } });
             } else if (action === 'move') {
-                const mv = document.getElementById('moveTasksModal'); if (!mv) return; mv.setAttribute('aria-hidden','false'); mv.style.display='flex';
+                const mv = document.getElementById('moveTasksModal'); if (!mv) return; mv.setAttribute('aria-hidden','false'); mv.style.display='flex'; const moveTasksBackdrop = document.getElementById('moveTasksBackdrop'); modalZIndexManager.applyToModal(mv, moveTasksBackdrop);
                 // render category options
                 const catCont = document.getElementById('moveTasksCategoryOptions'); const subCont = document.getElementById('moveTasksSubcategories'); renderCategoryButtons(catCont);
                 // clear subCont until a category selected
