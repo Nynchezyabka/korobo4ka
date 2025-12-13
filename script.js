@@ -2363,6 +2363,8 @@ function openAddModal(initialCategory, options = {}) {
     if (!addTaskModal) return;
     addTaskModal.setAttribute('aria-hidden', 'false');
     addTaskModal.style.display = 'flex';
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    modalZIndexManager.applyToModal(addTaskModal, modalBackdrop);
     modalTaskText.value = '';
     modalPrimaryCategory = null;
 
