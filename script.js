@@ -2920,7 +2920,7 @@ const infoModal = document.getElementById('infoModal');
 const infoBackdrop = document.getElementById('infoBackdrop');
 const infoCloseBtn = document.getElementById('infoCloseBtn');
 const infoCloseAction = document.getElementById('infoCloseAction');
-function openAboutModal() { if (!infoModal) return; infoModal.setAttribute('aria-hidden','false'); infoModal.style.display='flex'; }
+function openAboutModal() { if (!infoModal) return; infoModal.setAttribute('aria-hidden','false'); infoModal.style.display='flex'; const infoBackdropEl = document.getElementById('infoBackdrop'); modalZIndexManager.applyToModal(infoModal, infoBackdropEl); }
 function closeAboutModal() { if (!infoModal) return; infoModal.setAttribute('aria-hidden','true'); infoModal.style.display='none'; }
 if (infoFab) infoFab.addEventListener('click', openAboutModal);
 [infoBackdrop, infoCloseBtn, infoCloseAction].forEach(el => { if (el) el.addEventListener('click', closeAboutModal); });
