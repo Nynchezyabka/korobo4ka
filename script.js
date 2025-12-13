@@ -3306,13 +3306,12 @@ function updateDailyView() {
         const isLastItem = index === sortedTasks.length - 1;
 
         taskEl.innerHTML = `
-            <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}"><i class="fas fa-ellipsis-v"></i></button>
             <div class="timeline-dot" style="background-color: ${categoryColor};" title="${categoryName}"></div>
             <div class="timeline-connector${isLastItem ? ' timeline-connector-last' : ''}"></div>
             <div class="timeline-content">
                 <div class="timeline-header">
-                    <span class="timeline-time">${timeRangeStr}</span>
-                    <span class="timeline-duration">[${durationText}]</span>
+                    <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}"><i class="fas fa-ellipsis-v"></i></button>
+                    <span class="timeline-time">${timeRangeStr} [${durationText}]</span>
                 </div>
                 <div class="timeline-text">${escapeHtml(task.text)}</div>
                 <div class="timeline-footer">
