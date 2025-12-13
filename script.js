@@ -2276,7 +2276,7 @@ function openSubcategoryActions(category, subName) {
     [closeBtn,cancelBtn,backdrop].forEach(el => el && el.addEventListener('click', close));
 
     const renameOk = document.getElementById('renameSubcatOk'); const renameCancel = document.getElementById('renameSubcatCancel'); const renameClose = document.getElementById('renameSubcatClose');
-    const renameModal = document.getElementById('renameSubcatModal'); const renameInput = document.getElementById('renameSubcatInput');
+    const renameModal = document.getElementById('renameSubcatModal'); const renameBackdrop = document.getElementById('renameSubcatBackdrop'); const renameInput = document.getElementById('renameSubcatInput');
     if (renameOk) {
         renameOk.addEventListener('click', () => {
             const ctx = currentSubcatContext; if (!ctx) return; const newName = (renameInput.value||'').trim(); if (!newName) return;
@@ -2303,11 +2303,11 @@ function openSubcategoryActions(category, subName) {
                 }
             } catch (_) {}
             // close rename modal
-            if (renameModal) { renameModal.setAttribute('aria-hidden','true'); renameModal.style.display='none'; }
+            if (renameModal) { renameModal.setAttribute('aria-hidden','true'); renameModal.style.display='none'; closeModalWithZIndex(renameModal, renameBackdrop); }
         });
     }
-    if (renameCancel) renameCancel.addEventListener('click', () => { if (renameModal) { renameModal.setAttribute('aria-hidden','true'); renameModal.style.display='none'; } });
-    if (renameClose) renameClose.addEventListener('click', () => { if (renameModal) { renameModal.setAttribute('aria-hidden','true'); renameModal.style.display='none'; } });
+    if (renameCancel) renameCancel.addEventListener('click', () => { if (renameModal) { renameModal.setAttribute('aria-hidden','true'); renameModal.style.display='none'; closeModalWithZIndex(renameModal, renameBackdrop); } });
+    if (renameClose) renameClose.addEventListener('click', () => { if (renameModal) { renameModal.setAttribute('aria-hidden','true'); renameModal.style.display='none'; closeModalWithZIndex(renameModal, renameBackdrop); } });
 
     // wire subcat action buttons
     m.querySelectorAll('.subcat-action-btn').forEach(btn => {
