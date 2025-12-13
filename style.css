@@ -2535,7 +2535,7 @@ textarea {
 
 .timeline-header {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 8px;
     flex-wrap: wrap;
     font-weight: 500;
@@ -2549,7 +2549,9 @@ textarea {
 
 .timeline-duration {
     font-size: 0.95rem;
-    color: #666;
+    color: #999;
+    font-weight: 400;
+    margin-left: auto;
 }
 
 .timeline-text {
@@ -2581,9 +2583,9 @@ textarea {
     background: none;
     border: none;
     color: #999;
-    font-size: 1.2rem;
+    font-size: 1rem;
     cursor: pointer;
-    padding: 4px 4px;
+    padding: 4px 6px;
     min-height: auto;
     min-width: auto;
     box-shadow: none;
@@ -3005,7 +3007,8 @@ textarea {
 
     .timeline-duration {
         font-size: 0.95rem;
-        font-weight: 500;
+        font-weight: 400;
+        color: #999;
     }
 
     .timeline-text {
