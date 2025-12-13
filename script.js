@@ -278,6 +278,45 @@ let timerSoundEnabled = true;
 let showArchive = false;
 let quickAddContext = { active: false, resumeTimer: false };
 
+// Modal z-index management system
+const modalStack = [];
+let baseZIndex = 10000;
+
+function getNextZIndex() {
+    return baseZIndex + (modalStack.length * 2);
+}
+
+function openModalWithZIndex(modalElement, backdropElement = null) {
+    if (!modalElement) return;
+
+    const zIndex = getNextZIndex();
+
+    // Add to stack
+    modalStack.push({ modal: modalElement, backdrop: backdropElement });
+
+    // Set z-index for modal and backdrop
+    modalElement.style.zIndex = String(zIndex);
+    if (backdropElement) {
+        backdropElement.style.zIndex = String(zIndex - 1);
+    }
+}
+
+function closeModalWithZIndex(modalElement, backdropElement = null) {
+    if (!modalElement) return;
+
+    // Remove from stack
+    const index = modalStack.findIndex(item => item.modal === modalElement);
+    if (index !== -1) {
+        modalStack.splice(index, 1);
+    }
+
+    // Clear z-index
+    modalElement.style.zIndex = '';
+    if (backdropElement) {
+        backdropElement.style.zIndex = '';
+    }
+}
+
 // Элемнты DOM
 const sections = document.querySelectorAll('.section');
 
@@ -2165,6 +2204,7 @@ function openConfirmModal({ title='Подтверждение', message='', conf
     const m = document.getElementById('confirmModal'); if (!m) return;
     const backdrop = document.getElementById('confirmBackdrop');
     m.setAttribute('aria-hidden','false'); m.style.display = 'flex';
+    openModalWithZIndex(m, backdrop);
     const contentEl = m.querySelector('.modal-content');
     if (contentEl) contentEl.classList.toggle('compact', !!compact);
     const titleEl = m.querySelector('#confirmTitle'); const msgEl = m.querySelector('#confirmMessage');
@@ -2187,6 +2227,7 @@ function openConfirmModal({ title='Подтверждение', message='', conf
         const contentEl2 = m.querySelector('.modal-content');
         if (contentEl2) contentEl2.classList.remove('compact');
         m.setAttribute('aria-hidden','true'); m.style.display = 'none';
+        closeModalWithZIndex(m, backdrop);
     };
     const onClose = () => { cleanup(); };
     const onOk = () => { cleanup(); if (typeof onConfirm === 'function') onConfirm(); };
