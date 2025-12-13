@@ -1,6 +1,22 @@
 // Переменная для хранения задач
 let tasks = [];
 
+// Z-index manager for proper modal stacking
+let currentMaxZIndex = 10100;
+const modalZIndexManager = {
+    getNextZIndex() {
+        return ++currentMaxZIndex;
+    },
+    applyToModal(modalElement, backdropElement) {
+        const zIndex = this.getNextZIndex();
+        if (modalElement) modalElement.style.zIndex = zIndex;
+        // Don't set backdrop z-index - it's position:absolute inside the modal,
+        // so its z-index is relative to the modal, not the viewport. The content
+        // (z-index: 1) should stay on top of backdrop (z-index: 0).
+        return zIndex;
+    }
+};
+
 // Dynamically loaded assets from API
 let loadedAssets = {};
 
@@ -2165,6 +2181,7 @@ function openConfirmModal({ title='Подтверждение', message='', conf
     const m = document.getElementById('confirmModal'); if (!m) return;
     const backdrop = document.getElementById('confirmBackdrop');
     m.setAttribute('aria-hidden','false'); m.style.display = 'flex';
+    modalZIndexManager.applyToModal(m, backdrop);
     const contentEl = m.querySelector('.modal-content');
     if (contentEl) contentEl.classList.toggle('compact', !!compact);
     const titleEl = m.querySelector('#confirmTitle'); const msgEl = m.querySelector('#confirmMessage');
@@ -2221,7 +2238,9 @@ let currentSubcatContext = null;
 function openSubcategoryActions(category, subName) {
     currentSubcatContext = { category: parseInt(category), subName };
     const m = document.getElementById('subcatActionsModal'); if (!m) return;
+    const backdrop = document.getElementById('subcatActionsBackdrop');
     m.setAttribute('aria-hidden','false'); m.style.display='flex';
+    modalZIndexManager.applyToModal(m, backdrop);
 }
 
 // Setup subcategory actions modal behavior: rename, move, delete
@@ -2270,7 +2289,7 @@ function openSubcategoryActions(category, subName) {
         btn.addEventListener('click', () => {
             const action = btn.dataset.action; const ctx = currentSubcatContext; if (!ctx) return; close();
             if (action === 'rename') {
-                const r = document.getElementById('renameSubcatModal'); if (!r) return; const input = document.getElementById('renameSubcatInput'); input.value = ctx.subName || ''; r.setAttribute('aria-hidden','false'); r.style.display='flex';
+                const r = document.getElementById('renameSubcatModal'); if (!r) return; const input = document.getElementById('renameSubcatInput'); input.value = ctx.subName || ''; r.setAttribute('aria-hidden','false'); r.style.display='flex'; const renameBackdrop = document.getElementById('renameSubcatBackdrop'); modalZIndexManager.applyToModal(r, renameBackdrop);
             } else if (action === 'delete') {
                 openConfirmModal({ title: 'Удалить подкатегорию', message: `Удалить подкатегорию "${ctx.subName}"? Задачи останутся без подкатегории.`, confirmText: 'Удалить', cancelText: 'Отмена', requireCheck: false, onConfirm: () => {
                     const raw = localStorage.getItem('customSubcategories'); const cs = raw?JSON.parse(raw):{}; const arr = Array.isArray(cs[ctx.category])?cs[ctx.category]:[]; cs[ctx.category] = arr.filter(n=>n!==ctx.subName); localStorage.setItem('customSubcategories', JSON.stringify(cs)); tasks = tasks.map(t=> (t.category===ctx.category && t.subcategory===ctx.subName) ? ({...t, subcategory: undefined}) : t);
@@ -2294,7 +2313,7 @@ try {
     }
 } catch (_) {} } });
             } else if (action === 'move') {
-                const mv = document.getElementById('moveTasksModal'); if (!mv) return; mv.setAttribute('aria-hidden','false'); mv.style.display='flex';
+                const mv = document.getElementById('moveTasksModal'); if (!mv) return; mv.setAttribute('aria-hidden','false'); mv.style.display='flex'; const moveTasksBackdrop = document.getElementById('moveTasksBackdrop'); modalZIndexManager.applyToModal(mv, moveTasksBackdrop);
                 // render category options
                 const catCont = document.getElementById('moveTasksCategoryOptions'); const subCont = document.getElementById('moveTasksSubcategories'); renderCategoryButtons(catCont);
                 // clear subCont until a category selected
@@ -2346,6 +2365,8 @@ function openAddModal(initialCategory, options = {}) {
     if (!addTaskModal) return;
     addTaskModal.setAttribute('aria-hidden', 'false');
     addTaskModal.style.display = 'flex';
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    modalZIndexManager.applyToModal(addTaskModal, modalBackdrop);
     modalTaskText.value = '';
     modalPrimaryCategory = null;
 
@@ -2463,6 +2484,8 @@ function openMoveTaskModal(taskId) {
     if (!moveTaskModal) return;
     moveTaskModal.setAttribute('aria-hidden', 'false');
     moveTaskModal.style.display = 'flex';
+    const moveTaskBackdrop = document.getElementById('moveTaskBackdrop');
+    modalZIndexManager.applyToModal(moveTaskModal, moveTaskBackdrop);
 
     // Render category options
     renderMoveCategoryOptions();
@@ -2616,6 +2639,8 @@ function openPasteModal() {
     if (!pasteTasksModal) return;
     pasteTasksModal.setAttribute('aria-hidden','false');
     pasteTasksModal.style.display = 'flex';
+    const pasteBackdrop = document.getElementById('pasteTasksBackdrop');
+    modalZIndexManager.applyToModal(pasteTasksModal, pasteBackdrop);
     if (pasteTasksInput) { pasteTasksInput.value = ''; setTimeout(()=>pasteTasksInput.focus(), 50); }
 }
 function closePasteModal() {
@@ -2637,12 +2662,9 @@ function openTaskActionsModal(taskId) {
 
     m.setAttribute('aria-hidden', 'false');
     m.style.display = 'flex';
-    m.style.zIndex = '10500';
 
     const backdrop = document.getElementById('taskActionsBackdrop');
-    if (backdrop) {
-        backdrop.style.zIndex = '10499';
-    }
+    modalZIndexManager.applyToModal(m, backdrop);
 }
 
 function closeTaskActionsModal() {
@@ -2704,12 +2726,9 @@ function openEditTaskModal(taskId) {
 
     m.setAttribute('aria-hidden', 'false');
     m.style.display = 'flex';
-    m.style.zIndex = '10600';
 
     const backdrop = document.getElementById('editTaskBackdrop');
-    if (backdrop) {
-        backdrop.style.zIndex = '10599';
-    }
+    modalZIndexManager.applyToModal(m, backdrop);
 
     // Populate form fields
     const nameInput = document.getElementById('editTaskNameInput');
@@ -2903,7 +2922,7 @@ const infoModal = document.getElementById('infoModal');
 const infoBackdrop = document.getElementById('infoBackdrop');
 const infoCloseBtn = document.getElementById('infoCloseBtn');
 const infoCloseAction = document.getElementById('infoCloseAction');
-function openAboutModal() { if (!infoModal) return; infoModal.setAttribute('aria-hidden','false'); infoModal.style.display='flex'; }
+function openAboutModal() { if (!infoModal) return; infoModal.setAttribute('aria-hidden','false'); infoModal.style.display='flex'; const infoBackdropEl = document.getElementById('infoBackdrop'); modalZIndexManager.applyToModal(infoModal, infoBackdropEl); }
 function closeAboutModal() { if (!infoModal) return; infoModal.setAttribute('aria-hidden','true'); infoModal.style.display='none'; }
 if (infoFab) infoFab.addEventListener('click', openAboutModal);
 [infoBackdrop, infoCloseBtn, infoCloseAction].forEach(el => { if (el) el.addEventListener('click', closeAboutModal); });
@@ -3121,7 +3140,7 @@ function openDailyActivityModal() {
     modal.style.display = 'flex';
 
     const backdrop = document.getElementById('dailyActivityBackdrop');
-    if (backdrop) backdrop.style.display = 'block';
+    modalZIndexManager.applyToModal(modal, backdrop);
 
     selectedDailyDate = new Date();
     selectedDailyDate.setHours(0, 0, 0, 0);
@@ -3350,7 +3369,8 @@ function openAddModalFromArchive(initialCategory) {
     addTaskModal.setAttribute('aria-hidden', 'false');
     addTaskModal.style.display = 'flex';
     addTaskModal.style.position = 'fixed';
-    addTaskModal.style.zIndex = '10300';
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    modalZIndexManager.applyToModal(addTaskModal, modalBackdrop);
     modalTaskText.value = '';
     modalPrimaryCategory = null;
 
@@ -3409,6 +3429,8 @@ function openPastTaskCategoryModal() {
 
     modal.setAttribute('aria-hidden', 'false');
     modal.style.display = 'flex';
+    const pastTaskBackdrop = document.getElementById('pastTaskCategoryBackdrop');
+    modalZIndexManager.applyToModal(modal, pastTaskBackdrop);
 }
 
 function showPastTaskSubcategoriesFor(cat) {
@@ -3645,4 +3667,6 @@ function openTimelineTaskMenu(taskId) {
 
     m.setAttribute('aria-hidden', 'false');
     m.style.display = 'flex';
+    const backdrop = document.getElementById('taskActionsBackdrop');
+    modalZIndexManager.applyToModal(m, backdrop);
 }
