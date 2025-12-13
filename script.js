@@ -278,6 +278,45 @@ let timerSoundEnabled = true;
 let showArchive = false;
 let quickAddContext = { active: false, resumeTimer: false };
 
+// Modal z-index management system
+const modalStack = [];
+let baseZIndex = 10000;
+
+function getNextZIndex() {
+    return baseZIndex + (modalStack.length * 2);
+}
+
+function openModalWithZIndex(modalElement, backdropElement = null) {
+    if (!modalElement) return;
+
+    const zIndex = getNextZIndex();
+
+    // Add to stack
+    modalStack.push({ modal: modalElement, backdrop: backdropElement });
+
+    // Set z-index for modal and backdrop
+    modalElement.style.zIndex = String(zIndex);
+    if (backdropElement) {
+        backdropElement.style.zIndex = String(zIndex - 1);
+    }
+}
+
+function closeModalWithZIndex(modalElement, backdropElement = null) {
+    if (!modalElement) return;
+
+    // Remove from stack
+    const index = modalStack.findIndex(item => item.modal === modalElement);
+    if (index !== -1) {
+        modalStack.splice(index, 1);
+    }
+
+    // Clear z-index
+    modalElement.style.zIndex = '';
+    if (backdropElement) {
+        backdropElement.style.zIndex = '';
+    }
+}
+
 // Элемнты DOM
 const sections = document.querySelectorAll('.section');
 
@@ -2165,6 +2204,7 @@ function openConfirmModal({ title='Подтверждение', message='', conf
     const m = document.getElementById('confirmModal'); if (!m) return;
     const backdrop = document.getElementById('confirmBackdrop');
     m.setAttribute('aria-hidden','false'); m.style.display = 'flex';
+    openModalWithZIndex(m, backdrop);
     const contentEl = m.querySelector('.modal-content');
     if (contentEl) contentEl.classList.toggle('compact', !!compact);
     const titleEl = m.querySelector('#confirmTitle'); const msgEl = m.querySelector('#confirmMessage');
@@ -2187,6 +2227,7 @@ function openConfirmModal({ title='Подтверждение', message='', conf
         const contentEl2 = m.querySelector('.modal-content');
         if (contentEl2) contentEl2.classList.remove('compact');
         m.setAttribute('aria-hidden','true'); m.style.display = 'none';
+        closeModalWithZIndex(m, backdrop);
     };
     const onClose = () => { cleanup(); };
     const onOk = () => { cleanup(); if (typeof onConfirm === 'function') onConfirm(); };
@@ -2221,18 +2262,21 @@ let currentSubcatContext = null;
 function openSubcategoryActions(category, subName) {
     currentSubcatContext = { category: parseInt(category), subName };
     const m = document.getElementById('subcatActionsModal'); if (!m) return;
+    const backdrop = document.getElementById('subcatActionsBackdrop');
     m.setAttribute('aria-hidden','false'); m.style.display='flex';
+    openModalWithZIndex(m, backdrop);
 }
 
 // Setup subcategory actions modal behavior: rename, move, delete
 (function setupSubcatActions(){
     const m = document.getElementById('subcatActionsModal'); if (!m) return;
-    const close = () => { m.setAttribute('aria-hidden','true'); m.style.display='none'; };
-    const closeBtn = document.getElementById('subcatActionsClose'); const cancelBtn = document.getElementById('subcatActionsCancel'); const backdrop = document.getElementById('subcatActionsBackdrop');
+    const backdrop = document.getElementById('subcatActionsBackdrop');
+    const close = () => { m.setAttribute('aria-hidden','true'); m.style.display='none'; closeModalWithZIndex(m, backdrop); };
+    const closeBtn = document.getElementById('subcatActionsClose'); const cancelBtn = document.getElementById('subcatActionsCancel');
     [closeBtn,cancelBtn,backdrop].forEach(el => el && el.addEventListener('click', close));
 
     const renameOk = document.getElementById('renameSubcatOk'); const renameCancel = document.getElementById('renameSubcatCancel'); const renameClose = document.getElementById('renameSubcatClose');
-    const renameModal = document.getElementById('renameSubcatModal'); const renameInput = document.getElementById('renameSubcatInput');
+    const renameModal = document.getElementById('renameSubcatModal'); const renameBackdrop = document.getElementById('renameSubcatBackdrop'); const renameInput = document.getElementById('renameSubcatInput');
     if (renameOk) {
         renameOk.addEventListener('click', () => {
             const ctx = currentSubcatContext; if (!ctx) return; const newName = (renameInput.value||'').trim(); if (!newName) return;
@@ -2259,18 +2303,18 @@ function openSubcategoryActions(category, subName) {
                 }
             } catch (_) {}
             // close rename modal
-            if (renameModal) { renameModal.setAttribute('aria-hidden','true'); renameModal.style.display='none'; }
+            if (renameModal) { renameModal.setAttribute('aria-hidden','true'); renameModal.style.display='none'; closeModalWithZIndex(renameModal, renameBackdrop); }
         });
     }
-    if (renameCancel) renameCancel.addEventListener('click', () => { if (renameModal) { renameModal.setAttribute('aria-hidden','true'); renameModal.style.display='none'; } });
-    if (renameClose) renameClose.addEventListener('click', () => { if (renameModal) { renameModal.setAttribute('aria-hidden','true'); renameModal.style.display='none'; } });
+    if (renameCancel) renameCancel.addEventListener('click', () => { if (renameModal) { renameModal.setAttribute('aria-hidden','true'); renameModal.style.display='none'; closeModalWithZIndex(renameModal, renameBackdrop); } });
+    if (renameClose) renameClose.addEventListener('click', () => { if (renameModal) { renameModal.setAttribute('aria-hidden','true'); renameModal.style.display='none'; closeModalWithZIndex(renameModal, renameBackdrop); } });
 
     // wire subcat action buttons
     m.querySelectorAll('.subcat-action-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const action = btn.dataset.action; const ctx = currentSubcatContext; if (!ctx) return; close();
             if (action === 'rename') {
-                const r = document.getElementById('renameSubcatModal'); if (!r) return; const input = document.getElementById('renameSubcatInput'); input.value = ctx.subName || ''; r.setAttribute('aria-hidden','false'); r.style.display='flex';
+                const r = document.getElementById('renameSubcatModal'); if (!r) return; const rBackdrop = document.getElementById('renameSubcatBackdrop'); const input = document.getElementById('renameSubcatInput'); input.value = ctx.subName || ''; r.setAttribute('aria-hidden','false'); r.style.display='flex'; openModalWithZIndex(r, rBackdrop);
             } else if (action === 'delete') {
                 openConfirmModal({ title: 'Удалить подкатегорию', message: `Удалить подкатегорию "${ctx.subName}"? Задачи останутся без подкатегории.`, confirmText: 'Удалить', cancelText: 'Отмена', requireCheck: false, onConfirm: () => {
                     const raw = localStorage.getItem('customSubcategories'); const cs = raw?JSON.parse(raw):{}; const arr = Array.isArray(cs[ctx.category])?cs[ctx.category]:[]; cs[ctx.category] = arr.filter(n=>n!==ctx.subName); localStorage.setItem('customSubcategories', JSON.stringify(cs)); tasks = tasks.map(t=> (t.category===ctx.category && t.subcategory===ctx.subName) ? ({...t, subcategory: undefined}) : t);
@@ -2294,7 +2338,7 @@ try {
     }
 } catch (_) {} } });
             } else if (action === 'move') {
-                const mv = document.getElementById('moveTasksModal'); if (!mv) return; mv.setAttribute('aria-hidden','false'); mv.style.display='flex';
+                const mv = document.getElementById('moveTasksModal'); if (!mv) return; const mvBackdrop = document.getElementById('moveTasksBackdrop'); mv.setAttribute('aria-hidden','false'); mv.style.display='flex'; openModalWithZIndex(mv, mvBackdrop);
                 // render category options
                 const catCont = document.getElementById('moveTasksCategoryOptions'); const subCont = document.getElementById('moveTasksSubcategories'); renderCategoryButtons(catCont);
                 // clear subCont until a category selected
@@ -2302,7 +2346,7 @@ try {
                 // wire ok/cancel
                 const okBtn = document.getElementById('moveTasksOk'); const cancel = document.getElementById('moveTasksCancel'); const closeBtn = document.getElementById('moveTasksClose'); const backdrop2 = document.getElementById('moveTasksBackdrop');
                 if (okBtn) okBtn.disabled = false;
-                const closeMove = () => { mv.setAttribute('aria-hidden','true'); mv.style.display='none'; };
+                const closeMove = () => { mv.setAttribute('aria-hidden','true'); mv.style.display='none'; closeModalWithZIndex(mv, backdrop2); };
                 if (cancel) cancel.onclick = closeMove; if (closeBtn) closeBtn.addEventListener('click', closeMove); if (backdrop2) backdrop2.addEventListener('click', closeMove);
 
                 // Handle category selection
@@ -2344,8 +2388,10 @@ function openAddModal(initialCategory, options = {}) {
     }
     if (showArchive) { openInfoModal('Нельзя добавлять задачи в списке выполненных'); return; }
     if (!addTaskModal) return;
+    const modalBackdrop = document.getElementById('modalBackdrop');
     addTaskModal.setAttribute('aria-hidden', 'false');
     addTaskModal.style.display = 'flex';
+    openModalWithZIndex(addTaskModal, modalBackdrop);
     modalTaskText.value = '';
     modalPrimaryCategory = null;
 
@@ -2397,8 +2443,10 @@ function openAddModal(initialCategory, options = {}) {
 
 function closeAddModal() {
     if (!addTaskModal) return;
+    const modalBackdrop = document.getElementById('modalBackdrop');
     addTaskModal.setAttribute('aria-hidden', 'true');
     addTaskModal.style.display = 'none';
+    closeModalWithZIndex(addTaskModal, modalBackdrop);
     if (modalSubcategories) { modalSubcategories.classList.remove('show'); modalSubcategories.style.display = 'none'; }
     // If opened from timer quick-add and timer was running, resume automatically
     try {
