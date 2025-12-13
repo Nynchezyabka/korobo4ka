@@ -3138,7 +3138,7 @@ function openDailyActivityModal() {
     modal.style.display = 'flex';
 
     const backdrop = document.getElementById('dailyActivityBackdrop');
-    if (backdrop) backdrop.style.display = 'block';
+    modalZIndexManager.applyToModal(modal, backdrop);
 
     selectedDailyDate = new Date();
     selectedDailyDate.setHours(0, 0, 0, 0);
