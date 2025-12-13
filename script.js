@@ -3427,6 +3427,8 @@ function openPastTaskCategoryModal() {
 
     modal.setAttribute('aria-hidden', 'false');
     modal.style.display = 'flex';
+    const pastTaskBackdrop = document.getElementById('pastTaskCategoryBackdrop');
+    modalZIndexManager.applyToModal(modal, pastTaskBackdrop);
 }
 
 function showPastTaskSubcategoriesFor(cat) {
