@@ -3311,7 +3311,8 @@ function updateDailyView() {
             <div class="timeline-content">
                 <div class="timeline-header">
                     <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}"><i class="fas fa-ellipsis-v"></i></button>
-                    <span class="timeline-time">${timeRangeStr} [${durationText}]</span>
+                    <span class="timeline-time">${timeRangeStr}</span>
+                    <span class="timeline-duration">${durationText}</span>
                 </div>
                 <div class="timeline-text">${escapeHtml(task.text)}</div>
                 <div class="timeline-footer">
