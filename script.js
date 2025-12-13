@@ -2637,6 +2637,8 @@ function openPasteModal() {
     if (!pasteTasksModal) return;
     pasteTasksModal.setAttribute('aria-hidden','false');
     pasteTasksModal.style.display = 'flex';
+    const pasteBackdrop = document.getElementById('pasteTasksBackdrop');
+    modalZIndexManager.applyToModal(pasteTasksModal, pasteBackdrop);
     if (pasteTasksInput) { pasteTasksInput.value = ''; setTimeout(()=>pasteTasksInput.focus(), 50); }
 }
 function closePasteModal() {
