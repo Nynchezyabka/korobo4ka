@@ -2549,7 +2549,9 @@ textarea {
 
 .timeline-duration {
     font-size: 0.95rem;
-    color: #666;
+    color: #999;
+    font-weight: 400;
+    margin-left: auto;
 }
 
 .timeline-text {
