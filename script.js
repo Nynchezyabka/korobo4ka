@@ -2482,6 +2482,8 @@ function openMoveTaskModal(taskId) {
     if (!moveTaskModal) return;
     moveTaskModal.setAttribute('aria-hidden', 'false');
     moveTaskModal.style.display = 'flex';
+    const moveTaskBackdrop = document.getElementById('moveTaskBackdrop');
+    modalZIndexManager.applyToModal(moveTaskModal, moveTaskBackdrop);
 
     // Render category options
     renderMoveCategoryOptions();
