@@ -3367,7 +3367,8 @@ function openAddModalFromArchive(initialCategory) {
     addTaskModal.setAttribute('aria-hidden', 'false');
     addTaskModal.style.display = 'flex';
     addTaskModal.style.position = 'fixed';
-    addTaskModal.style.zIndex = '10300';
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    modalZIndexManager.applyToModal(addTaskModal, modalBackdrop);
     modalTaskText.value = '';
     modalPrimaryCategory = null;
 
