@@ -3154,6 +3154,7 @@ function openDailyActivityModal() {
 
     selectedPastTaskCategory = 0;
     selectedPastTaskSubcategory = null;
+    selectedHistoryFilter = 0; // Сбросить фильтр при открытии
     updatePastTaskCategoryButton();
 
     const now = new Date();
