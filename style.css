@@ -2543,6 +2543,20 @@ textarea {
     font-weight: 500;
 }
 
+.timeline-header-time {
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.timeline-header-duration {
+    font-size: 0.9rem;
+    color: #999;
+    white-space: nowrap;
+}
+
+/* Legacy classes for compatibility */
 .timeline-time {
     font-size: 1.1rem;
     color: #333;
