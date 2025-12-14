@@ -3137,6 +3137,7 @@ if (notifyToggleBtn) {
 let selectedDailyDate = null;
 let selectedPastTaskCategory = 0;
 let selectedPastTaskSubcategory = null;
+let selectedHistoryFilter = 0; // Для фильтров в истории: 0 = все, 1-5 = категории
 
 function openDailyActivityModal() {
     const modal = document.getElementById('dailyActivityModal');
