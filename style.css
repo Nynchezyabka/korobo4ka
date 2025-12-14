@@ -2606,7 +2606,8 @@ textarea {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 4px;
+    flex-wrap: wrap;
+    margin-top: 6px;
 }
 
 .timeline-category-tag {
