@@ -3263,17 +3263,94 @@ function renderCalendarWidget() {
     });
 }
 
+function getCategorySymbol(categoryId) {
+    const symbols = {
+        0: '⊙',
+        1: '🟨',
+        2: '🟦',
+        3: '🟩',
+        4: '🟥',
+        5: '🟪'
+    };
+    return symbols[categoryId] || '⊙';
+}
+
+function formatTimeDuration(totalMinutes) {
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+    if (hours === 0) return `${mins} мин`;
+    if (mins === 0) return `${hours} ч`;
+    return `${hours} ч ${mins} мин`;
+}
+
 function updateDailyView() {
     const dateDisplay = document.getElementById('selectedDateDisplay');
     const tasksList = document.getElementById('dailyTasksList');
+    const filtersContainer = document.getElementById('historyFiltersContainer');
+    const statsContainer = document.getElementById('historyStatsContainer');
 
     if (!dateDisplay || !tasksList) return;
 
     const dateStr = selectedDailyDate.toISOString().split('T')[0];
-    const completedTasks = tasks.filter(t => t.completedDate === dateStr && t.completed);
+    const allCompletedTasks = tasks.filter(t => t.completedDate === dateStr && t.completed);
+
+    // Фильтрование задач по выбранной категории
+    const completedTasks = selectedHistoryFilter === 0
+        ? allCompletedTasks
+        : allCompletedTasks.filter(t => t.category === selectedHistoryFilter);
 
     const displayDate = new Intl.DateTimeFormat('ru-RU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(selectedDailyDate);
     dateDisplay.innerHTML = `<strong>${displayDate}</strong>`;
+
+    // Рендеринг фильтров
+    if (filtersContainer) {
+        filtersContainer.innerHTML = '';
+        const categories = [0, 1, 2, 3, 4, 5];
+
+        categories.forEach(catId => {
+            const btn = document.createElement('button');
+            btn.className = `timeline-filter-btn category-${catId}`;
+            if (selectedHistoryFilter === catId) {
+                btn.classList.add('active');
+            }
+
+            let btnLabel = catId === 0 ? 'Все' : `${getCategorySymbol(catId)} ${getCategoryName(catId)}`;
+            btn.textContent = btnLabel;
+
+            btn.addEventListener('click', () => {
+                selectedHistoryFilter = catId;
+                updateDailyView();
+            });
+
+            filtersContainer.appendChild(btn);
+        });
+    }
+
+    // Рендеринг статистики
+    if (statsContainer) {
+        statsContainer.innerHTML = '';
+        let totalMinutes = 0;
+        completedTasks.forEach(task => {
+            totalMinutes += Math.round((task.duration || 0) / 60000);
+        });
+
+        const statItem1 = document.createElement('div');
+        statItem1.className = 'timeline-stats-item';
+        statItem1.innerHTML = `
+            <div class="timeline-stats-value">${completedTasks.length}</div>
+            <div class="timeline-stats-label">Задач</div>
+        `;
+
+        const statItem2 = document.createElement('div');
+        statItem2.className = 'timeline-stats-item';
+        statItem2.innerHTML = `
+            <div class="timeline-stats-value">${formatTimeDuration(totalMinutes)}</div>
+            <div class="timeline-stats-label">Всего времени</div>
+        `;
+
+        statsContainer.appendChild(statItem1);
+        statsContainer.appendChild(statItem2);
+    }
 
     tasksList.innerHTML = '';
 
@@ -3293,31 +3370,41 @@ function updateDailyView() {
 
         const categoryColor = getCategoryIndicatorColor(task.category);
         const categoryName = getCategoryName(task.category);
+        const categorySymbol = getCategorySymbol(task.category);
         const durationMinutes = Math.round((task.duration || 0) / 60000);
-        const durationText = durationMinutes > 0 ? `${durationMinutes} мин` : 'нет времени';
+        const durationText = durationMinutes > 0 ? `${durationMinutes} мин` : '0 мин';
 
         const startDate = new Date(task.completedAt || Date.now());
         const startTimeStr = startDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
-        const endDate = new Date(startDate.getTime() + (task.duration || 0));
-        const endTimeStr = endDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-
-        const timeRangeStr = `${startTimeStr} - ${endTimeStr}`;
-
         const isLastItem = index === sortedTasks.length - 1;
+
+        // Построение HTML структуры карточки задачи
+        let subcategoryHtml = '';
+        if (task.subcategory) {
+            const subcatLabel = getSubcategoryLabel(task.category, task.subcategory);
+            subcategoryHtml = `<span class="timeline-subcategory-tag">${escapeHtml(subcatLabel)}</span>`;
+        }
 
         taskEl.innerHTML = `
             <div class="timeline-dot" style="background-color: ${categoryColor};" title="${categoryName}"></div>
             <div class="timeline-connector${isLastItem ? ' timeline-connector-last' : ''}"></div>
-            <div class="timeline-content">
+            <div class="timeline-content" style="border-left-color: ${categoryColor};">
                 <div class="timeline-header">
-                    <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}"><i class="fas fa-ellipsis-v"></i></button>
-                    <span class="timeline-time">${timeRangeStr}</span>
-                    <span class="timeline-duration">${durationText}</span>
+                    <div class="timeline-header-left">
+                        <span class="timeline-header-time">${startTimeStr}</span>
+                        <span class="timeline-header-duration">${durationText}</span>
+                    </div>
+                    <div class="timeline-header-right">
+                        <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}"><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
                 </div>
                 <div class="timeline-text">${escapeHtml(task.text)}</div>
                 <div class="timeline-footer">
-                    <span class="timeline-category-tag" style="background-color: ${categoryColor}; color: ${getCategoryTagTextColor(task.category)};">${categoryName}</span>
+                    <span class="timeline-category-tag" style="background-color: ${categoryColor}; color: ${getCategoryTagTextColor(task.category)};">
+                        ${categorySymbol} ${escapeHtml(categoryName)}
+                    </span>
+                    ${subcategoryHtml ? `<div class="timeline-subcategory-tags">${subcategoryHtml}</div>` : ''}
                 </div>
             </div>
         `;
