@@ -2530,17 +2530,33 @@ textarea {
     background: white;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
+    border-left: 4px solid #ccc;
     min-height: auto;
 }
 
 .timeline-header {
     display: flex;
-    align-items: center;
+    justify-content: space-between;
+    align-items: flex-start;
     gap: 8px;
-    flex-wrap: wrap;
+    margin-bottom: 8px;
     font-weight: 500;
 }
 
+.timeline-header-time {
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.timeline-header-duration {
+    font-size: 0.9rem;
+    color: #999;
+    white-space: nowrap;
+}
+
+/* Legacy classes for compatibility */
 .timeline-time {
     font-size: 1.1rem;
     color: #333;
@@ -2605,11 +2621,14 @@ textarea {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 4px;
+    flex-wrap: wrap;
+    margin-top: 6px;
 }
 
 .timeline-category-tag {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     padding: 4px 10px;
     border-radius: 12px;
     font-size: 0.85rem;
@@ -3197,4 +3216,173 @@ textarea {
 
 .task-kebab-menu-btn:active {
     color: #999;
+}
+
+/* Timeline фильтры по категориям в истории */
+.timeline-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+    padding: 0 0 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.timeline-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    color: #666;
+}
+
+.timeline-filter-btn:hover {
+    border-color: #999;
+}
+
+.timeline-filter-btn:active {
+    transform: scale(0.98);
+}
+
+.timeline-filter-btn.active {
+    color: white;
+    border: none;
+}
+
+.timeline-filter-btn.active.category-0 {
+    background-color: #5d4037;
+}
+
+.timeline-filter-btn.active.category-1 {
+    background-color: #FFD54F;
+    color: #8B7500;
+}
+
+.timeline-filter-btn.active.category-2 {
+    background-color: #64B5F6;
+    color: #0D47A1;
+}
+
+.timeline-filter-btn.active.category-3 {
+    background-color: #81C784;
+    color: #1B5E20;
+}
+
+.timeline-filter-btn.active.category-4 {
+    background-color: #E57373;
+    color: #B71C1C;
+}
+
+.timeline-filter-btn.active.category-5 {
+    background-color: #9575CD;
+    color: #4527A0;
+}
+
+/* Статистика в истории */
+.timeline-stats {
+    display: flex;
+    gap: 16px;
+    padding: 12px 0;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.timeline-stats-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.timeline-stats-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #5d4037;
+    line-height: 1;
+}
+
+.timeline-stats-label {
+    font-size: 0.75rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+/* Обновлённая структура timeline-header для новой компоновки */
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.timeline-header-left {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+}
+
+.timeline-header-right {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Контейнер для подкатегорий (tags) */
+.timeline-subcategory-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.timeline-subcategory-tag {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background-color: #f5f5f5;
+    color: #666;
+    border: 1px solid #e0e0e0;
+}
+
+
+/* Адаптивность для мобильных */
+@media (max-width: 480px) {
+    .timeline-filters {
+        gap: 6px;
+    }
+
+    .timeline-filter-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .timeline-stats {
+        gap: 12px;
+    }
+
+    .timeline-stats-value {
+        font-size: 1.2rem;
+    }
+
+    .timeline-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .timeline-header-left {
+        width: 100%;
+        justify-content: space-between;
+    }
 }
