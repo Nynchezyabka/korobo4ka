@@ -3395,25 +3395,6 @@ textarea {
     border: 1px solid #e0e0e0;
 }
 
-/* Обновлённая структура timeline-footer */
-.timeline-footer {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 6px;
-}
-
-.timeline-category-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    white-space: nowrap;
-}
 
 /* Адаптивность для мобильных */
 @media (max-width: 480px) {
