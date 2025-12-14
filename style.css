@@ -3332,6 +3332,10 @@ textarea {
     flex: 1;
 }
 
+.timeline-header-right {
+    display: flex;
+    justify-content: flex-end;
+}
 
 /* Контейнер для подкатегорий (tags) */
 .timeline-subcategory-tags {
