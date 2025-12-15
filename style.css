@@ -2960,8 +2960,21 @@ textarea {
     }
 
     .timeline-header {
-        gap: 6px;
-        flex-wrap: wrap;
+        gap: 8px;
+        flex-wrap: nowrap;
+        align-items: center;
+    }
+
+    .timeline-header-time {
+        flex-shrink: 0;
+    }
+
+    .timeline-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+        flex-shrink: 0;
     }
 
     .timeline-time {
