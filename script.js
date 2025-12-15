@@ -3384,7 +3384,9 @@ function updateDailyView() {
         let subcategoryHtml = '';
         if (task.subcategory) {
             const subcatLabel = getSubcategoryLabel(task.category, task.subcategory);
-            subcategoryHtml = `<span class="timeline-subcategory-tag">${escapeHtml(subcatLabel)}</span>`;
+            const subcatColor = getSubcategoryTagColor(task.category);
+            const subcatTextColor = getSubcategoryTagTextColor(task.category);
+            subcategoryHtml = `<span class="timeline-subcategory-tag" style="background-color: ${subcatColor}; color: ${subcatTextColor};">${escapeHtml(subcatLabel)}</span>`;
         }
 
         taskEl.innerHTML = `
@@ -3392,20 +3394,18 @@ function updateDailyView() {
             <div class="timeline-connector${isLastItem ? ' timeline-connector-last' : ''}"></div>
             <div class="timeline-content" style="border-left-color: ${categoryColor};">
                 <div class="timeline-header">
-                    <div class="timeline-header-left">
-                        <span class="timeline-header-time">${startTimeStr}</span>
-                        <span class="timeline-header-duration">${durationText}</span>
-                    </div>
-                    <div class="timeline-header-right">
+                    <div class="timeline-header-time">${startTimeStr}</div>
+                    <div class="timeline-header-actions">
+                        <div class="timeline-header-duration">${durationText}</div>
                         <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}"><i class="fas fa-ellipsis-v"></i></button>
                     </div>
                 </div>
                 <div class="timeline-text">${escapeHtml(task.text)}</div>
                 <div class="timeline-footer">
                     <span class="timeline-category-tag" style="background-color: ${categoryColor}; color: ${getCategoryTagTextColor(task.category)};">
-                        ${categorySymbol} ${escapeHtml(categoryName)}
+                        ${escapeHtml(categoryName)}
                     </span>
-                    ${subcategoryHtml ? `<div class="timeline-subcategory-tags">${subcategoryHtml}</div>` : ''}
+                    ${subcategoryHtml ? `<span class="timeline-subcategory-tags">${subcategoryHtml}</span>` : ''}
                 </div>
             </div>
         `;
