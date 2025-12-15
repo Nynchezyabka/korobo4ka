@@ -3291,14 +3291,14 @@ function renderCalendarWidget() {
 }
 
 function getCategorySymbol(categoryId) {
-    // Return HTML with icon for filter buttons
+    // Return HTML with icon for filter buttons - simplified iconic style
     const icons = {
-        0: '<svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>',
-        1: '<svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
-        2: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l7 4v6c0 6.5-7 11-7 11S5 18.5 5 11V5l7-4zm0 3.5L8 7v4c0 4.5 4 8 4 8s4-3.5 4-8V7l-4-2.5zM12 10a2 2 0 100 4 2 2 0 000-4z"></path></svg>',
-        3: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle><path d="M8 9h8M8 15h8M9 12a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm6 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" stroke="white" stroke-width="1.5" fill="none"></path></svg>',
-        4: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"></path></svg>',
-        5: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>'
+        0: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><text x="12" y="15" font-size="14" font-weight="bold" text-anchor="middle" fill="white">?</text></svg>',
+        1: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v8c0 7 10 10 10 10s10-3 10-10V7l-10-5z"/></svg>',
+        2: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 4v16M8 12h8M10 8h4M10 16h4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>',
+        3: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><ellipse cx="8.5" cy="10" rx="1.5" ry="2" fill="white"/><ellipse cx="15.5" cy="10" rx="1.5" ry="2" fill="white"/><path d="M8 14 Q12 16 16 14" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>',
+        4: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="9" r="2.5"/><path d="M6 15c0-1.5 2.5-2.5 6-2.5s6 1 6 2.5v3H6v-3z"/></svg>',
+        5: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c2.5 0 4.5 2 4.5 4.5 0 2-1 3.5-2 5l-2.5 3.5-2.5-3.5c-1-1.5-2-3-2-5C7.5 5 9.5 3 12 3z"/></svg>'
     };
     return icons[categoryId] || icons[0];
 }
