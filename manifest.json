@@ -3,9 +3,11 @@
   "short_name": "КОРОБОЧКА",
   "description": "Планировщик задач с таймером",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#fffaf0",
   "theme_color": "#5d4037",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiBmaWxsPSIjZmZmYWYwIi8+CjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQ4LCA0OCkiPgo8cmVjdCB4PSIwIiB5PSI0OCIgd2lkdGg9Ijk2IiBoZWlnaHQ9IjY0IiBmaWxsPSIjRkZENTRGIiBzdHJva2U9IiM1ZDQwMzciIHN0cm9rZS13aWR0aD0iMiIgcng9IjgiLz4KPHBhdGggZD0iTTAgNDhMMjQgMzJMNDggNDhMMjQgNDgiIGZpbGw9IiNGRkE3MjciIHN0cm9rZT0iIzVkNDAzNyIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxwYXRoIGQ9Ik00OCA0OEw3MiAzMkw5NiA0OEw3MiA0OCIgZmlsbD0iI0ZGQjc0RiIgc3Ryb2tlPSIjNWQ0MDM3IiBzdHJva2Utd2lkdGg9IjIiLz4KPC9nPgo8dGV4dCB4PSI5NiIgeT0iMTEwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSI3MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI0ZGRDU0RiI+8Jmm7T08L3RleHQ+Cjwvc3ZnPg==",
