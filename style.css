@@ -3047,17 +3047,17 @@ textarea {
     }
 
     .timeline-content {
-        padding: 14px;
-        gap: 10px;
+        padding: 12px;
+        gap: 6px;
         border-radius: 10px;
     }
 
     .timeline-header {
         flex-direction: row;
-        gap: 8px;
+        gap: 6px;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
     }
 
     .timeline-header-time {
