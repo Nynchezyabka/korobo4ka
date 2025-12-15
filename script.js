@@ -472,7 +472,8 @@ function displayTasks() {
 
         const title = document.createElement('div');
         title.className = 'category-title';
-        title.innerHTML = `<div class=\"category-title-left\"><i class=\"fas fa-folder folder-before-title\"></i><span class=\"category-heading\">${getCategoryName(cat)}</span></div><button type=\"button\" class=\"category-add-btn\" data-cat=\"${cat}\" title=\"Добавить задачу в категории\"><i class=\"fas fa-plus\"></i></button>`;
+        const categorySquare = getCategorySquareHTML(cat);
+        title.innerHTML = `<div class=\"category-title-left\">${categorySquare}<span class=\"category-heading\">${getCategoryName(cat)}</span></div><button type=\"button\" class=\"category-add-btn\" data-cat=\"${cat}\" title=\"Добавить задачу в категории\"><i class=\"fas fa-plus\"></i></button>`;
 
         const grid = document.createElement('div');
         grid.className = 'group-grid';
