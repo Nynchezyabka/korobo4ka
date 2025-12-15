@@ -2555,12 +2555,14 @@ textarea {
     color: #333;
     font-weight: 600;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .timeline-header-duration {
     font-size: 0.9rem;
     color: #999;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .timeline-header-actions {
@@ -2568,6 +2570,7 @@ textarea {
     align-items: center;
     gap: 8px;
     margin-left: auto;
+    flex-shrink: 0;
 }
 
 /* Legacy classes for compatibility */
