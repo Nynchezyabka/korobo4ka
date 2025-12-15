@@ -413,6 +413,19 @@ function getCategoryName(category) {
     return categories[Number(category)] ?? "Категория не определена";
 }
 
+function getCategorySquareHTML(catId) {
+    const colors = {
+        0: '#9E9E9E',
+        1: '#FFD54F',
+        2: '#64B5F6',
+        3: '#81C784',
+        4: '#E57373',
+        5: '#9575CD'
+    };
+    const color = colors[catId] || '#9E9E9E';
+    return `<div class="category-square" style="background-color: ${color};"></div>`;
+}
+
 // Escape HTML to avoid injection when inserting task text into innerHTML
 function escapeHtml(unsafe) {
     if (!unsafe) return '';
