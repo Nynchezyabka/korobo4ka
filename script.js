@@ -3342,8 +3342,8 @@ function updateDailyView() {
                 btn.classList.add('active');
             }
 
-            let btnLabel = catId === 0 ? 'Все' : `${getCategorySymbol(catId)} ${getCategoryName(catId)}`;
-            btn.textContent = btnLabel;
+            let btnLabel = catId === 0 ? 'Все' : `${getCategorySymbol(catId)} <span>${getCategoryName(catId)}</span>`;
+            btn.innerHTML = btnLabel;
 
             btn.addEventListener('click', () => {
                 selectedHistoryFilter = catId;
