@@ -2579,8 +2579,7 @@ textarea {
 .timeline-header-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-left: auto;
+    gap: 6px;
     flex-shrink: 0;
 }
 
