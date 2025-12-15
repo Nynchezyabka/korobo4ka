@@ -424,14 +424,14 @@ function getCategorySquareHTML(catId) {
     };
     const color = colors[catId] || '#9E9E9E';
 
-    // Icon definitions for each category
+    // Icon definitions for each category - simplified iconic style
     const icons = {
-        0: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
-        1: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="2" r="1.5"/><rect x="10.5" y="5" width="3" height="10" rx="1.5"/><circle cx="8.5" cy="18" r="1.5"/><circle cx="15.5" cy="18" r="1.5"/></svg>',
-        2: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l3.5 2v5c0 3.5-3.5 6-3.5 6s-3.5-2.5-3.5-6V3L12 1zm0 4.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/></svg>',
-        3: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="8" cy="10" r="1.5" fill="white"/><circle cx="16" cy="10" r="1.5" fill="white"/><path d="M8 14h8" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>',
-        4: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="2.5"/><path d="M6 14c0-2 3-3 6-3s6 1 6 3v2H6v-2z"/></svg>',
-        5: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'
+        0: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><text x="12" y="15" font-size="16" font-weight="bold" text-anchor="middle" fill="white">?</text></svg>',
+        1: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v8c0 7 10 10 10 10s10-3 10-10V7l-10-5z"/></svg>',
+        2: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 4v16M8 12h8M10 8h4M10 16h4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>',
+        3: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><ellipse cx="8.5" cy="10" rx="1.5" ry="2" fill="white"/><ellipse cx="15.5" cy="10" rx="1.5" ry="2" fill="white"/><path d="M8 14 Q12 16 16 14" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>',
+        4: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="9" r="2.5"/><path d="M6 15c0-1.5 2.5-2.5 6-2.5s6 1 6 2.5v3H6v-3z"/></svg>',
+        5: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c2.5 0 4.5 2 4.5 4.5 0 2-1 3.5-2 5l-2.5 3.5-2.5-3.5c-1-1.5-2-3-2-5C7.5 5 9.5 3 12 3z"/></svg>'
     };
 
     const icon = icons[catId] || icons[0];
