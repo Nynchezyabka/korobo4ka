@@ -1753,6 +1753,13 @@ textarea {
 .category-title .category-heading { white-space: normal; overflow: visible; text-overflow: clip; max-width: none; overflow-wrap: anywhere; }
 .category-heading { font-family: 'Caveat', cursive; font-size: 1.5rem; }
 
+.category-square {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
 /* Make add-category options readable; allow wrapping of long labels */
 .add-category-option, .add-category-badge, .add-category-badge button { white-space: normal; overflow: visible; text-overflow: clip; max-width: none; font-size: 0.95rem; }
 .add-category-option { padding: 6px 10px; border-radius: 6px; }
@@ -2537,7 +2544,7 @@ textarea {
 .timeline-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
     margin-bottom: 8px;
     font-weight: 500;
@@ -2548,12 +2555,22 @@ textarea {
     color: #333;
     font-weight: 600;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .timeline-header-duration {
     font-size: 0.9rem;
     color: #999;
     white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.timeline-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
 /* Legacy classes for compatibility */
@@ -2946,8 +2963,21 @@ textarea {
     }
 
     .timeline-header {
-        gap: 6px;
-        flex-wrap: wrap;
+        gap: 8px;
+        flex-wrap: nowrap;
+        align-items: center;
+    }
+
+    .timeline-header-time {
+        flex-shrink: 0;
+    }
+
+    .timeline-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+        flex-shrink: 0;
     }
 
     .timeline-time {
@@ -3014,9 +3044,20 @@ textarea {
     }
 
     .timeline-header {
-        flex-direction: column;
-        gap: 4px;
-        align-items: flex-start;
+        flex-direction: row;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .timeline-header-time {
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    .timeline-header-duration {
+        font-size: 0.85rem;
+        font-weight: 400;
+        color: #999;
     }
 
     .timeline-time {
@@ -3346,14 +3387,12 @@ textarea {
 }
 
 .timeline-subcategory-tag {
-    display: inline-block;
-    padding: 3px 8px;
+    display: inline-flex;
+    padding: 4px 10px;
     border-radius: 10px;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 500;
-    background-color: #f5f5f5;
-    color: #666;
-    border: 1px solid #e0e0e0;
+    white-space: nowrap;
 }
 
 

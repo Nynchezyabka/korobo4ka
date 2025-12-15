@@ -413,6 +413,19 @@ function getCategoryName(category) {
     return categories[Number(category)] ?? "Категория не определена";
 }
 
+function getCategorySquareHTML(catId) {
+    const colors = {
+        0: '#9E9E9E',
+        1: '#FFD54F',
+        2: '#64B5F6',
+        3: '#81C784',
+        4: '#E57373',
+        5: '#9575CD'
+    };
+    const color = colors[catId] || '#9E9E9E';
+    return `<div class="category-square" style="background-color: ${color};"></div>`;
+}
+
 // Escape HTML to avoid injection when inserting task text into innerHTML
 function escapeHtml(unsafe) {
     if (!unsafe) return '';
@@ -472,7 +485,8 @@ function displayTasks() {
 
         const title = document.createElement('div');
         title.className = 'category-title';
-        title.innerHTML = `<div class=\"category-title-left\"><i class=\"fas fa-folder folder-before-title\"></i><span class=\"category-heading\">${getCategoryName(cat)}</span></div><button type=\"button\" class=\"category-add-btn\" data-cat=\"${cat}\" title=\"Добавить задачу в категории\"><i class=\"fas fa-plus\"></i></button>`;
+        const categorySquare = getCategorySquareHTML(cat);
+        title.innerHTML = `<div class=\"category-title-left\">${categorySquare}<span class=\"category-heading\">${getCategoryName(cat)}</span></div><button type=\"button\" class=\"category-add-btn\" data-cat=\"${cat}\" title=\"Добавить задачу в категории\"><i class=\"fas fa-plus\"></i></button>`;
 
         const grid = document.createElement('div');
         grid.className = 'group-grid';
@@ -3384,7 +3398,9 @@ function updateDailyView() {
         let subcategoryHtml = '';
         if (task.subcategory) {
             const subcatLabel = getSubcategoryLabel(task.category, task.subcategory);
-            subcategoryHtml = `<span class="timeline-subcategory-tag">${escapeHtml(subcatLabel)}</span>`;
+            const subcatColor = getSubcategoryTagColor(task.category);
+            const subcatTextColor = getSubcategoryTagTextColor(task.category);
+            subcategoryHtml = `<span class="timeline-subcategory-tag" style="background-color: ${subcatColor}; color: ${subcatTextColor};">${escapeHtml(subcatLabel)}</span>`;
         }
 
         taskEl.innerHTML = `
@@ -3392,20 +3408,18 @@ function updateDailyView() {
             <div class="timeline-connector${isLastItem ? ' timeline-connector-last' : ''}"></div>
             <div class="timeline-content" style="border-left-color: ${categoryColor};">
                 <div class="timeline-header">
-                    <div class="timeline-header-left">
-                        <span class="timeline-header-time">${startTimeStr}</span>
-                        <span class="timeline-header-duration">${durationText}</span>
-                    </div>
-                    <div class="timeline-header-right">
+                    <div class="timeline-header-time">${startTimeStr}</div>
+                    <div class="timeline-header-actions">
+                        <div class="timeline-header-duration">${durationText}</div>
                         <button class="timeline-menu-btn" title="Меню" data-task-id="${task.id}"><i class="fas fa-ellipsis-v"></i></button>
                     </div>
                 </div>
                 <div class="timeline-text">${escapeHtml(task.text)}</div>
                 <div class="timeline-footer">
                     <span class="timeline-category-tag" style="background-color: ${categoryColor}; color: ${getCategoryTagTextColor(task.category)};">
-                        ${categorySymbol} ${escapeHtml(categoryName)}
+                        ${escapeHtml(categoryName)}
                     </span>
-                    ${subcategoryHtml ? `<div class="timeline-subcategory-tags">${subcategoryHtml}</div>` : ''}
+                    ${subcategoryHtml ? `<span class="timeline-subcategory-tags">${subcategoryHtml}</span>` : ''}
                 </div>
             </div>
         `;
@@ -3455,6 +3469,30 @@ function getCategoryTagTextColor(catId) {
         3: '#1B5E20',
         4: '#B71C1C',
         5: '#0277BD'
+    };
+    return textColors[catId] || '#666666';
+}
+
+function getSubcategoryTagColor(catId) {
+    const colors = {
+        0: '#f5f5f5',
+        1: '#fff9c4',
+        2: '#bbdefb',
+        3: '#c8e6c9',
+        4: '#ffcdd2',
+        5: '#d1c4e9'
+    };
+    return colors[catId] || '#f5f5f5';
+}
+
+function getSubcategoryTagTextColor(catId) {
+    const textColors = {
+        0: '#666666',
+        1: '#8B7500',
+        2: '#1b3b5a',
+        3: '#1b5e20',
+        4: '#7f1d1d',
+        5: '#3d2a5a'
     };
     return textColors[catId] || '#666666';
 }

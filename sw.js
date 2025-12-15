@@ -8,9 +8,7 @@ const ASSETS = [
   '/style.css',
   '/script.js',
   '/db.js',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png'
+  '/manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
@@ -93,10 +91,11 @@ self.addEventListener('push', function(event) {
     } catch (e) {
         data = {};
     }
+    const giftBoxIcon = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiBmaWxsPSIjZmZmYWYwIi8+CjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQ4LCA0OCkiPgo8cmVjdCB4PSIwIiB5PSI0OCIgd2lkdGg9Ijk2IiBoZWlnaHQ9IjY0IiBmaWxsPSIjRkZENTRGIiBzdHJva2U9IiM1ZDQwMzciIHN0cm9rZS13aWR0aD0iMiIgcng9IjgiLz4KPHBhdGggZD0iTTAgNDhMMjQgMzJMNDggNDhMMjQgNDgiIGZpbGw9IiNGRkE3MjciIHN0cm9rZT0iIzVkNDAzNyIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxwYXRoIGQ9Ik00OCA0OEw3MiAzMkw5NiA0OEw3MiA0OCIgZmlsbD0iI0ZGQjc0RiIgc3Ryb2tlPSIjNWQ0MDM3IiBzdHJva2Utd2lkdGg9IjIiLz4KPC9nPgo8L3N2Zz4=';
     const options = {
         body: data.body || 'Время вышло! Задача завершена.',
-        icon: data.icon || '/icon-192.png',
-        badge: data.badge || '/icon-192.png',
+        icon: data.icon || giftBoxIcon,
+        badge: data.badge || giftBoxIcon,
         vibrate: data.vibrate || [500, 300, 500],
         tag: data.tag || 'timer-notification',
         renotify: true,
