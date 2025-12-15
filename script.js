@@ -423,7 +423,19 @@ function getCategorySquareHTML(catId) {
         5: '#9575CD'
     };
     const color = colors[catId] || '#9E9E9E';
-    return `<div class="category-square" style="background-color: ${color};"></div>`;
+
+    // Icon definitions for each category - simplified iconic style
+    const icons = {
+        0: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="11"/><circle cx="12" cy="7" r="1.5" fill="white"/><rect x="11" y="10" width="2" height="6" rx="1" fill="white"/></svg>',
+        1: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 6v6c0 7 8 9 8 9s8-2 8-9V6l-8-4z" stroke="currentColor" stroke-width="0.5"/></svg>',
+        2: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="11"/><g fill="white" stroke="white" stroke-width="1"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="7" y1="12" x2="17" y2="12" stroke-linecap="round"/></g></svg>',
+        3: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="11"/><circle cx="8" cy="10" r="1.5" fill="white"/><circle cx="16" cy="10" r="1.5" fill="white"/><path d="M7 15 Q12 17 17 15" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>',
+        4: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10L12 5l9 5v2H3v-2z"/><circle cx="12" cy="10" r="2.5"/><path d="M7 14c0-1.5 2.5-2.5 5-2.5s5 1 5 2.5v4H7v-4z"/></svg>',
+        5: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4c1.5 0 2.8 1.2 2.8 2.8 0 1.2-.6 2.2-1.3 3.2L12 14l-1.5-4c-.7-1-1.3-2-1.3-3.2C9.2 5.2 10.5 4 12 4z"/></svg>'
+    };
+
+    const icon = icons[catId] || icons[0];
+    return `<div class="category-square" style="color: ${color};">${icon}</div>`;
 }
 
 // Escape HTML to avoid injection when inserting task text into innerHTML
@@ -3279,15 +3291,16 @@ function renderCalendarWidget() {
 }
 
 function getCategorySymbol(categoryId) {
-    const symbols = {
-        0: '⊙',
-        1: '🟨',
-        2: '🟦',
-        3: '🟩',
-        4: '🟥',
-        5: '🟪'
+    // Return HTML with icon for filter buttons - simplified iconic style
+    const icons = {
+        0: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="11"/><circle cx="12" cy="7" r="1.5" fill="white"/><rect x="11" y="10" width="2" height="6" rx="1" fill="white"/></svg>',
+        1: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 6v6c0 7 8 9 8 9s8-2 8-9V6l-8-4z" stroke="currentColor" stroke-width="0.5"/></svg>',
+        2: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="11"/><g fill="white" stroke="white" stroke-width="1"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="7" y1="12" x2="17" y2="12" stroke-linecap="round"/></g></svg>',
+        3: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="11"/><circle cx="8" cy="10" r="1.5" fill="white"/><circle cx="16" cy="10" r="1.5" fill="white"/><path d="M7 15 Q12 17 17 15" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>',
+        4: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10L12 5l9 5v2H3v-2z"/><circle cx="12" cy="10" r="2.5"/><path d="M7 14c0-1.5 2.5-2.5 5-2.5s5 1 5 2.5v4H7v-4z"/></svg>',
+        5: '<svg class="filter-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4c1.5 0 2.8 1.2 2.8 2.8 0 1.2-.6 2.2-1.3 3.2L12 14l-1.5-4c-.7-1-1.3-2-1.3-3.2C9.2 5.2 10.5 4 12 4z"/></svg>'
     };
-    return symbols[categoryId] || '⊙';
+    return icons[categoryId] || icons[0];
 }
 
 function formatTimeDuration(totalMinutes) {
@@ -3329,8 +3342,8 @@ function updateDailyView() {
                 btn.classList.add('active');
             }
 
-            let btnLabel = catId === 0 ? 'Все' : `${getCategorySymbol(catId)} ${getCategoryName(catId)}`;
-            btn.textContent = btnLabel;
+            let btnLabel = catId === 0 ? 'Все' : `${getCategorySymbol(catId)} <span>${getCategoryName(catId)}</span>`;
+            btn.innerHTML = btnLabel;
 
             btn.addEventListener('click', () => {
                 selectedHistoryFilter = catId;
