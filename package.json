@@ -1,8 +1,8 @@
 {
   "name": "korobochka",
-  "version": "4.5",
+  "version": "4.6",
   "private": true,
-  "description": "PWA task planner with timer",
+  "description": "PWA task planner with timer. Organize your tasks in categories and complete them with focused time blocks.",
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js"
