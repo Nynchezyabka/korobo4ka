@@ -3459,6 +3459,30 @@ function getCategoryTagTextColor(catId) {
     return textColors[catId] || '#666666';
 }
 
+function getSubcategoryTagColor(catId) {
+    const colors = {
+        0: '#f5f5f5',
+        1: '#fff9c4',
+        2: '#bbdefb',
+        3: '#c8e6c9',
+        4: '#ffcdd2',
+        5: '#d1c4e9'
+    };
+    return colors[catId] || '#f5f5f5';
+}
+
+function getSubcategoryTagTextColor(catId) {
+    const textColors = {
+        0: '#666666',
+        1: '#8B7500',
+        2: '#1b3b5a',
+        3: '#1b5e20',
+        4: '#7f1d1d',
+        5: '#3d2a5a'
+    };
+    return textColors[catId] || '#666666';
+}
+
 function openAddModalFromArchive(initialCategory) {
     if (!addTaskModal) return;
     addTaskModal.setAttribute('aria-hidden', 'false');
