@@ -3028,9 +3028,9 @@ textarea {
     }
 
     .timeline-header {
-        flex-direction: column;
-        gap: 4px;
-        align-items: flex-start;
+        flex-direction: row;
+        gap: 8px;
+        align-items: center;
     }
 
     .timeline-time {
