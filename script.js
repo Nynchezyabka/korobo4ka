@@ -426,12 +426,12 @@ function getCategorySquareHTML(catId) {
 
     // Icon definitions for each category
     const icons = {
-        0: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>',
-        1: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
-        2: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l7 4v6c0 6.5-7 11-7 11S5 18.5 5 11V5l7-4zm0 3.5L8 7v4c0 4.5 4 8 4 8s4-3.5 4-8V7l-4-2.5zM12 10a2 2 0 100 4 2 2 0 000-4z"></path></svg>',
-        3: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle><path d="M8 9h8M8 15h8M9 12a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm6 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" stroke="white" stroke-width="1.5" fill="none"></path></svg>',
-        4: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"></path></svg>',
-        5: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>'
+        0: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+        1: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="2" r="1.5"/><rect x="10.5" y="5" width="3" height="10" rx="1.5"/><circle cx="8.5" cy="18" r="1.5"/><circle cx="15.5" cy="18" r="1.5"/></svg>',
+        2: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l3.5 2v5c0 3.5-3.5 6-3.5 6s-3.5-2.5-3.5-6V3L12 1zm0 4.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/></svg>',
+        3: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="8" cy="10" r="1.5" fill="white"/><circle cx="16" cy="10" r="1.5" fill="white"/><path d="M8 14h8" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>',
+        4: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="2.5"/><path d="M6 14c0-2 3-3 6-3s6 1 6 3v2H6v-2z"/></svg>',
+        5: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'
     };
 
     const icon = icons[catId] || icons[0];
