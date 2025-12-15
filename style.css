@@ -2555,9 +2555,10 @@ textarea {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     margin-bottom: 8px;
     font-weight: 500;
+    flex-wrap: wrap;
 }
 
 .timeline-header-time {
