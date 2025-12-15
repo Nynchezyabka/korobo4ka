@@ -3057,6 +3057,8 @@ textarea {
         flex-direction: row;
         gap: 8px;
         align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
     }
 
     .timeline-header-time {
