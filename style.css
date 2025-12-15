@@ -3061,14 +3061,16 @@ textarea {
     }
 
     .timeline-header-time {
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 700;
+        white-space: nowrap;
     }
 
     .timeline-header-duration {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: 400;
         color: #999;
+        white-space: nowrap;
     }
 
     .timeline-time {
