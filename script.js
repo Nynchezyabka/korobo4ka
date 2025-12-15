@@ -423,7 +423,19 @@ function getCategorySquareHTML(catId) {
         5: '#9575CD'
     };
     const color = colors[catId] || '#9E9E9E';
-    return `<div class="category-square" style="background-color: ${color};"></div>`;
+
+    // Icon definitions for each category
+    const icons = {
+        0: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>',
+        1: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
+        2: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l7 4v6c0 6.5-7 11-7 11S5 18.5 5 11V5l7-4zm0 3.5L8 7v4c0 4.5 4 8 4 8s4-3.5 4-8V7l-4-2.5zM12 10a2 2 0 100 4 2 2 0 000-4z"></path></svg>',
+        3: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle><path d="M8 9h8M8 15h8M9 12a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm6 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" stroke="white" stroke-width="1.5" fill="none"></path></svg>',
+        4: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"></path></svg>',
+        5: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>'
+    };
+
+    const icon = icons[catId] || icons[0];
+    return `<div class="category-square" style="color: ${color};">${icon}</div>`;
 }
 
 // Escape HTML to avoid injection when inserting task text into innerHTML
