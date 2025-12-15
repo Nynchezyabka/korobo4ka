@@ -1318,12 +1318,12 @@ function showTimer(task) {
 
         if (backgroundImage) {
             // Apply background image with light overlay to ensure text readability while showing the image
-            timerContent.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), url('${backgroundImage}')`;
+            timerContent.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.5)), url('${backgroundImage}')`;
             timerContent.style.backgroundSize = 'cover';
             timerContent.style.backgroundPosition = 'center center';
             timerContent.style.backgroundRepeat = 'no-repeat';
             timerContent.style.backgroundAttachment = 'scroll';
-            timerContent.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+            timerContent.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
         } else {
             timerContent.style.backgroundImage = 'none';
             const bgColor = getCategoryGroupBg(task.category);
