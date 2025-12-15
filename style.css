@@ -2537,7 +2537,7 @@ textarea {
 .timeline-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
     margin-bottom: 8px;
     font-weight: 500;
@@ -2554,6 +2554,13 @@ textarea {
     font-size: 0.9rem;
     color: #999;
     white-space: nowrap;
+}
+
+.timeline-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
 }
 
 /* Legacy classes for compatibility */
