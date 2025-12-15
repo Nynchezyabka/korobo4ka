@@ -3085,26 +3085,27 @@ textarea {
     }
 
     .timeline-text {
-        font-size: 1rem;
-        line-height: 1.5;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        margin: 4px 0;
     }
 
     .timeline-timestamps {
-        gap: 6px;
-        margin: 8px 0;
-        padding: 8px 0;
+        gap: 4px;
+        margin: 4px 0;
+        padding: 4px 0;
     }
 
     .timeline-added-time,
     .timeline-completed-time {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
     }
 
     .timeline-footer {
         flex-direction: row;
         align-items: center;
-        gap: 10px;
-        margin-top: 8px;
+        gap: 6px;
+        margin-top: 4px;
     }
 
     .timeline-category-tag {
