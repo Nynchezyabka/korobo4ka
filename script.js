@@ -438,8 +438,8 @@ function getCategorySquareHTML(catId) {
         // Простые радости - улыбающееся лицо
         3: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/></svg>',
 
-        // Эго-радости - студент с книгой и дипломом
-        4: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="2.5"/><path d="M12 9c-3 0-4 2-4 3v5c0 1 1 2 4 2s4-1 4-2v-5c0-1-1-3-4-3z"/><path d="M7 15l-2 3v2h14v-2l-2-3"/><rect x="8" y="10" width="2" height="6" rx="0.5"/><rect x="14" y="10" width="2" height="6" rx="0.5"/><path d="M8 4l2-2 6 0 2 2" stroke-linecap="round"/></svg>',
+        // Эго-радости - студент в академической шапочке (mortarboard)
+        4: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16l-2 2H6l-2-2z"/><line x1="12" y1="8" x2="12" y2="10"/><circle cx="12" cy="11" r="2.5"/><path d="M16 15c0 1-1 2-4 2s-4-1-4-2"/><path d="M9 17v2c0 1 1 2 3 2s3-1 3-2v-2"/><path d="M14 6l2-3" stroke-width="1.5"/></svg>',
 
         // Доступность простых радостей - сердце
         5: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'
