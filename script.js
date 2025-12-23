@@ -424,14 +424,25 @@ function getCategorySquareHTML(catId) {
     };
     const color = colors[catId] || '#9E9E9E';
 
-    // Icon definitions for each category - simplified iconic style
+    // Improved icon definitions for each category with better aesthetics
     const icons = {
-        0: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="11"/><circle cx="12" cy="7" r="1.5" fill="white"/><rect x="11" y="10" width="2" height="6" rx="1" fill="white"/></svg>',
-        1: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 6v6c0 7 8 9 8 9s8-2 8-9V6l-8-4z" stroke="currentColor" stroke-width="0.5"/></svg>',
-        2: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="11"/><g fill="white" stroke="white" stroke-width="1"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="7" y1="12" x2="17" y2="12" stroke-linecap="round"/></g></svg>',
-        3: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="11"/><circle cx="8" cy="10" r="1.5" fill="white"/><circle cx="16" cy="10" r="1.5" fill="white"/><path d="M7 15 Q12 17 17 15" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>',
-        4: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10L12 5l9 5v2H3v-2z"/><circle cx="12" cy="10" r="2.5"/><path d="M7 14c0-1.5 2.5-2.5 5-2.5s5 1 5 2.5v4H7v-4z"/></svg>',
-        5: '<svg class="category-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4c1.5 0 2.8 1.2 2.8 2.8 0 1.2-.6 2.2-1.3 3.2L12 14l-1.5-4c-.7-1-1.3-2-1.3-3.2C9.2 5.2 10.5 4 12 4z"/></svg>'
+        // Категория не определена - знак вопроса
+        0: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 17v.01M12 13a2 2 0 0 0-2-2 2 2 0 0 0-2 2c0 1 1 2 2 3s2 1 2 2"/></svg>',
+
+        // Обязательные дела - галочка/чек-лист
+        1: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>',
+
+        // Система безопасности - щит с замком
+        2: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><rect x="9" y="12" width="6" height="4" rx="1"/><path d="M12 16v3"/></svg>',
+
+        // Простые радости - улыбающееся лицо
+        3: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/></svg>',
+
+        // Эго-радости - корона
+        4: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l3 6 3-6 3 6 3-6"/><path d="M4 14h16" stroke-width="2"/><path d="M4 14v3c0 1 1 2 2 2h12c1 0 2-1 2-2v-3"/></svg>',
+
+        // Доступность простых радостей - сердце
+        5: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'
     };
 
     const icon = icons[catId] || icons[0];
