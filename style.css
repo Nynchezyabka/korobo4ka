@@ -1754,20 +1754,19 @@ textarea {
 .category-heading { font-family: 'Caveat', cursive; font-size: 1.5rem; }
 
 .category-square {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
     flex-shrink: 0;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    margin-right: 8px;
 }
 
-.category-icon {
-    width: 20px;
-    height: 20px;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+.category-square i {
+    font-size: 20px;
+    color: inherit;
 }
 
 /* Make add-category options readable; allow wrapping of long labels */
