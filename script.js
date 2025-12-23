@@ -438,8 +438,8 @@ function getCategorySquareHTML(catId) {
         // Простые радости - улыбающееся лицо
         3: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/></svg>',
 
-        // Эго-радости - студент с книгой
-        4: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3"/><path d="M18 21H6c-1 0-2-1-2-2v-1c0-2 2-4 8-4s8 2 8 4v1c0 1-1 2-2 2z"/><path d="M8 3h8l1 4H7l1-4z"/><rect x="8" y="13" width="8" height="6" rx="1"/></svg>',
+        // Эго-радости - студент с академической шапкой
+        4: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l8-4 8 4v2H4V7z"/><circle cx="12" cy="11" r="3"/><path d="M18 20H6c-1 0-2-1-2-2v-3c0-2 2-3 8-3s8 1 8 3v3c0 1-1 2-2 2z"/><line x1="12" y1="7" x2="14" y2="5"/></svg>',
 
         // Доступность простых радостей - сердце
         5: '<svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'
