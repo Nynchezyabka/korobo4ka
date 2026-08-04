@@ -319,7 +319,12 @@ export function TimerScreen({ task, onClose }: Props) {
           </div>
         )}
 
+        {showNextMinute && (
+          <NextMinuteSheet task={task} onClose={() => setShowNextMinute(false)} />
+        )}
+
       </div>
+
     </div>
   );
 }
