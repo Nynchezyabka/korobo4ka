@@ -327,8 +327,11 @@ export default function App() {
     switch (currentPage) {
       case "tasks":
         return <TaskListPanel showArchive={false} restrictCategories={tasksFilter} onClearFilter={() => setTasksFilter(null)} />;
+      case "projects":
+        return <ProjectsPanel />;
       case "archive":
         return <TaskListPanel showArchive={true} />;
+
       case "history":
         return <HistoryModal />;
       case "templates":
