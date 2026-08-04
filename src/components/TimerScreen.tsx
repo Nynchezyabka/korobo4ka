@@ -21,6 +21,8 @@ export function TimerScreen({ task, onClose }: Props) {
   const [finished, setFinished] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [showPresets, setShowPresets] = useState(false);
+  const [showNextMinute, setShowNextMinute] = useState(false);
+
   const endAtRef = useRef(0);
   const intervalRef = useRef<number | null>(null);
   const bgImage = useRef(getRandomBackgroundForCategory(task.category));
