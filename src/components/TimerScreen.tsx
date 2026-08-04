@@ -2,7 +2,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Task, CATEGORIES } from "@/types";
 import { useApp } from "@/App";
 import { getRandomBackgroundForCategory } from "@/lib/assets";
-import { X, Play, Pause, RotateCcw, Check, Undo2, Volume2, VolumeX, Shuffle } from "lucide-react";
+import { NextMinuteSheet } from "@/components/NextMinuteSheet";
+import { X, Play, Pause, RotateCcw, Check, Undo2, Volume2, VolumeX, Shuffle, Footprints } from "lucide-react";
+
 
 interface Props {
   task: Task;
@@ -19,6 +21,8 @@ export function TimerScreen({ task, onClose }: Props) {
   const [finished, setFinished] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [showPresets, setShowPresets] = useState(false);
+  const [showNextMinute, setShowNextMinute] = useState(false);
+
   const endAtRef = useRef(0);
   const intervalRef = useRef<number | null>(null);
   const bgImage = useRef(getRandomBackgroundForCategory(task.category));
@@ -279,7 +283,14 @@ export function TimerScreen({ task, onClose }: Props) {
                   <Shuffle size={14} /> Сменить задачу
                 </button>
               </div>
+              <button
+                onClick={() => setShowNextMinute(true)}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white/70 text-sm font-medium active:scale-95 transition-all border border-border/40"
+              >
+                <Footprints size={15} /> Следующая минута
+              </button>
             </div>
+
 
             <button
               onClick={completeTask}
@@ -308,7 +319,12 @@ export function TimerScreen({ task, onClose }: Props) {
           </div>
         )}
 
+        {showNextMinute && (
+          <NextMinuteSheet task={task} onClose={() => setShowNextMinute(false)} />
+        )}
+
       </div>
+
     </div>
   );
 }

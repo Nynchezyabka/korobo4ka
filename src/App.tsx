@@ -4,6 +4,8 @@ import { initTaskStore, loadTasks, saveTasks, getNextId, exportTasksToFile, impo
 import { dbGetMeta, dbSetMeta } from "@/lib/db";
 import { Dashboard } from "@/components/Dashboard";
 import { TaskListPanel } from "@/components/TaskListPanel";
+import { ProjectsPanel } from "@/components/ProjectsPanel";
+
 import { TimerScreen } from "@/components/TimerScreen";
 import { AddTaskModal } from "@/components/AddTaskModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -327,8 +329,11 @@ export default function App() {
     switch (currentPage) {
       case "tasks":
         return <TaskListPanel showArchive={false} restrictCategories={tasksFilter} onClearFilter={() => setTasksFilter(null)} />;
+      case "projects":
+        return <ProjectsPanel />;
       case "archive":
         return <TaskListPanel showArchive={true} />;
+
       case "history":
         return <HistoryModal />;
       case "templates":

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import {
   Home, List, Archive, CalendarDays, Repeat, Download, Upload,
   ChevronLeft, ChevronRight, Info, Bell, BellOff, BellRing, Type,
-  RefreshCw,
+  RefreshCw, ListChecks,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -84,7 +84,7 @@ function UpdateControl({ expanded }: { expanded: boolean }) {
   );
 }
 
-export type PageId = "home" | "tasks" | "archive" | "history" | "templates" | "info";
+export type PageId = "home" | "tasks" | "projects" | "archive" | "history" | "templates" | "info";
 
 interface Props {
   currentPage: PageId;
@@ -97,10 +97,12 @@ interface Props {
 const NAV_ITEMS: { id: PageId; label: string; icon: React.ReactNode }[] = [
   { id: "home", label: "Главная", icon: <Home size={20} /> },
   { id: "tasks", label: "Все задачи", icon: <List size={20} /> },
+  { id: "projects", label: "Проекты", icon: <ListChecks size={20} /> },
   { id: "archive", label: "Архив", icon: <Archive size={20} /> },
   { id: "history", label: "Календарь", icon: <CalendarDays size={20} /> },
   { id: "templates", label: "Шаблоны", icon: <Repeat size={20} /> },
 ];
+
 
 const REMINDERS_KEY = "daily_reminders";
 
