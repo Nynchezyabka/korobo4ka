@@ -283,7 +283,14 @@ export function TimerScreen({ task, onClose }: Props) {
                   <Shuffle size={14} /> Сменить задачу
                 </button>
               </div>
+              <button
+                onClick={() => setShowNextMinute(true)}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white/70 text-sm font-medium active:scale-95 transition-all border border-border/40"
+              >
+                <Footprints size={15} /> Следующая минута
+              </button>
             </div>
+
 
             <button
               onClick={completeTask}
