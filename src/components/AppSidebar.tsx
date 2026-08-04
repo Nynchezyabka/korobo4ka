@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import {
   Home, List, Archive, CalendarDays, Repeat, Download, Upload,
   ChevronLeft, ChevronRight, Info, Bell, BellOff, BellRing, Type,
-  RefreshCw,
+  RefreshCw, ListChecks,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
