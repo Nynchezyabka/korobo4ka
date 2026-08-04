@@ -23,5 +23,10 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "vite-plugin-pwa": "1.2.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vite": "^7"
   }
 }
