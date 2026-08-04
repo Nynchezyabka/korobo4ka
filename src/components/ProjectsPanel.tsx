@@ -268,7 +268,7 @@ function ProjectDetail({
   const saveAsTemplate = () => {
     if (steps.length === 0) return;
     const tpl: ChecklistTemplate = {
-      id: nextId(checklists.length ? checklists : [{ id: 0 }]),
+      id: nextId(checklists),
       title: project.title,
       steps: steps.map((s) => s.text),
       category: project.category,
