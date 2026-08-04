@@ -12,9 +12,65 @@ export interface Task {
   templateId?: number;
   /** Scheduled (planned) timestamp — task is for the future */
   scheduledFor?: number;
+  /** Project (checklist) this task belongs to */
+  projectId?: number;
+  /** Position inside the project checklist */
+  stepOrder?: number;
+}
+
+/** Project = ordered (or unordered) checklist of tasks */
+export interface Project {
+  id: number;
+  title: string;
+  category: CategoryId;
+  /** sequential — шаги идут по порядку; parallel — в любом порядке */
+  mode: "sequential" | "parallel";
+  createdAt: number;
+  archived?: boolean;
+}
+
+/** One-minute micro step recorded inside the timer ("Метод следующей минуты") */
+export interface MicroStep {
+  id: number;
+  taskId: number;
+  text: string;
+  createdAt: number;
+  done: boolean;
+  /** Why the user got stuck, if they pressed "Застряла" */
+  blocker?: BlockerId;
+}
+
+export type BlockerId =
+  | "boring"
+  | "unclear"
+  | "no-info"
+  | "no-energy"
+  | "fear"
+  | "too-big"
+  | "distracted";
+
+export const BLOCKERS: { id: BlockerId; label: string; hint: string }[] = [
+  { id: "boring", label: "Скучно", hint: "Включите музыку или таймер на 5 минут" },
+  { id: "unclear", label: "Непонятно, с чего начать", hint: "Запишите самый маленький шаг на 1 минуту" },
+  { id: "no-info", label: "Не хватает информации", hint: "Следующий шаг — найти/спросить информацию" },
+  { id: "no-energy", label: "Нет сил", hint: "Сделайте один микро-шаг и отдохните" },
+  { id: "fear", label: "Страшно / неприятно", hint: "Разрешите себе сделать плохо, но сделать" },
+  { id: "too-big", label: "Слишком большое дело", hint: "Разбейте на шаги по одной минуте" },
+  { id: "distracted", label: "Отвлекаюсь", hint: "Уберите телефон, поставьте 15 минут" },
+];
+
+/** Saved reusable checklist */
+export interface ChecklistTemplate {
+  id: number;
+  title: string;
+  steps: string[];
+  category?: CategoryId;
+  /** true — встроенный шаблон из библиотеки */
+  builtin?: boolean;
 }
 
 export type CategoryId = 0 | 1 | 2 | 3 | 4 | 5;
+
 
 export interface CategoryInfo {
   id: CategoryId;
