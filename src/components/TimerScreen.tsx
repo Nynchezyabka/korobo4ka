@@ -2,7 +2,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Task, CATEGORIES } from "@/types";
 import { useApp } from "@/App";
 import { getRandomBackgroundForCategory } from "@/lib/assets";
-import { X, Play, Pause, RotateCcw, Check, Undo2, Volume2, VolumeX, Shuffle } from "lucide-react";
+import { NextMinuteSheet } from "@/components/NextMinuteSheet";
+import { X, Play, Pause, RotateCcw, Check, Undo2, Volume2, VolumeX, Shuffle, Footprints } from "lucide-react";
+
 
 interface Props {
   task: Task;
