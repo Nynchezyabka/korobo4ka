@@ -82,9 +82,10 @@ export function ProjectsPanel() {
   return (
     <div className="animate-fade-in">
       <h2 className="font-display text-2xl text-primary mb-1">🧩 Проекты</h2>
-      <p className="text-xs sm:text-sm text-muted-foreground mb-3">
-        Дела, которые нельзя сделать за один раз — разложите на маленькие шаги.
-      </p>
+      <div className="mb-3 p-2.5 rounded-lg bg-muted/40 border border-border/60 text-xs sm:text-sm text-muted-foreground">
+        Список шагов к одной цели: дела, которые нельзя сделать за один раз, разложите на маленькие шаги.
+        Если нужно повторение по расписанию — это <span className="font-semibold text-foreground">Повторяющиеся задачи</span>.
+      </div>
 
       {!creating ? (
         <button
@@ -380,7 +381,7 @@ function ProjectDetail({
           {aiLoading ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />} Спросить AI
         </button>
         <button onClick={() => setShowLibrary(!showLibrary)} className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-white/60 border border-border/50">
-          <Library size={13} /> Библиотека
+          <Library size={13} /> Библиотека чек-листов
         </button>
         {steps.length > 0 && (
           <button onClick={saveAsTemplate} className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-white/60 border border-border/50">

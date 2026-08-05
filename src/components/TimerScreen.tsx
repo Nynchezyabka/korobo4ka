@@ -3,7 +3,7 @@ import { Task, CATEGORIES } from "@/types";
 import { useApp } from "@/App";
 import { getRandomBackgroundForCategory } from "@/lib/assets";
 import { NextMinuteSheet } from "@/components/NextMinuteSheet";
-import { X, Play, Pause, RotateCcw, Check, Undo2, Volume2, VolumeX, Shuffle, Footprints } from "lucide-react";
+import { X, Play, Pause, RotateCcw, Check, Undo2, Volume2, VolumeX, Shuffle, Lightbulb } from "lucide-react";
 
 
 interface Props {
@@ -284,10 +284,10 @@ export function TimerScreen({ task, onClose }: Props) {
                 </button>
               </div>
               <button
-                onClick={() => setShowNextMinute(true)}
+                onClick={() => { setShowNextMinute(true); window.dispatchEvent(new CustomEvent("korobochka:overlay", { detail: true })); }}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white/70 text-sm font-medium active:scale-95 transition-all border border-border/40"
               >
-                <Footprints size={15} /> Следующая минута
+                <Lightbulb size={15} /> С чего начать?
               </button>
             </div>
 
@@ -320,7 +320,10 @@ export function TimerScreen({ task, onClose }: Props) {
         )}
 
         {showNextMinute && (
-          <NextMinuteSheet task={task} onClose={() => setShowNextMinute(false)} />
+          <NextMinuteSheet
+            task={task}
+            onClose={() => { setShowNextMinute(false); window.dispatchEvent(new CustomEvent("korobochka:overlay", { detail: false })); }}
+          />
         )}
 
       </div>
