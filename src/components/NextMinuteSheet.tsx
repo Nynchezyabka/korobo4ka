@@ -47,18 +47,24 @@ export function NextMinuteSheet({ task, onClose }: Props) {
   const suggest = () => setIdeas(suggestStepsOffline(task.text).steps);
 
   return (
-    <div className="fixed inset-0 z-[10500] flex items-end sm:items-center justify-center bg-black/40" onClick={onClose}>
+    <div className="fixed inset-0 z-[11000] flex items-end sm:items-center justify-center bg-black/50" onClick={onClose}>
       <div
         className="w-full sm:max-w-md max-h-[85vh] overflow-auto bg-background rounded-t-2xl sm:rounded-2xl p-4 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-2 mb-1">
-          <h3 className="font-display text-lg sm:text-xl text-primary flex-1">Следующая минута</h3>
-          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-muted"><X size={18} /></button>
+        <div className="flex items-start gap-2 mb-1">
+          <div className="flex-1 min-w-0">
+            <h3 className="font-display text-lg sm:text-xl text-primary">С чего начать?</h3>
+            <p className="text-xs sm:text-sm text-foreground/80 truncate">{task.text}</p>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-muted shrink-0"><X size={18} /></button>
         </div>
         <p className="text-xs sm:text-sm text-muted-foreground mb-3">
           Что можно сделать прямо сейчас за одну минуту? Например «открыть ноутбук».
+          Это не задачи в коробочке — просто раскачка, чтобы начать.
         </p>
+
+        <p className="text-xs font-semibold text-muted-foreground mb-1.5">Шаг на одну минуту</p>
 
         <div className="flex gap-2 mb-3">
           <input

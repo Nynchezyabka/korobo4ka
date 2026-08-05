@@ -177,7 +177,7 @@ export function QuickAddBar({ inTimer }: Props) {
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
-            placeholder="Задача…"
+            placeholder={inTimer ? "Записать идею…" : "Задача…"}
             className="flex-1 min-w-0 px-2 sm:px-3 py-2 rounded-xl bg-transparent text-base sm:text-sm outline-none placeholder:text-muted-foreground/60"
           />
           <button

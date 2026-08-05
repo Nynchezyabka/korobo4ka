@@ -37,9 +37,13 @@ export function TemplatesPanel({ templates, onSave }: Props) {
 
   return (
     <div className="animate-fade-in">
-      <h2 className="font-display text-2xl text-primary flex items-center gap-2 mb-3">
-        <Repeat size={22} /> Шаблоны
+      <h2 className="font-display text-2xl text-primary flex items-center gap-2 mb-1">
+        <Repeat size={22} /> Повторяющиеся задачи
       </h2>
+      <div className="mb-3 p-2.5 rounded-lg bg-muted/40 border border-border/60 text-xs sm:text-sm text-muted-foreground">
+        Одна задача, которая сама появляется по расписанию: зарядка каждое утро, оплата счетов 5-го числа.
+        Если нужен список шагов к одной цели — это <span className="font-semibold text-foreground">Проекты</span>.
+      </div>
 
       {templates.length === 0 && !showForm && (
         <p className="text-center text-muted-foreground py-6">

@@ -15,6 +15,7 @@ import { AppSidebar, PageId } from "@/components/AppSidebar";
 import { HistoryModal } from "@/components/HistoryModal";
 import { OnboardingScreen } from "@/components/OnboardingScreen";
 import { QuickAddBar } from "@/components/QuickAddBar";
+import { SettingsModal, applySkin, loadSkin } from "@/components/SettingsModal";
 import { processRecurringTemplates, createNextInstance } from "@/lib/recurring";
 import { sendNotification } from "@/lib/notifications";
 import { toast } from "sonner";
@@ -69,6 +70,8 @@ export default function App() {
   const [addModalRestrict, setAddModalRestrict] = useState<CategoryId[] | null>(null);
   const [tasksFilter, setTasksFilter] = useState<CategoryId[] | null>(null);
   const [headerDate, setHeaderDate] = useState(() => formatTodayHeader(new Date()));
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [overlayOpen, setOverlayOpen] = useState(false);
 
   // Initialize IndexedDB and load tasks + templates
   useEffect(() => {
@@ -157,6 +160,16 @@ export default function App() {
     const id = setInterval(tick, 30_000);
     return () => clearInterval(id);
   }, [ready, tasks]);
+
+  // Apply saved skin once
+  useEffect(() => { applySkin(loadSkin()); }, []);
+
+  // Hide the quick-add bar while a full-screen sheet is open
+  useEffect(() => {
+    const handler = (e: Event) => setOverlayOpen(!!(e as CustomEvent).detail);
+    window.addEventListener("korobochka:overlay", handler as EventListener);
+    return () => window.removeEventListener("korobochka:overlay", handler as EventListener);
+  }, []);
 
   // Update header date at midnight
   useEffect(() => {
@@ -350,8 +363,7 @@ export default function App() {
       <AppSidebar
         currentPage={currentPage}
         onNavigate={(p) => { if (p !== "tasks") setTasksFilter(null); setCurrentPage(p); }}
-        onExport={handleExport}
-        onImport={handleImport}
+        onOpenSettings={() => setSettingsOpen(true)}
       />
 
       <div className="ml-12 transition-all duration-300">
@@ -379,8 +391,18 @@ export default function App() {
       )}
 
       {/* Unified bottom bar — visible on Home and inside Timer */}
-      {(currentPage === "home" || timerTask) && !addModalOpen && (
+      {(currentPage === "home" || timerTask) && !addModalOpen && !overlayOpen && !settingsOpen && (
         <QuickAddBar inTimer={!!timerTask} />
+      )}
+
+      {settingsOpen && (
+        <SettingsModal
+          onClose={() => setSettingsOpen(false)}
+          onExport={handleExport}
+          onImport={handleImport}
+          onOpenArchive={() => setCurrentPage("archive")}
+          onOpenInfo={() => setCurrentPage("info")}
+        />
       )}
 
       {/* Add modal */}

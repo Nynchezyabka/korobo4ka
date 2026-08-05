@@ -148,6 +148,11 @@ body:is(.dark *) {
   transform: scale(1.03);
 }
 
+/* Alternative skin: plain readable font instead of the handwritten one */
+html.skin-strict {
+  --font-display: "Montserrat", system-ui, sans-serif;
+}
+
 /* Display font weight - make cursive fonts bolder */
 .font-display {
   font-weight: 700 !important;
