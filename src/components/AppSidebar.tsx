@@ -76,7 +76,7 @@ export function AppSidebar({ currentPage, onNavigate, onOpenSettings }: Props) {
           className={itemClass(false)}
         >
           <span className="shrink-0"><Settings size={20} /></span>
-          {expanded ? <span className="truncate">Настройки</span> : <span className="w-full text-center text-[9px] leading-none">Ещё</span>}
+          {expanded && <span className="truncate">Настройки</span>}
         </button>
       </nav>
     </aside>
