@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import {
   X, Bell, BellOff, BellRing, Type, RefreshCw, Download, Upload,
-  Archive, Info, Palette,
+  Archive, Info, Palette, Sparkles,
 } from "lucide-react";
+import { APP_VERSION } from "@/lib/changelog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
