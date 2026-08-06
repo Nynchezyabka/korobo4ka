@@ -16,6 +16,8 @@ import { HistoryModal } from "@/components/HistoryModal";
 import { OnboardingScreen } from "@/components/OnboardingScreen";
 import { QuickAddBar } from "@/components/QuickAddBar";
 import { SettingsModal, applySkin, loadSkin } from "@/components/SettingsModal";
+import { WhatsNewModal } from "@/components/WhatsNewModal";
+import { APP_VERSION, CHANGELOG, ChangelogEntry, entriesSince, getSeenVersion, markVersionSeen } from "@/lib/changelog";
 import { processRecurringTemplates, createNextInstance } from "@/lib/recurring";
 import { sendNotification } from "@/lib/notifications";
 import { toast } from "sonner";
