@@ -78,13 +78,16 @@ export default function App() {
 
   // Show "What's new" once after an update
   useEffect(() => {
-    const seen = getSeenVersion();
+    // Existing users (pre-5.1) have no stored version — treat them as coming from 5.0
+    const isReturning = !!localStorage.getItem("onboarding_done");
+    const seen = getSeenVersion() ?? (isReturning ? "5.0" : null);
     if (!seen) {
       markVersionSeen();
       return;
     }
     const pending = entriesSince(seen);
     if (pending.length) setWhatsNew(pending);
+    else markVersionSeen();
   }, []);
 
 
