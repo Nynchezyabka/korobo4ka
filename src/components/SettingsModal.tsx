@@ -290,6 +290,13 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
               <RefreshCw size={16} className={checking ? "animate-spin" : ""} />
               {checking ? "Проверка…" : needRefresh ? "Обновить сейчас" : "Проверить обновления"}
             </button>
+            <button
+              onClick={() => { onOpenWhatsNew(); onClose(); }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-muted/60 text-left"
+            >
+              <Sparkles size={16} /> Что нового
+            </button>
+            <div className="px-3 pt-1 text-[11px] text-muted-foreground">Версия {APP_VERSION}</div>
           </div>
         </Section>
       </div>
