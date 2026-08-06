@@ -72,6 +72,20 @@ export default function App() {
   const [headerDate, setHeaderDate] = useState(() => formatTodayHeader(new Date()));
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [overlayOpen, setOverlayOpen] = useState(false);
+  const [whatsNew, setWhatsNew] = useState<ChangelogEntry[] | null>(null);
+
+  // Show "What's new" once after an update
+  useEffect(() => {
+    const seen = getSeenVersion();
+    if (!seen) {
+      markVersionSeen();
+      return;
+    }
+    const pending = entriesSince(seen);
+    if (pending.length) setWhatsNew(pending);
+  }, []);
+
+
 
   // Initialize IndexedDB and load tasks + templates
   useEffect(() => {
