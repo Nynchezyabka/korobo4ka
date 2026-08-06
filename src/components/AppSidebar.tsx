@@ -63,11 +63,7 @@ export function AppSidebar({ currentPage, onNavigate, onOpenSettings }: Props) {
                 <span className="absolute left-0 top-1 bottom-1 w-1 rounded-r bg-primary" />
               )}
               <span className="shrink-0">{item.icon}</span>
-              {expanded ? (
-                <span className="truncate">{item.label}</span>
-              ) : (
-                <span className="w-full text-center text-[9px] leading-none truncate px-0.5">{item.short}</span>
-              )}
+              {expanded && <span className="truncate">{item.label}</span>}
             </button>
           );
         })}
