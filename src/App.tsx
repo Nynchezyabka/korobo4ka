@@ -390,7 +390,7 @@ export default function App() {
               <ThemeToggle />
             </div>
             <h1 className="font-display text-2xl sm:text-4xl text-primary drop-shadow-sm animate-fade-in px-10">
-              🎁 КОРОБОЧКА 5.0
+              🎁 КОРОБОЧКА {APP_VERSION}
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1 capitalize animate-fade-in">
               {headerDate}
