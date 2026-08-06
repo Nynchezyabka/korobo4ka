@@ -55,6 +55,7 @@ interface Props {
   onImport: (file: File) => void;
   onOpenArchive: () => void;
   onOpenInfo: () => void;
+  onOpenWhatsNew: () => void;
 }
 
 function Section({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
