@@ -1,6 +1,6 @@
 {
   "name": "korobochka",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "private": true,
   "type": "module",
   "description": "PWA task planner with timer. Organize your tasks in categories and complete them with focused time blocks.",

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import {
   X, Bell, BellOff, BellRing, Type, RefreshCw, Download, Upload,
-  Archive, Info, Palette,
+  Archive, Info, Palette, Sparkles,
 } from "lucide-react";
+import { APP_VERSION } from "@/lib/changelog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
@@ -55,6 +56,7 @@ interface Props {
   onImport: (file: File) => void;
   onOpenArchive: () => void;
   onOpenInfo: () => void;
+  onOpenWhatsNew: () => void;
 }
 
 function Section({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
@@ -68,7 +70,7 @@ function Section({ title, icon, children }: { title: string; icon: React.ReactNo
   );
 }
 
-export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOpenInfo }: Props) {
+export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOpenInfo, onOpenWhatsNew }: Props) {
   // Reminders
   const [permission, setPermission] = useState<NotificationPermission>(getNotificationPermission());
   const [cfg, setCfg] = useState<DailyReminders>(loadReminders);
@@ -289,6 +291,13 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
               <RefreshCw size={16} className={checking ? "animate-spin" : ""} />
               {checking ? "Проверка…" : needRefresh ? "Обновить сейчас" : "Проверить обновления"}
             </button>
+            <button
+              onClick={() => { onOpenWhatsNew(); onClose(); }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-muted/60 text-left"
+            >
+              <Sparkles size={16} /> Что нового
+            </button>
+            <div className="px-3 pt-1 text-[11px] text-muted-foreground">Версия {APP_VERSION}</div>
           </div>
         </Section>
       </div>

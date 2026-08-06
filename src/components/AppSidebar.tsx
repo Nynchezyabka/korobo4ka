@@ -12,12 +12,12 @@ interface Props {
   onOpenSettings: () => void;
 }
 
-const NAV_ITEMS: { id: PageId; label: string; short: string; icon: React.ReactNode }[] = [
-  { id: "home", label: "Главная", short: "Дом", icon: <Home size={20} /> },
-  { id: "tasks", label: "Все задачи", short: "Задачи", icon: <List size={20} /> },
-  { id: "projects", label: "Проекты", short: "Проекты", icon: <ListChecks size={20} /> },
-  { id: "history", label: "Календарь", short: "Кален.", icon: <CalendarDays size={20} /> },
-  { id: "templates", label: "Повторяющиеся задачи", short: "Повтор", icon: <Repeat size={20} /> },
+const NAV_ITEMS: { id: PageId; label: string; icon: React.ReactNode }[] = [
+  { id: "home", label: "Главная", icon: <Home size={20} /> },
+  { id: "tasks", label: "Все задачи", icon: <List size={20} /> },
+  { id: "projects", label: "Проекты", icon: <ListChecks size={20} /> },
+  { id: "history", label: "Календарь", icon: <CalendarDays size={20} /> },
+  { id: "templates", label: "Повторяющиеся задачи", icon: <Repeat size={20} /> },
 ];
 
 export function AppSidebar({ currentPage, onNavigate, onOpenSettings }: Props) {
@@ -26,7 +26,7 @@ export function AppSidebar({ currentPage, onNavigate, onOpenSettings }: Props) {
   const itemClass = (active: boolean) =>
     cn(
       "relative rounded-lg transition-all text-sm font-medium",
-      expanded ? "flex items-center gap-3 px-3 py-2.5" : "flex flex-col items-center gap-0.5 py-2 px-0",
+      expanded ? "flex items-center gap-3 px-3 py-2.5" : "flex items-center justify-center py-2.5 px-0",
       active
         ? "bg-primary/10 text-primary"
         : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
@@ -63,11 +63,7 @@ export function AppSidebar({ currentPage, onNavigate, onOpenSettings }: Props) {
                 <span className="absolute left-0 top-1 bottom-1 w-1 rounded-r bg-primary" />
               )}
               <span className="shrink-0">{item.icon}</span>
-              {expanded ? (
-                <span className="truncate">{item.label}</span>
-              ) : (
-                <span className="w-full text-center text-[9px] leading-none truncate px-0.5">{item.short}</span>
-              )}
+              {expanded && <span className="truncate">{item.label}</span>}
             </button>
           );
         })}
@@ -80,7 +76,7 @@ export function AppSidebar({ currentPage, onNavigate, onOpenSettings }: Props) {
           className={itemClass(false)}
         >
           <span className="shrink-0"><Settings size={20} /></span>
-          {expanded ? <span className="truncate">Настройки</span> : <span className="w-full text-center text-[9px] leading-none">Ещё</span>}
+          {expanded && <span className="truncate">Настройки</span>}
         </button>
       </nav>
     </aside>

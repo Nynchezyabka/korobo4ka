@@ -16,6 +16,8 @@ import { HistoryModal } from "@/components/HistoryModal";
 import { OnboardingScreen } from "@/components/OnboardingScreen";
 import { QuickAddBar } from "@/components/QuickAddBar";
 import { SettingsModal, applySkin, loadSkin } from "@/components/SettingsModal";
+import { WhatsNewModal } from "@/components/WhatsNewModal";
+import { APP_VERSION, CHANGELOG, ChangelogEntry, entriesSince, getSeenVersion, markVersionSeen } from "@/lib/changelog";
 import { processRecurringTemplates, createNextInstance } from "@/lib/recurring";
 import { sendNotification } from "@/lib/notifications";
 import { toast } from "sonner";
@@ -72,6 +74,23 @@ export default function App() {
   const [headerDate, setHeaderDate] = useState(() => formatTodayHeader(new Date()));
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [overlayOpen, setOverlayOpen] = useState(false);
+  const [whatsNew, setWhatsNew] = useState<ChangelogEntry[] | null>(null);
+
+  // Show "What's new" once after an update
+  useEffect(() => {
+    // Existing users (pre-5.1) have no stored version — treat them as coming from 5.0
+    const isReturning = !!localStorage.getItem("onboarding_done");
+    const seen = getSeenVersion() ?? (isReturning ? "5.0" : null);
+    if (!seen) {
+      markVersionSeen();
+      return;
+    }
+    const pending = entriesSince(seen);
+    if (pending.length) setWhatsNew(pending);
+    else markVersionSeen();
+  }, []);
+
+
 
   // Initialize IndexedDB and load tasks + templates
   useEffect(() => {
@@ -374,7 +393,7 @@ export default function App() {
               <ThemeToggle />
             </div>
             <h1 className="font-display text-2xl sm:text-4xl text-primary drop-shadow-sm animate-fade-in px-10">
-              🎁 КОРОБОЧКА 5.0
+              🎁 КОРОБОЧКА {APP_VERSION}
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1 capitalize animate-fade-in">
               {headerDate}
@@ -402,7 +421,12 @@ export default function App() {
           onImport={handleImport}
           onOpenArchive={() => setCurrentPage("archive")}
           onOpenInfo={() => setCurrentPage("info")}
+          onOpenWhatsNew={() => setWhatsNew(CHANGELOG.slice(0, 1))}
         />
+      )}
+
+      {whatsNew && (
+        <WhatsNewModal entries={whatsNew} onClose={() => setWhatsNew(null)} />
       )}
 
       {/* Add modal */}
