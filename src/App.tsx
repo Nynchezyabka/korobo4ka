@@ -402,7 +402,12 @@ export default function App() {
           onImport={handleImport}
           onOpenArchive={() => setCurrentPage("archive")}
           onOpenInfo={() => setCurrentPage("info")}
+          onOpenWhatsNew={() => setWhatsNew(CHANGELOG.slice(0, 1))}
         />
+      )}
+
+      {whatsNew && (
+        <WhatsNewModal entries={whatsNew} onClose={() => setWhatsNew(null)} />
       )}
 
       {/* Add modal */}
