@@ -26,7 +26,7 @@ export function AppSidebar({ currentPage, onNavigate, onOpenSettings }: Props) {
   const itemClass = (active: boolean) =>
     cn(
       "relative rounded-lg transition-all text-sm font-medium",
-      expanded ? "flex items-center gap-3 px-3 py-2.5" : "flex flex-col items-center gap-0.5 py-2 px-0",
+      expanded ? "flex items-center gap-3 px-3 py-2.5" : "flex items-center justify-center py-2.5 px-0",
       active
         ? "bg-primary/10 text-primary"
         : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
