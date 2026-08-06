@@ -12,12 +12,12 @@ interface Props {
   onOpenSettings: () => void;
 }
 
-const NAV_ITEMS: { id: PageId; label: string; short: string; icon: React.ReactNode }[] = [
-  { id: "home", label: "Главная", short: "Дом", icon: <Home size={20} /> },
-  { id: "tasks", label: "Все задачи", short: "Задачи", icon: <List size={20} /> },
-  { id: "projects", label: "Проекты", short: "Проекты", icon: <ListChecks size={20} /> },
-  { id: "history", label: "Календарь", short: "Кален.", icon: <CalendarDays size={20} /> },
-  { id: "templates", label: "Повторяющиеся задачи", short: "Повтор", icon: <Repeat size={20} /> },
+const NAV_ITEMS: { id: PageId; label: string; icon: React.ReactNode }[] = [
+  { id: "home", label: "Главная", icon: <Home size={20} /> },
+  { id: "tasks", label: "Все задачи", icon: <List size={20} /> },
+  { id: "projects", label: "Проекты", icon: <ListChecks size={20} /> },
+  { id: "history", label: "Календарь", icon: <CalendarDays size={20} /> },
+  { id: "templates", label: "Повторяющиеся задачи", icon: <Repeat size={20} /> },
 ];
 
 export function AppSidebar({ currentPage, onNavigate, onOpenSettings }: Props) {
