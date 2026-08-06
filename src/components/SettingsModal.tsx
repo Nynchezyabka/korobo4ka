@@ -69,7 +69,7 @@ function Section({ title, icon, children }: { title: string; icon: React.ReactNo
   );
 }
 
-export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOpenInfo }: Props) {
+export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOpenInfo, onOpenWhatsNew }: Props) {
   // Reminders
   const [permission, setPermission] = useState<NotificationPermission>(getNotificationPermission());
   const [cfg, setCfg] = useState<DailyReminders>(loadReminders);
