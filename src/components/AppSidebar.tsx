@@ -1,8 +1,9 @@
 import { useState } from "react";
 import {
-  Home, List, CalendarDays, Repeat, ChevronLeft, ChevronRight, Settings, ListChecks,
+  Home, List, CalendarDays, Repeat, ChevronLeft, ChevronRight, Settings, Puzzle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
 
 export type PageId = "home" | "tasks" | "projects" | "archive" | "history" | "templates" | "info";
 
@@ -15,10 +16,11 @@ interface Props {
 const NAV_ITEMS: { id: PageId; label: string; icon: React.ReactNode }[] = [
   { id: "home", label: "Главная", icon: <Home size={20} /> },
   { id: "tasks", label: "Все задачи", icon: <List size={20} /> },
-  { id: "projects", label: "Проекты", icon: <ListChecks size={20} /> },
+  { id: "projects", label: "Проекты", icon: <Puzzle size={20} /> },
   { id: "history", label: "Календарь", icon: <CalendarDays size={20} /> },
   { id: "templates", label: "Повторяющиеся задачи", icon: <Repeat size={20} /> },
 ];
+
 
 export function AppSidebar({ currentPage, onNavigate, onOpenSettings }: Props) {
   const [expanded, setExpanded] = useState(false);
