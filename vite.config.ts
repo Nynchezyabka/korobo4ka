@@ -7,10 +7,10 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       includeAssets: ["Assets/**/*", "favicon.jpg", "icon-192.svg", "icon-512.svg", "icon-maskable-192.svg", "icon-maskable-512.svg"],
       manifest: {
-        name: "🎁 КОРОБОЧКА 5.0",
+        name: "🎁 КОРОБОЧКА",
         short_name: "КОРОБОЧКА",
         description: "Планировщик задач с таймером",
         start_url: "/",
