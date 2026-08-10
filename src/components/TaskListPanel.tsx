@@ -355,6 +355,8 @@ interface TaskCardProps {
   onChangeCategory: (cat: CategoryId) => void;
   onUpdateText: (text: string) => void;
   onUpdateSubcategory: (sub: string | undefined) => void;
+  onSetReminder: (ts: number | null) => void;
+  onOpenNextMinute: () => void;
   onDragStart: () => void;
   onDragOver: () => void;
   onDrop: () => void;
