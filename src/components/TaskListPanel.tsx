@@ -671,6 +671,53 @@ function TaskCard({
           )}
         </div>
       )}
+
+      {/* Reminder dialog */}
+      {showReminder && (
+        <div
+          ref={reminderRef}
+          className="absolute z-[10300] top-8 right-0 bg-background rounded-lg shadow-lg p-3 min-w-[220px] border border-border animate-scale-in"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs sm:text-sm font-display flex items-center gap-1.5">
+              <Bell size={14} /> Напомнить
+            </span>
+            <button onClick={() => setShowReminder(false)} className="p-1 rounded hover:bg-muted">
+              <X size={12} />
+            </button>
+          </div>
+          <div className="flex flex-col gap-2">
+            <input
+              type="date"
+              value={reminderDate}
+              onChange={(e) => setReminderDate(e.target.value)}
+              className="w-full text-xs sm:text-sm px-2 py-1.5 rounded border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            <input
+              type="time"
+              value={reminderTime}
+              onChange={(e) => setReminderTime(e.target.value)}
+              className="w-full text-xs sm:text-sm px-2 py-1.5 rounded border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            <div className="flex gap-2 mt-1">
+              {hasReminder && (
+                <button
+                  onClick={clearReminder}
+                  className="flex-1 text-[10px] sm:text-xs px-2 py-1.5 rounded border border-border hover:bg-muted"
+                >
+                  Отменить
+                </button>
+              )}
+              <button
+                onClick={applyReminder}
+                className="flex-1 text-[10px] sm:text-xs px-2 py-1.5 rounded bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
