@@ -339,6 +339,12 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
           </div>
         );
       })}
+
+      <NextMinuteSheet
+        isOpen={!!nextMinuteTask}
+        onClose={() => setNextMinuteTask(null)}
+        task={nextMinuteTask || undefined}
+      />
     </div>
   );
 }
