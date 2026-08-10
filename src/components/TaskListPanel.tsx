@@ -372,6 +372,9 @@ function TaskCard({
 }: TaskCardProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showActions, setShowActions] = useState(false);
+  const [showReminder, setShowReminder] = useState(false);
+  const [reminderDate, setReminderDate] = useState<string>("");
+  const [reminderTime, setReminderTime] = useState<string>("12:00");
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(task.text);
   const [editingSub, setEditingSub] = useState(false);
@@ -379,6 +382,31 @@ function TaskCard({
   const [customSubInput, setCustomSubInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
+  const reminderRef = useRef<HTMLDivElement>(null);
+
+  const hasReminder = Boolean(task.scheduledFor && task.scheduledFor > Date.now());
+
+  const applyReminder = () => {
+    if (!reminderDate || !reminderTime) return;
+    const [h, m] = reminderTime.split(":").map(Number);
+    const d = new Date(reminderDate);
+    d.setHours(h, m, 0, 0);
+    onSetReminder(d.getTime());
+    setShowReminder(false);
+  };
+
+  const clearReminder = () => {
+    onSetReminder(null);
+    setShowReminder(false);
+  };
+
+  const openReminder = () => {
+    const initial = task.scheduledFor && task.scheduledFor > Date.now() ? new Date(task.scheduledFor) : new Date();
+    setReminderDate(initial.toISOString().split("T")[0]);
+    setReminderTime(`${String(initial.getHours()).padStart(2, "0")}:${String(initial.getMinutes()).padStart(2, "0")}`);
+    setShowReminder(true);
+    setShowActions(false);
+  };
 
   const bgMap: Record<CategoryId, string> = {
     0: "bg-cat-0-bg border-l-4 border-l-cat-0",
