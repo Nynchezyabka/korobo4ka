@@ -97,6 +97,10 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
     applySkin(skin);
   }, [skin]);
 
+  // Private note
+  const [privateNote, setPrivateNote] = useState<string>(loadPrivateNote);
+  const [noteOpen, setNoteOpen] = useState(false);
+
   // Updates
   const [needRefresh, setNeedRefresh] = useState(false);
   const [checking, setChecking] = useState(false);
