@@ -308,24 +308,26 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
                       {(!sub || !isCollapsed) && (
                         <div className="flex flex-col gap-2">
                           {subGroups.get(sub)!.map((task) => (
-                            <TaskCard
-                              key={task.id}
-                              task={task}
-                              showArchive={showArchive}
-                              isDragOver={dragOverId === task.id}
-                              onStart={() => openTimer(task)}
-                              onToggle={() => toggleActive(task.id)}
-                              onDelete={() => deleteTask(task.id)}
-                              onComplete={() => completeTask(task.id)}
-                              onReturn={() => returnTask(task.id)}
-                              onChangeCategory={(newCat) => changeCategory(task.id, newCat)}
-                              onUpdateText={(text) => updateTaskText(task.id, text)}
-                              onUpdateSubcategory={(sub) => updateTaskSubcategory(task.id, sub)}
-                              onDragStart={() => setDragId(task.id)}
-                              onDragOver={() => setDragOverId(task.id)}
-                              onDrop={() => handleDrop(task.id)}
-                              onDragEnd={() => { setDragId(null); setDragOverId(null); }}
-                            />
+                          <TaskCard
+                            key={task.id}
+                            task={task}
+                            showArchive={showArchive}
+                            isDragOver={dragOverId === task.id}
+                            onStart={() => openTimer(task)}
+                            onToggle={() => toggleActive(task.id)}
+                            onDelete={() => deleteTask(task.id)}
+                            onComplete={() => completeTask(task.id)}
+                            onReturn={() => returnTask(task.id)}
+                            onChangeCategory={(newCat) => changeCategory(task.id, newCat)}
+                            onUpdateText={(text) => updateTaskText(task.id, text)}
+                            onUpdateSubcategory={(sub) => updateTaskSubcategory(task.id, sub)}
+                            onSetReminder={(ts) => setTaskReminderAt(task, ts)}
+                            onOpenNextMinute={() => setNextMinuteTask(task)}
+                            onDragStart={() => setDragId(task.id)}
+                            onDragOver={() => setDragOverId(task.id)}
+                            onDrop={() => handleDrop(task.id)}
+                            onDragEnd={() => { setDragId(null); setDragOverId(null); }}
+                          />
                           ))}
                         </div>
                       )}
