@@ -408,6 +408,17 @@ function TaskCard({
     setShowActions(false);
   };
 
+  useEffect(() => {
+    if (!showReminder) return;
+    const handleClick = (e: MouseEvent) => {
+      if (reminderRef.current && !reminderRef.current.contains(e.target as Node)) {
+        setShowReminder(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [showReminder]);
+
   const bgMap: Record<CategoryId, string> = {
     0: "bg-cat-0-bg border-l-4 border-l-cat-0",
     1: "bg-cat-1-bg border-l-4 border-l-cat-1",
