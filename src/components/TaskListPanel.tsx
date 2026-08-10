@@ -4,8 +4,11 @@ import { useApp } from "@/App";
 import { getCustomSubcategoriesSync, saveCustomSubcategories, getCategoryDisplayName, getCustomCategoryNamesSync, saveCustomCategoryNames, renameSubcategory } from "@/lib/taskStore";
 import { cn } from "@/lib/utils";
 import { CategoryIcon } from "@/components/CategoryIcon";
+import { NextMinuteSheet } from "@/components/NextMinuteSheet";
+import { setTaskReminder, clearTaskReminder, hasActiveReminder } from "@/lib/notifications";
 import {
   Play, Eye, EyeOff, Trash2, Check, Undo2, FolderOpen, Plus, Pencil, GripVertical, MoreVertical,
+  Bell, BellOff, Lightbulb, X, CalendarClock,
 } from "lucide-react";
 
 interface Props {
