@@ -8,7 +8,7 @@ import { NextMinuteSheet } from "@/components/NextMinuteSheet";
 import { setTaskReminder, clearTaskReminder, hasActiveReminder } from "@/lib/notifications";
 import {
   Play, Eye, EyeOff, Trash2, Check, Undo2, FolderOpen, Plus, Pencil, GripVertical, MoreVertical,
-  Bell, BellOff, Lightbulb, X, CalendarClock,
+  Bell, BellRing, BellOff, Lightbulb, X, CalendarClock,
 } from "lucide-react";
 
 interface Props {
