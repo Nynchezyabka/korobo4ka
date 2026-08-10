@@ -1,11 +1,14 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Task, CategoryId, CATEGORIES, DEFAULT_SUBCATEGORIES } from "@/types";
 import { useApp } from "@/App";
 import { getCustomSubcategoriesSync, saveCustomSubcategories, getCategoryDisplayName, getCustomCategoryNamesSync, saveCustomCategoryNames, renameSubcategory } from "@/lib/taskStore";
 import { cn } from "@/lib/utils";
 import { CategoryIcon } from "@/components/CategoryIcon";
+import { NextMinuteSheet } from "@/components/NextMinuteSheet";
+import { setTaskReminder, clearTaskReminder, hasActiveReminder } from "@/lib/notifications";
 import {
   Play, Eye, EyeOff, Trash2, Check, Undo2, FolderOpen, Plus, Pencil, GripVertical, MoreVertical,
+  Bell, BellRing, BellOff, Lightbulb, X, CalendarClock,
 } from "lucide-react";
 
 interface Props {
@@ -27,6 +30,8 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
   const [renameCatText, setRenameCatText] = useState("");
   const [renamingSub, setRenamingSub] = useState<{ cat: CategoryId; sub: string } | null>(null);
   const [renameSubText, setRenameSubText] = useState("");
+  const [nextMinuteTask, setNextMinuteTask] = useState<Task | null>(null);
+  const [reminderTask, setReminderTask] = useState<Task | null>(null);
 
   const source = tasks
     .filter((t) => (showArchive ? t.completed : !t.completed))
@@ -51,10 +56,12 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
   };
 
   const deleteTask = (id: number) => {
+    clearTaskReminder(id);
     setTasks((prev) => prev.filter((t) => t.id !== id));
   };
 
   const completeTask = (id: number) => {
+    clearTaskReminder(id);
     completeTaskWithRecurrence(id);
   };
 
@@ -64,6 +71,20 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
         t.id === id ? { ...t, completed: false, active: true, statusChangedAt: Date.now() } : t
       )
     );
+  };
+
+  const setTaskReminderAt = (task: Task, scheduledFor: number | null) => {
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === task.id
+          ? { ...t, scheduledFor: scheduledFor ?? undefined }
+          : t
+      )
+    );
+    clearTaskReminder(task.id);
+    if (scheduledFor && scheduledFor > Date.now()) {
+      setTaskReminder(task.id, task.text, Math.ceil((scheduledFor - Date.now()) / (60 * 1000)));
+    }
   };
 
   const changeCategory = (id: number, newCat: CategoryId) => {
@@ -287,24 +308,26 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
                       {(!sub || !isCollapsed) && (
                         <div className="flex flex-col gap-2">
                           {subGroups.get(sub)!.map((task) => (
-                            <TaskCard
-                              key={task.id}
-                              task={task}
-                              showArchive={showArchive}
-                              isDragOver={dragOverId === task.id}
-                              onStart={() => openTimer(task)}
-                              onToggle={() => toggleActive(task.id)}
-                              onDelete={() => deleteTask(task.id)}
-                              onComplete={() => completeTask(task.id)}
-                              onReturn={() => returnTask(task.id)}
-                              onChangeCategory={(newCat) => changeCategory(task.id, newCat)}
-                              onUpdateText={(text) => updateTaskText(task.id, text)}
-                              onUpdateSubcategory={(sub) => updateTaskSubcategory(task.id, sub)}
-                              onDragStart={() => setDragId(task.id)}
-                              onDragOver={() => setDragOverId(task.id)}
-                              onDrop={() => handleDrop(task.id)}
-                              onDragEnd={() => { setDragId(null); setDragOverId(null); }}
-                            />
+                          <TaskCard
+                            key={task.id}
+                            task={task}
+                            showArchive={showArchive}
+                            isDragOver={dragOverId === task.id}
+                            onStart={() => openTimer(task)}
+                            onToggle={() => toggleActive(task.id)}
+                            onDelete={() => deleteTask(task.id)}
+                            onComplete={() => completeTask(task.id)}
+                            onReturn={() => returnTask(task.id)}
+                            onChangeCategory={(newCat) => changeCategory(task.id, newCat)}
+                            onUpdateText={(text) => updateTaskText(task.id, text)}
+                            onUpdateSubcategory={(sub) => updateTaskSubcategory(task.id, sub)}
+                            onSetReminder={(ts) => setTaskReminderAt(task, ts)}
+                            onOpenNextMinute={() => setNextMinuteTask(task)}
+                            onDragStart={() => setDragId(task.id)}
+                            onDragOver={() => setDragOverId(task.id)}
+                            onDrop={() => handleDrop(task.id)}
+                            onDragEnd={() => { setDragId(null); setDragOverId(null); }}
+                          />
                           ))}
                         </div>
                       )}
@@ -316,6 +339,13 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
           </div>
         );
       })}
+
+      {nextMinuteTask && (
+        <NextMinuteSheet
+          task={nextMinuteTask}
+          onClose={() => setNextMinuteTask(null)}
+        />
+      )}
     </div>
   );
 }
@@ -332,6 +362,8 @@ interface TaskCardProps {
   onChangeCategory: (cat: CategoryId) => void;
   onUpdateText: (text: string) => void;
   onUpdateSubcategory: (sub: string | undefined) => void;
+  onSetReminder: (ts: number | null) => void;
+  onOpenNextMinute: () => void;
   onDragStart: () => void;
   onDragOver: () => void;
   onDrop: () => void;
@@ -342,10 +374,14 @@ function TaskCard({
   task, showArchive, isDragOver,
   onStart, onToggle, onDelete, onComplete, onReturn, onChangeCategory,
   onUpdateText, onUpdateSubcategory,
+  onSetReminder, onOpenNextMinute,
   onDragStart, onDragOver, onDrop, onDragEnd,
 }: TaskCardProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showActions, setShowActions] = useState(false);
+  const [showReminder, setShowReminder] = useState(false);
+  const [reminderDate, setReminderDate] = useState<string>("");
+  const [reminderTime, setReminderTime] = useState<string>("12:00");
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(task.text);
   const [editingSub, setEditingSub] = useState(false);
@@ -353,6 +389,42 @@ function TaskCard({
   const [customSubInput, setCustomSubInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
+  const reminderRef = useRef<HTMLDivElement>(null);
+
+  const hasReminder = Boolean(task.scheduledFor && task.scheduledFor > Date.now());
+
+  const applyReminder = () => {
+    if (!reminderDate || !reminderTime) return;
+    const [h, m] = reminderTime.split(":").map(Number);
+    const d = new Date(reminderDate);
+    d.setHours(h, m, 0, 0);
+    onSetReminder(d.getTime());
+    setShowReminder(false);
+  };
+
+  const clearReminder = () => {
+    onSetReminder(null);
+    setShowReminder(false);
+  };
+
+  const openReminder = () => {
+    const initial = task.scheduledFor && task.scheduledFor > Date.now() ? new Date(task.scheduledFor) : new Date();
+    setReminderDate(initial.toISOString().split("T")[0]);
+    setReminderTime(`${String(initial.getHours()).padStart(2, "0")}:${String(initial.getMinutes()).padStart(2, "0")}`);
+    setShowReminder(true);
+    setShowActions(false);
+  };
+
+  useEffect(() => {
+    if (!showReminder) return;
+    const handleClick = (e: MouseEvent) => {
+      if (reminderRef.current && !reminderRef.current.contains(e.target as Node)) {
+        setShowReminder(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [showReminder]);
 
   const bgMap: Record<CategoryId, string> = {
     0: "bg-cat-0-bg border-l-4 border-l-cat-0",
@@ -481,6 +553,13 @@ function TaskCard({
                 <Play size={14} />
               </button>
               <button
+                onClick={onOpenNextMinute}
+                className="p-1.5 rounded active:bg-black/10 hover:bg-black/5 transition-colors"
+                title="С чего начать?"
+              >
+                <Lightbulb size={14} />
+              </button>
+              <button
                 onClick={() => setShowActions(!showActions)}
                 className="p-1.5 rounded active:bg-black/10 hover:bg-black/5 transition-colors"
                 title="Действия"
@@ -488,7 +567,7 @@ function TaskCard({
                 <MoreVertical size={14} />
               </button>
               {showActions && (
-                <div className="absolute z-[10200] top-full right-0 mt-1 bg-background rounded-md shadow-lg p-1 min-w-[140px] border border-border animate-scale-in">
+                <div className="absolute z-[10200] top-full right-0 mt-1 bg-background rounded-md shadow-lg p-1 min-w-[150px] border border-border animate-scale-in">
                   <button
                     onClick={() => { onComplete(); setShowActions(false); }}
                     className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
@@ -500,6 +579,12 @@ function TaskCard({
                     className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
                   >
                     {task.active ? <><EyeOff size={12} /> Скрыть</> : <><Eye size={12} /> Показать</>}
+                  </button>
+                  <button
+                    onClick={openReminder}
+                    className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
+                  >
+                    {hasReminder ? <><BellRing size={12} /> Изменить напоминание</> : <><Bell size={12} /> Напомнить</>}
                   </button>
                   <button
                     onClick={() => { onDelete(); setShowActions(false); }}
@@ -602,6 +687,53 @@ function TaskCard({
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Reminder dialog */}
+      {showReminder && (
+        <div
+          ref={reminderRef}
+          className="absolute z-[10300] top-8 right-0 bg-background rounded-lg shadow-lg p-3 min-w-[220px] border border-border animate-scale-in"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs sm:text-sm font-display flex items-center gap-1.5">
+              <Bell size={14} /> Напомнить
+            </span>
+            <button onClick={() => setShowReminder(false)} className="p-1 rounded hover:bg-muted">
+              <X size={12} />
+            </button>
+          </div>
+          <div className="flex flex-col gap-2">
+            <input
+              type="date"
+              value={reminderDate}
+              onChange={(e) => setReminderDate(e.target.value)}
+              className="w-full text-xs sm:text-sm px-2 py-1.5 rounded border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            <input
+              type="time"
+              value={reminderTime}
+              onChange={(e) => setReminderTime(e.target.value)}
+              className="w-full text-xs sm:text-sm px-2 py-1.5 rounded border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            <div className="flex gap-2 mt-1">
+              {hasReminder && (
+                <button
+                  onClick={clearReminder}
+                  className="flex-1 text-[10px] sm:text-xs px-2 py-1.5 rounded border border-border hover:bg-muted"
+                >
+                  Отменить
+                </button>
+              )}
+              <button
+                onClick={applyReminder}
+                className="flex-1 text-[10px] sm:text-xs px-2 py-1.5 rounded bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                OK
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

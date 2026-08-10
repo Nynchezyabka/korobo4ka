@@ -1,3 +1,5 @@
+import { Task } from "@/types";
+
 /**
  * Push notifications module using the Notification API + timers
  */
@@ -65,4 +67,26 @@ export function clearTaskReminder(taskId: number): void {
 
 export function hasActiveReminder(taskId: number): boolean {
   return activeReminders.has(taskId);
+}
+
+/** Schedule reminders for all tasks with a future scheduledFor date.
+ *  Clears any existing per-task reminders first. */
+export function scheduleTaskReminders(tasks: Task[]): void {
+  // Clear all existing task reminders
+  activeReminders.forEach((tid) => clearTimeout(tid));
+  activeReminders.clear();
+
+  const now = Date.now();
+  tasks.forEach((task) => {
+    if (!task.scheduledFor || task.completed || task.scheduledFor <= now) return;
+    const delayMs = task.scheduledFor - now;
+    setTaskReminder(task.id, task.text, Math.ceil(delayMs / (60 * 1000)));
+  });
+}
+
+export function updateTaskReminder(task: Task): void {
+  clearTaskReminder(task.id);
+  if (!task.scheduledFor || task.completed || task.scheduledFor <= Date.now()) return;
+  const delayMs = task.scheduledFor - Date.now();
+  setTaskReminder(task.id, task.text, Math.ceil(delayMs / (60 * 1000)));
 }
