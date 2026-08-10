@@ -367,6 +367,7 @@ function TaskCard({
   task, showArchive, isDragOver,
   onStart, onToggle, onDelete, onComplete, onReturn, onChangeCategory,
   onUpdateText, onUpdateSubcategory,
+  onSetReminder, onOpenNextMinute,
   onDragStart, onDragOver, onDrop, onDragEnd,
 }: TaskCardProps) {
   const [showDropdown, setShowDropdown] = useState(false);
