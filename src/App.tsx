@@ -19,7 +19,7 @@ import { SettingsModal, applySkin, loadSkin } from "@/components/SettingsModal";
 import { WhatsNewModal } from "@/components/WhatsNewModal";
 import { APP_VERSION, CHANGELOG, ChangelogEntry, entriesSince, getSeenVersion, markVersionSeen } from "@/lib/changelog";
 import { processRecurringTemplates, createNextInstance } from "@/lib/recurring";
-import { sendNotification } from "@/lib/notifications";
+import { sendNotification, scheduleTaskReminders } from "@/lib/notifications";
 import { toast } from "sonner";
 
 interface AppContextValue {
