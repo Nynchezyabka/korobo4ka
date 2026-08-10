@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Task, CategoryId, CATEGORIES, DEFAULT_SUBCATEGORIES } from "@/types";
 import { useApp } from "@/App";
 import { getCustomSubcategoriesSync, saveCustomSubcategories, getCategoryDisplayName, getCustomCategoryNamesSync, saveCustomCategoryNames, renameSubcategory } from "@/lib/taskStore";
