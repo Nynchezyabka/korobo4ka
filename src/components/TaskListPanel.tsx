@@ -56,10 +56,12 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
   };
 
   const deleteTask = (id: number) => {
+    clearTaskReminder(id);
     setTasks((prev) => prev.filter((t) => t.id !== id));
   };
 
   const completeTask = (id: number) => {
+    clearTaskReminder(id);
     completeTaskWithRecurrence(id);
   };
 
@@ -69,6 +71,20 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
         t.id === id ? { ...t, completed: false, active: true, statusChangedAt: Date.now() } : t
       )
     );
+  };
+
+  const setTaskReminderAt = (task: Task, scheduledFor: number | null) => {
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === task.id
+          ? { ...t, scheduledFor: scheduledFor ?? undefined }
+          : t
+      )
+    );
+    clearTaskReminder(task.id);
+    if (scheduledFor && scheduledFor > Date.now()) {
+      setTaskReminder(task.id, task.text, Math.ceil((scheduledFor - Date.now()) / (60 * 1000)));
+    }
   };
 
   const changeCategory = (id: number, newCat: CategoryId) => {
