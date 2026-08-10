@@ -542,7 +542,7 @@ function TaskCard({
                 <MoreVertical size={14} />
               </button>
               {showActions && (
-                <div className="absolute z-[10200] top-full right-0 mt-1 bg-background rounded-md shadow-lg p-1 min-w-[140px] border border-border animate-scale-in">
+                <div className="absolute z-[10200] top-full right-0 mt-1 bg-background rounded-md shadow-lg p-1 min-w-[150px] border border-border animate-scale-in">
                   <button
                     onClick={() => { onComplete(); setShowActions(false); }}
                     className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
@@ -554,6 +554,12 @@ function TaskCard({
                     className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
                   >
                     {task.active ? <><EyeOff size={12} /> Скрыть</> : <><Eye size={12} /> Показать</>}
+                  </button>
+                  <button
+                    onClick={openReminder}
+                    className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
+                  >
+                    {hasReminder ? <><BellRing size={12} /> Изменить напоминание</> : <><Bell size={12} /> Напомнить</>}
                   </button>
                   <button
                     onClick={() => { onDelete(); setShowActions(false); }}
