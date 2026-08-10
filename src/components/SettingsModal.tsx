@@ -281,6 +281,27 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
           </div>
         </Section>
 
+        <Section title="Моя заметка" icon={<PencilIcon size={16} />}>
+          <p className="text-xs text-muted-foreground mb-2">
+            Личная заметка видна только вам на этом устройстве. Можно записать, что обычно мешает начать дело.
+          </p>
+          <button
+            onClick={() => setNoteOpen(!noteOpen)}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-muted/60 text-left w-full"
+          >
+            {noteOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            {noteOpen ? "Скрыть заметку" : "Показать / изменить заметку"}
+          </button>
+          {noteOpen && (
+            <textarea
+              value={privateNote}
+              onChange={(e) => { setPrivateNote(e.target.value); savePrivateNote(e.target.value); }}
+              placeholder="Например: не понимаю, что делать; слишком большой объём; неприятно; страшно; устала; нет условий; нужно решение; боюсь оценки; задача превратилась в «теперь я должна»..."
+              className="mt-2 w-full h-32 text-sm p-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+            />
+          )}
+        </Section>
+
         <Section title="О приложении" icon={<Info size={16} />}>
           <div className="flex flex-col gap-1.5">
             <button
