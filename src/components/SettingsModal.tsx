@@ -22,6 +22,10 @@ import {
 const REMINDERS_KEY = "daily_reminders";
 const FONT_SIZE_KEY = "app_font_scale";
 const SKIN_KEY = "app_skin";
+const PRIVATE_NOTE_KEY = "my_private_note";
+
+function loadPrivateNote(): string { return localStorage.getItem(PRIVATE_NOTE_KEY) || ""; }
+function savePrivateNote(text: string) { localStorage.setItem(PRIVATE_NOTE_KEY, text); }
 
 interface DailyReminders { enabled: boolean; times: string[] }
 
