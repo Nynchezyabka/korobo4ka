@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   X, Bell, BellOff, BellRing, Type, RefreshCw, Download, Upload,
-  Archive, Info, Palette, Sparkles,
+  Archive, Info, Palette, Sparkles, Pencil as PencilIcon, ChevronUp, ChevronDown,
 } from "lucide-react";
 import { APP_VERSION } from "@/lib/changelog";
 import { cn } from "@/lib/utils";
