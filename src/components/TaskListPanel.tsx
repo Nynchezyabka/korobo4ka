@@ -535,6 +535,13 @@ function TaskCard({
                 <Play size={14} />
               </button>
               <button
+                onClick={onOpenNextMinute}
+                className="p-1.5 rounded active:bg-black/10 hover:bg-black/5 transition-colors"
+                title="С чего начать?"
+              >
+                <Lightbulb size={14} />
+              </button>
+              <button
                 onClick={() => setShowActions(!showActions)}
                 className="p-1.5 rounded active:bg-black/10 hover:bg-black/5 transition-colors"
                 title="Действия"
