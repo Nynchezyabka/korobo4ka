@@ -30,6 +30,8 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
   const [renameCatText, setRenameCatText] = useState("");
   const [renamingSub, setRenamingSub] = useState<{ cat: CategoryId; sub: string } | null>(null);
   const [renameSubText, setRenameSubText] = useState("");
+  const [nextMinuteTask, setNextMinuteTask] = useState<Task | null>(null);
+  const [reminderTask, setReminderTask] = useState<Task | null>(null);
 
   const source = tasks
     .filter((t) => (showArchive ? t.completed : !t.completed))
