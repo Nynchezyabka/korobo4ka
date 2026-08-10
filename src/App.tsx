@@ -180,6 +180,12 @@ export default function App() {
     return () => clearInterval(id);
   }, [ready, tasks]);
 
+  // Per-task reminders scheduler
+  useEffect(() => {
+    if (!ready) return;
+    scheduleTaskReminders(tasks);
+  }, [ready, tasks]);
+
   // Apply saved skin once
   useEffect(() => { applySkin(loadSkin()); }, []);
 
