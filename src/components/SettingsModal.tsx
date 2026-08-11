@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   X, Bell, BellOff, BellRing, Type, RefreshCw, Download, Upload,
-  Archive, Info, Palette, Sparkles, Pencil as PencilIcon, ChevronUp, ChevronDown,
+  Archive, Info, Palette, Sparkles,
 } from "lucide-react";
 import { APP_VERSION } from "@/lib/changelog";
 import { cn } from "@/lib/utils";
@@ -22,12 +22,9 @@ import {
 const REMINDERS_KEY = "daily_reminders";
 const FONT_SIZE_KEY = "app_font_scale";
 const SKIN_KEY = "app_skin";
-const PRIVATE_NOTE_KEY = "my_private_note";
-
-function loadPrivateNote(): string { return localStorage.getItem(PRIVATE_NOTE_KEY) || ""; }
-function savePrivateNote(text: string) { localStorage.setItem(PRIVATE_NOTE_KEY, text); }
 
 interface DailyReminders { enabled: boolean; times: string[] }
+
 
 function loadReminders(): DailyReminders {
   try {
@@ -97,12 +94,9 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
     applySkin(skin);
   }, [skin]);
 
-  // Private note
-  const [privateNote, setPrivateNote] = useState<string>(loadPrivateNote);
-  const [noteOpen, setNoteOpen] = useState(false);
-
   // Updates
   const [needRefresh, setNeedRefresh] = useState(false);
+
   const [checking, setChecking] = useState(false);
   useEffect(() => {
     const unsub = subscribeUpdates(({ needRefresh, checking }) => {
@@ -281,28 +275,8 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
           </div>
         </Section>
 
-        <Section title="Моя заметка" icon={<PencilIcon size={16} />}>
-          <p className="text-xs text-muted-foreground mb-2">
-            Личная заметка видна только вам на этом устройстве. Можно записать, что обычно мешает начать дело.
-          </p>
-          <button
-            onClick={() => setNoteOpen(!noteOpen)}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-muted/60 text-left w-full"
-          >
-            {noteOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            {noteOpen ? "Скрыть заметку" : "Показать / изменить заметку"}
-          </button>
-          {noteOpen && (
-            <textarea
-              value={privateNote}
-              onChange={(e) => { setPrivateNote(e.target.value); savePrivateNote(e.target.value); }}
-              placeholder="Например: не понимаю, что делать; слишком большой объём; неприятно; страшно; устала; нет условий; нужно решение; боюсь оценки; задача превратилась в «теперь я должна»..."
-              className="mt-2 w-full h-32 text-sm p-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-            />
-          )}
-        </Section>
-
         <Section title="О приложении" icon={<Info size={16} />}>
+
           <div className="flex flex-col gap-1.5">
             <button
               onClick={() => { onOpenInfo(); onClose(); }}

@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { useApp } from "@/App";
 import { parseVoice } from "@/lib/voiceParse";
-import { Mic, Plus, Clock, Repeat, X, MicOff } from "lucide-react";
+import { Mic, Plus, Clock, Repeat, X } from "lucide-react";
 import { CategoryId, RecurrenceType, RECURRENCE_LABELS, WEEKDAYS } from "@/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+
 
 interface Props {
   inTimer?: boolean;
@@ -197,10 +198,11 @@ export function QuickAddBar({ inTimer }: Props) {
           <button
             onClick={handleVoice}
             className={cn("flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-md border shrink-0", listening ? "bg-red-500/15 border-red-400 text-red-600 animate-pulse" : "border-border text-muted-foreground hover:bg-muted")}
-            title="Голосовой ввод"
+            title={listening ? "Идёт запись — нажмите, чтобы остановить" : "Голосовой ввод"}
           >
-            {listening ? <MicOff size={16} /> : <Mic size={16} />}
+            {listening ? <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" /> : <Mic size={16} />}
           </button>
+
           <button
             onClick={submit}
             disabled={!text.trim()}
