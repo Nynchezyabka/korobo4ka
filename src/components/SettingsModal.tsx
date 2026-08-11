@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   X, Bell, BellOff, BellRing, Type, RefreshCw, Download, Upload,
-  Archive, Info, Palette, Sparkles, Pencil as PencilIcon, ChevronUp, ChevronDown,
+  Archive, Info, Palette, Sparkles,
 } from "lucide-react";
 import { APP_VERSION } from "@/lib/changelog";
 import { cn } from "@/lib/utils";
@@ -22,12 +22,9 @@ import {
 const REMINDERS_KEY = "daily_reminders";
 const FONT_SIZE_KEY = "app_font_scale";
 const SKIN_KEY = "app_skin";
-const PRIVATE_NOTE_KEY = "my_private_note";
-
-function loadPrivateNote(): string { return localStorage.getItem(PRIVATE_NOTE_KEY) || ""; }
-function savePrivateNote(text: string) { localStorage.setItem(PRIVATE_NOTE_KEY, text); }
 
 interface DailyReminders { enabled: boolean; times: string[] }
+
 
 function loadReminders(): DailyReminders {
   try {

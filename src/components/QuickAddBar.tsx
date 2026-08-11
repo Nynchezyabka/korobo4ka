@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { useApp } from "@/App";
 import { parseVoice } from "@/lib/voiceParse";
-import { Mic, Plus, Clock, Repeat, X, MicOff } from "lucide-react";
+import { Mic, Plus, Clock, Repeat, X } from "lucide-react";
 import { CategoryId, RecurrenceType, RECURRENCE_LABELS, WEEKDAYS } from "@/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+
 
 interface Props {
   inTimer?: boolean;
