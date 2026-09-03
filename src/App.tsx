@@ -5,6 +5,7 @@ import { dbGetMeta, dbSetMeta } from "@/lib/db";
 import { Dashboard } from "@/components/Dashboard";
 import { TaskListPanel } from "@/components/TaskListPanel";
 import { ProjectsPanel } from "@/components/ProjectsPanel";
+import { BraindumpPanel } from "@/components/BraindumpPanel";
 
 import { TimerScreen } from "@/components/TimerScreen";
 import { AddTaskModal } from "@/components/AddTaskModal";
@@ -369,6 +370,8 @@ export default function App() {
         return <TaskListPanel showArchive={false} restrictCategories={tasksFilter} onClearFilter={() => setTasksFilter(null)} />;
       case "projects":
         return <ProjectsPanel />;
+      case "braindump":
+        return <BraindumpPanel />;
       case "archive":
         return <TaskListPanel showArchive={true} />;
 
