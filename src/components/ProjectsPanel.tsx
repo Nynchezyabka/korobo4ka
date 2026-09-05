@@ -12,11 +12,11 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
   Plus, ChevronLeft, Play, Check, Trash2, Sparkles, Lightbulb,
-  BookmarkPlus, Library, Lock, Loader2, ListChecks,
+  BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat,
 } from "lucide-react";
 
 export function ProjectsPanel() {
-  const { tasks, setTasks, openTimer, completeTaskWithRecurrence } = useApp();
+  const { tasks, setTasks, openTimer, completeTaskWithRecurrence, navigate } = useApp();
   const [projects, setProjects] = useState<Project[]>([]);
   const [checklists, setChecklists] = useState<ChecklistTemplate[]>([]);
   const [openId, setOpenId] = useState<number | null>(null);
@@ -85,7 +85,13 @@ export function ProjectsPanel() {
       <h2 className="font-display text-2xl text-primary mb-1">🧩 Проекты</h2>
       <div className="mb-3 p-2.5 rounded-lg bg-muted/40 border border-border/60 text-xs sm:text-sm text-muted-foreground">
         Список шагов к одной цели: дела, которые нельзя сделать за один раз, разложите на маленькие шаги.
-        Если нужно повторение по расписанию — это <span className="font-semibold text-foreground">Повторяющиеся задачи</span>.
+        Если нужно повторение по расписанию — это{" "}
+        <button
+          onClick={() => navigate("templates")}
+          className="inline-flex items-center gap-1 font-semibold text-primary underline underline-offset-2 align-baseline"
+        >
+          <Repeat size={14} /> Повторяющиеся задачи
+        </button>.
       </div>
 
       {!creating ? (
