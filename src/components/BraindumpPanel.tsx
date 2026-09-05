@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { runAI, activeAiLabel } from "@/lib/aiClient";
+import { BRAINDUMP_INSTRUCTIONS, BRAINDUMP_SCHEMA } from "@/lib/aiPrompts";
 import { useApp } from "@/App";
 import { CATEGORIES, CategoryId, RECURRENCE_LABELS, WEEKDAYS, RecurrenceType } from "@/types";
 import { DraftItem, DraftKind, normalizeItems, applyDraft } from "@/lib/braindump";
@@ -37,11 +38,13 @@ export function BraindumpPanel() {
     }
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("parse-braindump", {
-        body: { text: text.trim(), today: new Date().toString() },
+      const data = await runAI({
+        instructions: BRAINDUMP_INSTRUCTIONS,
+        input: `Сегодня: ${new Date().toString()}\n\nТекст пользователя:\n${text.trim()}`,
+        schemaName: "braindump",
+        schema: BRAINDUMP_SCHEMA,
+        fallback: { fn: "parse-braindump", body: { text: text.trim(), today: new Date().toString() } },
       });
-      if (error) throw new Error((data as any)?.error || error.message);
-      if ((data as any)?.error) throw new Error((data as any).error);
       const normalized = normalizeItems((data as any)?.items ?? []);
       if (!normalized.length) {
         toast.info("Не нашла здесь конкретных дел — попробуйте описать подробнее");
@@ -131,6 +134,9 @@ export function BraindumpPanel() {
             {loading ? <Loader2 size={18} className="animate-spin" /> : <Wand2 size={18} />}
             {loading ? "Разбираю…" : "Разобрать"}
           </button>
+        </div>
+        <div className="mt-1.5 text-[11px] text-muted-foreground text-right">
+          {activeAiLabel() ?? "Встроенный ИИ"}
         </div>
       </div>
 

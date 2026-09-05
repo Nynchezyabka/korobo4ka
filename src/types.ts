@@ -128,8 +128,14 @@ export interface TaskTemplate {
   category: CategoryId;
   subcategory?: string;
   recurrence: RecurrenceType;
-  /** Day of week (0-6, Sun-Sat) for weekly; day of month (1-31) for monthly */
+  /** Day of week (0-6, Sun-Sat) for weekly; day of month (1-31, -1 = last day) for monthly */
   recurrenceDay?: number;
+  /** Weekly: несколько дней недели (0-6). Приоритетнее recurrenceDay */
+  recurrenceDays?: number[];
+  /** Каждые N дней/недель/месяцев (по умолчанию 1) */
+  recurrenceInterval?: number;
+  /** Дата окончания повторения (YYYY-MM-DD) */
+  until?: string;
   /** Hour to create task (0-23) */
   recurrenceHour: number;
   active: boolean;

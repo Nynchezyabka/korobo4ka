@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { describeRecurrence } from "@/lib/recurring";
 import { TaskTemplate, CategoryId, CATEGORIES, RecurrenceType, RECURRENCE_LABELS, WEEKDAYS, DEFAULT_SUBCATEGORIES } from "@/types";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { cn } from "@/lib/utils";
@@ -65,10 +66,7 @@ export function TemplatesPanel({ templates, onSave }: Props) {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{tpl.text}</p>
                 <p className="text-xs text-muted-foreground">
-                  {RECURRENCE_LABELS[tpl.recurrence]}
-                  {tpl.recurrence === "weekly" && tpl.recurrenceDay !== undefined && ` · ${WEEKDAYS[tpl.recurrenceDay]}`}
-                  {tpl.recurrence === "monthly" && tpl.recurrenceDay !== undefined && ` · ${tpl.recurrenceDay} числа`}
-                  {` · в ${tpl.recurrenceHour}:00`}
+                  {describeRecurrence(tpl)}
                   {tpl.subcategory && ` · ${tpl.subcategory}`}
                 </p>
               </div>
@@ -117,6 +115,18 @@ function TemplateForm({ initial, onSave, onCancel }: {
   const [recurrence, setRecurrence] = useState<RecurrenceType>(initial.recurrence);
   const [recurrenceDay, setRecurrenceDay] = useState(initial.recurrenceDay ?? 1);
   const [recurrenceHour, setRecurrenceHour] = useState(initial.recurrenceHour);
+  const [recurrenceDays, setRecurrenceDays] = useState<number[]>(
+    initial.recurrenceDays?.length
+      ? initial.recurrenceDays
+      : initial.recurrence === "weekly" && initial.recurrenceDay !== undefined
+        ? [initial.recurrenceDay]
+        : []
+  );
+  const [interval, setInterval] = useState(initial.recurrenceInterval ?? 1);
+  const [until, setUntil] = useState(initial.until ?? "");
+
+  const toggleDay = (d: number) =>
+    setRecurrenceDays((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d].sort()));
 
   const customSubs = getCustomSubcategoriesSync();
   const allSubs = [
@@ -134,7 +144,10 @@ function TemplateForm({ initial, onSave, onCancel }: {
       category,
       subcategory: subcategory || undefined,
       recurrence,
-      recurrenceDay: recurrence === "daily" ? undefined : recurrenceDay,
+      recurrenceDay: recurrence === "monthly" ? recurrenceDay : undefined,
+      recurrenceDays: recurrence === "weekly" ? (recurrenceDays.length ? recurrenceDays : [new Date().getDay()]) : undefined,
+      recurrenceInterval: Math.max(1, interval),
+      until: until || undefined,
       recurrenceHour,
     });
   };
@@ -216,44 +229,82 @@ function TemplateForm({ initial, onSave, onCancel }: {
 
       {/* Day selector */}
       {recurrence === "weekly" && (
-        <div className="mb-2">
-          <select
-            value={recurrenceDay}
-            onChange={(e) => setRecurrenceDay(parseInt(e.target.value))}
-            className="sm:hidden w-full text-xs px-2 py-1.5 rounded border border-border bg-background"
-          >
-            {WEEKDAYS.map((d, i) => <option key={i} value={i}>{d}</option>)}
-          </select>
-          <div className="hidden sm:flex gap-1">
+        <div className="mb-2 space-y-1.5">
+          <div className="flex flex-wrap gap-1">
             {WEEKDAYS.map((d, i) => (
               <button
                 key={i}
-                onClick={() => setRecurrenceDay(i)}
+                onClick={() => toggleDay(i)}
                 className={cn(
-                  "text-xs w-8 h-8 rounded-full border transition-all",
-                  recurrenceDay === i ? "border-primary bg-primary/10 font-bold" : "border-border opacity-60"
+                  "text-xs w-9 h-9 rounded-full border transition-all",
+                  recurrenceDays.includes(i) ? "border-primary bg-primary/10 font-bold" : "border-border opacity-60"
                 )}
               >
                 {d}
               </button>
             ))}
           </div>
+          <div className="flex flex-wrap gap-1">
+            <button onClick={() => setRecurrenceDays([1, 2, 3, 4, 5])} className="text-[11px] px-2 py-1 rounded-full border border-border opacity-80">Будни</button>
+            <button onClick={() => setRecurrenceDays([0, 6])} className="text-[11px] px-2 py-1 rounded-full border border-border opacity-80">Выходные</button>
+            <button onClick={() => setRecurrenceDays([0, 1, 2, 3, 4, 5, 6])} className="text-[11px] px-2 py-1 rounded-full border border-border opacity-80">Все дни</button>
+          </div>
         </div>
       )}
 
       {recurrence === "monthly" && (
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center flex-wrap gap-2 mb-2">
           <span className="text-xs">День месяца:</span>
           <input
             type="number"
             min={1}
             max={31}
-            value={recurrenceDay}
+            value={recurrenceDay === -1 ? "" : recurrenceDay}
+            disabled={recurrenceDay === -1}
             onChange={(e) => setRecurrenceDay(Math.max(1, Math.min(31, parseInt(e.target.value) || 1)))}
-            className="w-14 text-center text-sm rounded border border-border px-2 py-1"
+            className="w-14 text-center text-sm rounded border border-border px-2 py-1 bg-background disabled:opacity-40"
           />
+          <button
+            onClick={() => setRecurrenceDay(recurrenceDay === -1 ? 1 : -1)}
+            className={cn(
+              "text-[11px] px-2 py-1 rounded-full border",
+              recurrenceDay === -1 ? "border-primary bg-primary/10 font-semibold" : "border-border opacity-70"
+            )}
+          >
+            Последний день
+          </button>
         </div>
       )}
+
+      {/* Interval */}
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-xs">Повторять каждые:</span>
+        <input
+          type="number"
+          min={1}
+          max={12}
+          value={interval}
+          onChange={(e) => setInterval(Math.max(1, Math.min(12, parseInt(e.target.value) || 1)))}
+          className="w-14 text-center text-sm rounded border border-border px-2 py-1 bg-background"
+        />
+        <span className="text-xs text-muted-foreground">
+          {recurrence === "daily" ? "дн." : recurrence === "weekly" ? "нед." : "мес."}
+        </span>
+      </div>
+
+      {/* Until */}
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
+        <span className="text-xs">Повторять до:</span>
+        <input
+          type="date"
+          value={until}
+          onChange={(e) => setUntil(e.target.value)}
+          className="text-xs rounded border border-border px-2 py-1 bg-background"
+        />
+        {until && (
+          <button onClick={() => setUntil("")} className="text-[11px] text-muted-foreground underline">без ограничения</button>
+        )}
+      </div>
 
       {/* Hour */}
       <div className="flex items-center gap-2 mb-3">

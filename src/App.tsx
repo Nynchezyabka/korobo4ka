@@ -32,6 +32,7 @@ interface AppContextValue {
   saveTemplates: (tpls: TaskTemplate[]) => void;
   completeTaskWithRecurrence: (id: number) => void;
   addQuickTask: (text: string, scheduledFor?: number, category?: CategoryId) => void;
+  navigate: (page: PageId) => void;
 }
 
 export const AppContext = createContext<AppContextValue>(null!);
@@ -350,6 +351,7 @@ export default function App() {
   const ctx: AppContextValue = {
     tasks, setTasks, openTimer, openAddModal,
     templates, saveTemplates, completeTaskWithRecurrence, addQuickTask,
+    navigate: (p: PageId) => { if (p !== "tasks") setTasksFilter(null); setCurrentPage(p); },
   };
 
   if (!ready) {
