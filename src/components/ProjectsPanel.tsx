@@ -5,7 +5,8 @@ import { getCategoryDisplayName } from "@/lib/taskStore";
 import { getNextId } from "@/lib/taskStore";
 import { loadProjects, saveProjects, loadChecklists, saveChecklists, nextId } from "@/lib/projects";
 import { suggestStepsOffline, BUILTIN_TEMPLATES } from "@/lib/stepHints";
-import { supabase } from "@/integrations/supabase/client";
+import { runAI } from "@/lib/aiClient";
+import { STEPS_INSTRUCTIONS, STEPS_SCHEMA } from "@/lib/aiPrompts";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -251,12 +252,16 @@ function ProjectDetail({
   const askAi = async () => {
     setAiLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("suggest-steps", {
-        body: { title: project.title },
+      const data = await runAI({
+        instructions: STEPS_INSTRUCTIONS,
+        input: `Дело: ${project.title}`,
+        schemaName: "steps",
+        schema: STEPS_SCHEMA,
+        fallback: { fn: "suggest-steps", body: { title: project.title } },
       });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      const list: string[] = Array.isArray(data?.steps) ? data.steps : [];
+      const list: string[] = Array.isArray(data?.steps)
+        ? data.steps.filter((x: unknown) => typeof x === "string" && x.trim()).slice(0, 10)
+        : [];
       if (list.length === 0) throw new Error("AI не вернул шаги");
       setHints(list);
     } catch (e: any) {
