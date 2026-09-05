@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import {
   X, Bell, BellOff, BellRing, Type, RefreshCw, Download, Upload,
-  Archive, Info, Palette, Sparkles,
+  Archive, Info, Palette, Sparkles, KeyRound, Loader2,
 } from "lucide-react";
+import {
+  detectProvider, loadAiConfig, saveAiConfig, clearAiConfig, pickDefaultModel, UserAiConfig,
+} from "@/lib/aiProviders";
 import { APP_VERSION } from "@/lib/changelog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -93,6 +96,51 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
     localStorage.setItem(SKIN_KEY, skin);
     applySkin(skin);
   }, [skin]);
+
+  // Свой ИИ-ключ
+  const [aiCfg, setAiCfg] = useState<UserAiConfig | null>(loadAiConfig);
+  const [keyInput, setKeyInput] = useState("");
+  const [customUrl, setCustomUrl] = useState("");
+  const [checkingKey, setCheckingKey] = useState(false);
+
+  const checkKey = async () => {
+    setCheckingKey(true);
+    try {
+      const r = await detectProvider(keyInput, customUrl);
+      if (!r.ok) { toast.error(r.error); return; }
+      const { provider, models } = r.result;
+      const cfg: UserAiConfig = {
+        key: keyInput.trim(),
+        providerId: provider.id,
+        providerName: provider.name,
+        baseUrl: provider.baseUrl,
+        jsonSchema: provider.jsonSchema,
+        models,
+        model: pickDefaultModel(provider.id, models),
+      };
+      saveAiConfig(cfg);
+      setAiCfg(cfg);
+      setKeyInput("");
+      toast.success(`Подключено: ${provider.name}`);
+    } catch {
+      toast.error("Не удалось проверить ключ");
+    } finally {
+      setCheckingKey(false);
+    }
+  };
+
+  const removeKey = () => {
+    clearAiConfig();
+    setAiCfg(null);
+    toast.success("Ключ удалён — работает встроенный ИИ");
+  };
+
+  const chooseModel = (m: string) => {
+    if (!aiCfg) return;
+    const next = { ...aiCfg, model: m };
+    saveAiConfig(next);
+    setAiCfg(next);
+  };
 
   // Updates
   const [needRefresh, setNeedRefresh] = useState(false);
@@ -243,6 +291,63 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
           <p className="text-[11px] text-muted-foreground mt-1.5">
             «Коробочка» — привычный рукописный шрифт. «Строгий» — обычный шрифт, если читать тяжело.
           </p>
+        </Section>
+
+        <Section title="Свой ИИ-ключ" icon={<KeyRound size={16} />}>
+          {aiCfg ? (
+            <div className="space-y-2">
+              <div className="text-sm">
+                Подключено: <span className="font-semibold">{aiCfg.providerName}</span>
+              </div>
+              <label className="block text-xs text-muted-foreground">Модель</label>
+              <select
+                value={aiCfg.model}
+                onChange={(e) => chooseModel(e.target.value)}
+                className="w-full text-sm px-2 py-2 rounded-md border border-border bg-background"
+              >
+                {aiCfg.models.map((m) => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+              <button
+                onClick={removeKey}
+                className="text-sm px-3 py-1.5 rounded-md border border-border text-muted-foreground hover:bg-muted"
+              >
+                Удалить ключ
+              </button>
+              <p className="text-[11px] text-muted-foreground">
+                Ключ хранится только на этом устройстве и на сервер не отправляется.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                Можно подключить свой ключ (DeepSeek, OpenRouter, OpenAI, Groq, Mistral, Gemini и другие) —
+                приложение само определит сервис и покажет модели. Без ключа работает встроенный ИИ.
+              </p>
+              <input
+                type="password"
+                value={keyInput}
+                onChange={(e) => setKeyInput(e.target.value)}
+                placeholder="Вставьте ключ"
+                className="w-full text-sm px-2 py-2 rounded-md border border-border bg-background"
+              />
+              <input
+                value={customUrl}
+                onChange={(e) => setCustomUrl(e.target.value)}
+                placeholder="Свой адрес API (только для локальной модели)"
+                className="w-full text-xs px-2 py-2 rounded-md border border-border bg-background"
+              />
+              <button
+                onClick={checkKey}
+                disabled={checkingKey || keyInput.trim().length < 8}
+                className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-md bg-primary text-primary-foreground disabled:opacity-40"
+              >
+                {checkingKey && <Loader2 size={14} className="animate-spin" />}
+                {checkingKey ? "Проверяю…" : "Проверить"}
+              </button>
+            </div>
+          )}
         </Section>
 
         <Section title="Данные" icon={<Download size={16} />}>
