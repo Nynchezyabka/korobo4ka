@@ -80,7 +80,7 @@ export default function App() {
 
   // Show "What's new" once after an update
   useEffect(() => {
-    // Existing users (pre-5.1) have no stored version — treat them as coming from 5.0
+    // Existing users (pre-changelog) have no stored version — treat them as coming from 5.0
     const isReturning = !!localStorage.getItem("onboarding_done");
     const seen = getSeenVersion() ?? (isReturning ? "5.0" : null);
     if (!seen) {
