@@ -293,38 +293,64 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
           </p>
         </Section>
 
-        <Section title="Свой ИИ-ключ" icon={<KeyRound size={16} />}>
-          {aiCfg ? (
-            <div className="space-y-2">
-              <div className="text-sm">
-                Подключено: <span className="font-semibold">{aiCfg.providerName}</span>
-              </div>
-              <label className="block text-xs text-muted-foreground">Модель</label>
-              <select
-                value={aiCfg.model}
-                onChange={(e) => chooseModel(e.target.value)}
-                className="w-full text-sm px-2 py-2 rounded-md border border-border bg-background"
-              >
-                {aiCfg.models.map((m) => (
-                  <option key={m} value={m}>{m}</option>
+        <Section title="Свои ИИ-ключи" icon={<KeyRound size={16} />}>
+          <div className="space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Можно подключить несколько ключей (DeepSeek, OpenRouter, OpenAI, Groq, Mistral, Gemini и другие)
+              и переключаться между ними. Без ключа работает встроенный ИИ.
+              Ключи хранятся только на этом устройстве.
+            </p>
+
+            {conns.length > 0 && (
+              <div className="space-y-1.5">
+                <button
+                  onClick={() => chooseActive(null)}
+                  className={cn(
+                    "w-full text-left text-sm px-3 py-2 rounded-md border",
+                    activeId === null ? "border-primary bg-primary/10 font-semibold" : "border-border",
+                  )}
+                >
+                  Встроенный ИИ
+                </button>
+                {conns.map((c) => (
+                  <div
+                    key={c.id}
+                    className={cn(
+                      "rounded-md border p-2",
+                      activeId === c.id ? "border-primary bg-primary/10" : "border-border",
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => chooseActive(c.id)} className="flex-1 text-left text-sm">
+                        <span className={cn(activeId === c.id && "font-semibold")}>{c.providerName}</span>
+                        <span className="block text-[11px] text-muted-foreground">{c.model}</span>
+                      </button>
+                      <button
+                        onClick={() => removeConn(c.id)}
+                        className="p-1.5 rounded-md text-muted-foreground hover:bg-muted"
+                        aria-label="Удалить подключение"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                    {activeId === c.id && (
+                      <select
+                        value={c.model}
+                        onChange={(e) => chooseModel(c.id, e.target.value)}
+                        className="mt-2 w-full text-sm px-2 py-1.5 rounded-md border border-border bg-background"
+                      >
+                        {c.models.map((m) => (
+                          <option key={m} value={m}>{m}</option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
                 ))}
-              </select>
-              <button
-                onClick={removeKey}
-                className="text-sm px-3 py-1.5 rounded-md border border-border text-muted-foreground hover:bg-muted"
-              >
-                Удалить ключ
-              </button>
-              <p className="text-[11px] text-muted-foreground">
-                Ключ хранится только на этом устройстве и на сервер не отправляется.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <p className="text-xs text-muted-foreground">
-                Можно подключить свой ключ (DeepSeek, OpenRouter, OpenAI, Groq, Mistral, Gemini и другие) —
-                приложение само определит сервис и покажет модели. Без ключа работает встроенный ИИ.
-              </p>
+              </div>
+            )}
+
+            <div className="space-y-2 pt-1">
+              <div className="text-xs text-muted-foreground">Добавить ключ</div>
               <input
                 type="password"
                 value={keyInput}
@@ -344,11 +370,13 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
                 className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-md bg-primary text-primary-foreground disabled:opacity-40"
               >
                 {checkingKey && <Loader2 size={14} className="animate-spin" />}
-                {checkingKey ? "Проверяю…" : "Проверить"}
+                {checkingKey ? "Проверяю…" : "Проверить и добавить"}
               </button>
+              {keyError && <p className="text-[11px] text-destructive whitespace-pre-line">{keyError}</p>}
             </div>
-          )}
+          </div>
         </Section>
+
 
         <Section title="Данные" icon={<Download size={16} />}>
           <div className="flex flex-col gap-1.5">

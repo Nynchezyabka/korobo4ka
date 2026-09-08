@@ -12,10 +12,14 @@ export interface ProviderDef {
   baseUrl: string;
   /** Префиксы ключа, по которым сервис определяется в первую очередь */
   prefixes: string[];
+  /** Префикс однозначный: другие сервисы даже не проверяем */
+  exclusivePrefixes?: string[];
   /** Поддерживает ли strict json_schema в response_format */
   jsonSchema: boolean;
-  /** Дополнительные заголовки */
+  /** Дополнительные заголовки (только разрешённые браузером!) */
   headers?: Record<string, string>;
+  /** Отдельный путь для проверки ключа (когда /models публичный) */
+  authCheckPath?: string;
   /** Модели по умолчанию, если /models недоступен */
   fallbackModels?: string[];
 }
@@ -26,8 +30,12 @@ export const PROVIDERS: ProviderDef[] = [
     name: "OpenRouter",
     baseUrl: "https://openrouter.ai/api/v1",
     prefixes: ["sk-or-"],
+    exclusivePrefixes: ["sk-or-"],
     jsonSchema: true,
-    headers: { "HTTP-Referer": "https://korobo4ka.lovable.app", "X-Title": "Korobochka" },
+    // ВАЖНО: HTTP-Referer — запрещённый в браузере заголовок, fetch с ним падает.
+    headers: { "X-Title": "Korobochka" },
+    // /models у OpenRouter публичный, ключ проверяем через /key
+    authCheckPath: "/key",
   },
   {
     id: "deepseek",
@@ -49,6 +57,7 @@ export const PROVIDERS: ProviderDef[] = [
     name: "Groq",
     baseUrl: "https://api.groq.com/openai/v1",
     prefixes: ["gsk_"],
+    exclusivePrefixes: ["gsk_"],
     jsonSchema: true,
   },
   {
@@ -63,6 +72,7 @@ export const PROVIDERS: ProviderDef[] = [
     name: "Google Gemini",
     baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai",
     prefixes: ["AIza"],
+    exclusivePrefixes: ["AIza"],
     jsonSchema: true,
   },
   {
@@ -70,6 +80,7 @@ export const PROVIDERS: ProviderDef[] = [
     name: "Cerebras",
     baseUrl: "https://api.cerebras.ai/v1",
     prefixes: ["csk-"],
+    exclusivePrefixes: ["csk-"],
     jsonSchema: true,
   },
   {
@@ -91,9 +102,11 @@ export const CUSTOM_PROVIDER: ProviderDef = {
 
 // ---------- storage ----------
 
-const KEY_STORE = "ai_user_key";
+const LEGACY_STORE = "ai_user_key";
+const STORE = "ai_connections";
 
 export interface UserAiConfig {
+  id?: string;
   key: string;
   providerId: string;
   providerName: string;
@@ -103,22 +116,117 @@ export interface UserAiConfig {
   models: string[];
 }
 
-export function loadAiConfig(): UserAiConfig | null {
+export type AiConnection = UserAiConfig & { id: string };
+
+interface AiStore {
+  connections: AiConnection[];
+  activeId: string | null;
+}
+
+function emptyStore(): AiStore {
+  return { connections: [], activeId: null };
+}
+
+function newId() {
+  return `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+}
+
+function isValid(c: any): boolean {
+  return !!(c?.key && c?.baseUrl && c?.model);
+}
+
+/** Читает хранилище, при необходимости переносит старый одиночный ключ. */
+export function loadAiStore(): AiStore {
   try {
-    const raw = localStorage.getItem(KEY_STORE);
-    if (!raw) return null;
-    const cfg = JSON.parse(raw);
-    if (cfg?.key && cfg?.baseUrl && cfg?.model) return cfg as UserAiConfig;
+    const raw = localStorage.getItem(STORE);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      const connections: AiConnection[] = Array.isArray(parsed?.connections)
+        ? parsed.connections.filter(isValid).map((c: any) => ({ ...c, id: c.id || newId() }))
+        : [];
+      const activeId =
+        connections.find((c) => c.id === parsed?.activeId)?.id ?? connections[0]?.id ?? null;
+      return { connections, activeId };
+    }
   } catch { /* ignore */ }
-  return null;
+
+  // миграция со старого формата
+  try {
+    const legacy = localStorage.getItem(LEGACY_STORE);
+    if (legacy) {
+      const cfg = JSON.parse(legacy);
+      if (isValid(cfg)) {
+        const store: AiStore = {
+          connections: [{ ...cfg, id: newId() } as AiConnection],
+          activeId: null,
+        };
+        store.activeId = store.connections[0].id;
+        saveAiStore(store);
+        localStorage.removeItem(LEGACY_STORE);
+        return store;
+      }
+    }
+  } catch { /* ignore */ }
+
+  return emptyStore();
+}
+
+export function saveAiStore(store: AiStore) {
+  localStorage.setItem(STORE, JSON.stringify(store));
+}
+
+/** Добавляет новое подключение, не трогая существующие. Делает его активным. */
+export function addAiConnection(cfg: UserAiConfig): AiConnection {
+  const store = loadAiStore();
+  const conn: AiConnection = { ...cfg, id: newId() };
+  // одно подключение на пару провайдер+ключ
+  const rest = store.connections.filter(
+    (c) => !(c.providerId === conn.providerId && c.key === conn.key),
+  );
+  store.connections = [...rest, conn];
+  store.activeId = conn.id;
+  saveAiStore(store);
+  return conn;
+}
+
+export function removeAiConnection(id: string) {
+  const store = loadAiStore();
+  store.connections = store.connections.filter((c) => c.id !== id);
+  if (store.activeId === id) store.activeId = store.connections[0]?.id ?? null;
+  saveAiStore(store);
+}
+
+export function setActiveConnection(id: string | null) {
+  const store = loadAiStore();
+  store.activeId = store.connections.some((c) => c.id === id) ? id : null;
+  saveAiStore(store);
+}
+
+export function updateConnection(id: string, patch: Partial<AiConnection>) {
+  const store = loadAiStore();
+  store.connections = store.connections.map((c) => (c.id === id ? { ...c, ...patch } : c));
+  saveAiStore(store);
+}
+
+/** Активное подключение (или null — тогда работает встроенный ИИ). */
+export function loadAiConfig(): UserAiConfig | null {
+  const store = loadAiStore();
+  if (!store.activeId) return null;
+  return store.connections.find((c) => c.id === store.activeId) ?? null;
 }
 
 export function saveAiConfig(cfg: UserAiConfig) {
-  localStorage.setItem(KEY_STORE, JSON.stringify(cfg));
+  if (cfg.id) {
+    updateConnection(cfg.id, cfg as AiConnection);
+    setActiveConnection(cfg.id);
+  } else {
+    addAiConnection(cfg);
+  }
 }
 
 export function clearAiConfig() {
-  localStorage.removeItem(KEY_STORE);
+  localStorage.removeItem(STORE);
+  localStorage.removeItem(LEGACY_STORE);
 }
 
 // ---------- detection ----------
@@ -140,18 +248,79 @@ export function humanError(status: number, fallback = "Сервис недост
   return fallback;
 }
 
-async function fetchModels(baseUrl: string, key: string, extra?: Record<string, string>) {
-  const res = await fetch(`${baseUrl.replace(/\/$/, "")}/models`, {
-    headers: providerHeaders({ headers: extra }, key),
-  });
-  if (!res.ok) return { ok: false as const, status: res.status };
+/** Текст ошибки от самого сервиса, если он его прислал. */
+async function providerMessage(res: Response): Promise<string | null> {
+  try {
+    const t = await res.text();
+    if (!t) return null;
+    try {
+      const j = JSON.parse(t);
+      const msg = j?.error?.message ?? j?.error ?? j?.message;
+      if (typeof msg === "string" && msg.trim()) return msg.trim().slice(0, 200);
+    } catch {
+      return t.trim().slice(0, 200) || null;
+    }
+  } catch { /* ignore */ }
+  return null;
+}
+
+type FetchResult =
+  | { ok: true; models: string[] }
+  | { ok: false; status: number; message?: string | null }
+  | { ok: false; status: 0; network: true; message: string };
+
+async function fetchModels(
+  baseUrl: string,
+  key: string,
+  extra?: Record<string, string>,
+): Promise<FetchResult> {
+  let res: Response;
+  try {
+    res = await fetch(`${baseUrl.replace(/\/$/, "")}/models`, {
+      headers: providerHeaders({ headers: extra }, key),
+    });
+  } catch (e: any) {
+    return {
+      ok: false,
+      status: 0,
+      network: true,
+      message:
+        "Запрос к сервису не прошёл из браузера (сеть или блокировка CORS). " +
+        (e?.message ? `Подробности: ${e.message}` : ""),
+    };
+  }
+  if (!res.ok) return { ok: false, status: res.status, message: await providerMessage(res) };
   const data = await res.json().catch(() => null);
   const list: string[] = Array.isArray(data?.data)
     ? data.data.map((m: any) => String(m?.id ?? "")).filter(Boolean)
     : Array.isArray(data?.models)
       ? data.models.map((m: any) => String(m?.id ?? m?.name ?? "")).filter(Boolean)
       : [];
-  return { ok: true as const, models: list.sort() };
+  return { ok: true, models: list.sort() };
+}
+
+/** Проверка самого ключа там, где /models публичный (OpenRouter). */
+async function checkAuth(
+  p: ProviderDef,
+  key: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!p.authCheckPath) return { ok: true };
+  let res: Response;
+  try {
+    res = await fetch(`${p.baseUrl.replace(/\/$/, "")}${p.authCheckPath}`, {
+      headers: providerHeaders(p, key),
+    });
+  } catch (e: any) {
+    return {
+      ok: false,
+      error:
+        `${p.name}: запрос не прошёл из браузера (сеть или блокировка CORS). ` +
+        (e?.message ? `Подробности: ${e.message}` : ""),
+    };
+  }
+  if (res.ok) return { ok: true };
+  const msg = await providerMessage(res);
+  return { ok: false, error: `${p.name}: ${humanError(res.status)}${msg ? ` — ${msg}` : ""}` };
 }
 
 export interface DetectResult {
@@ -159,49 +328,55 @@ export interface DetectResult {
   models: string[];
 }
 
+type DetectOut = { ok: true; result: DetectResult } | { ok: false; error: string };
+
+async function tryProvider(p: ProviderDef, key: string): Promise<DetectOut> {
+  const auth = await checkAuth(p, key);
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const r = await fetchModels(p.baseUrl, key, p.headers);
+  if (r.ok) {
+    const models = r.models.length ? r.models : (p.fallbackModels ?? []);
+    if (!models.length) return { ok: false, error: `${p.name}: список моделей пуст` };
+    return { ok: true, result: { provider: p, models } };
+  }
+  if ((r as any).network) return { ok: false, error: `${p.name}: ${(r as any).message}` };
+  const msg = (r as any).message as string | null;
+  return { ok: false, error: `${p.name}: ${humanError(r.status)}${msg ? ` — ${msg}` : ""}` };
+}
+
 /**
- * Определяет сервис по ключу: сначала кандидаты по префиксу, затем остальные.
- * Первый сервис, который ответил 200 на GET /models, считается верным.
+ * Определяет сервис по ключу. Для однозначных префиксов (sk-or-, gsk_, AIza, csk-)
+ * проверяется только этот сервис и показывается именно его ошибка.
  */
 export async function detectProvider(
   key: string,
   customBaseUrl?: string,
-): Promise<{ ok: true; result: DetectResult } | { ok: false; error: string }> {
+): Promise<DetectOut> {
   const trimmed = key.trim();
   if (!trimmed) return { ok: false, error: "Введите ключ" };
 
   if (customBaseUrl?.trim()) {
     const provider = { ...CUSTOM_PROVIDER, baseUrl: customBaseUrl.trim().replace(/\/$/, "") };
-    const r = await fetchModels(provider.baseUrl, trimmed).catch(() => null);
-    if (!r) return { ok: false, error: "Не удалось связаться с указанным адресом" };
-    if (!r.ok) return { ok: false, error: humanError(r.status) };
-    return { ok: true, result: { provider, models: r.models } };
+    return tryProvider(provider, trimmed);
   }
+
+  const exclusive = PROVIDERS.find((p) =>
+    (p.exclusivePrefixes ?? []).some((pre) => trimmed.startsWith(pre)),
+  );
+  if (exclusive) return tryProvider(exclusive, trimmed);
 
   const byPrefix = PROVIDERS.filter((p) => p.prefixes.some((pre) => trimmed.startsWith(pre)));
   const rest = PROVIDERS.filter((p) => !byPrefix.includes(p));
   const candidates = [...byPrefix, ...rest];
 
-  let lastStatus = 0;
+  let lastError = "Не удалось определить сервис по этому ключу";
   for (const p of candidates) {
-    try {
-      const r = await fetchModels(p.baseUrl, trimmed, p.headers);
-      if (r.ok) {
-        const models = r.models.length ? r.models : (p.fallbackModels ?? []);
-        if (!models.length) continue;
-        return { ok: true, result: { provider: p, models } };
-      }
-      lastStatus = r.status;
-      // 401/403 — ключ не от этого сервиса, пробуем следующий
-    } catch { /* сеть/CORS — пробуем следующий */ }
+    const r = await tryProvider(p, trimmed);
+    if (r.ok) return r;
+    if (byPrefix.includes(p)) lastError = r.error;
   }
-
-  return {
-    ok: false,
-    error: lastStatus
-      ? humanError(lastStatus, "Не удалось определить сервис по этому ключу")
-      : "Не удалось определить сервис по этому ключу",
-  };
+  return { ok: false, error: lastError };
 }
 
 /** Разумная модель по умолчанию из списка. */
@@ -221,3 +396,4 @@ export function pickDefaultModel(providerId: string, models: string[]): string {
   const chatty = models.find((m) => /chat|instruct|flash|mini|turbo/i.test(m));
   return chatty ?? models[0] ?? "";
 }
+
