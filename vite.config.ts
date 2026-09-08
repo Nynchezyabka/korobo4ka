@@ -47,8 +47,23 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,jpg,svg,woff2}"],
+        // HTML не предкэшируем: навигацию обслуживает NetworkFirst (см. ниже),
+        // иначе старая index.html отдаётся из кэша и приложение «не обновляется».
+        globPatterns: ["**/*.{js,css,ico,png,jpg,svg,woff2}"],
+        navigateFallback: null,
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
         runtimeCaching: [
+          {
+            // Страницы приложения: сначала сеть, кэш — только как запасной вариант офлайн
+            urlPattern: ({ request }) => request.mode === "navigate",
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "html-pages",
+              networkTimeoutSeconds: 4,
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 7 },
+            },
+          },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: "CacheFirst",
