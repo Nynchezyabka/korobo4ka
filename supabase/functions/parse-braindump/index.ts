@@ -38,6 +38,15 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
+
+    const ownerCode = typeof (body as any)?.ownerCode === 'string' ? (body as any).ownerCode.trim() : '';
+    const expectedCode = Deno.env.get('OWNER_ACCESS_CODE') ?? '';
+    if (!expectedCode || ownerCode !== expectedCode) {
+      return new Response(
+        JSON.stringify({ error: 'Встроенный ИИ доступен только владельцу' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
     const text = typeof body?.text === 'string' ? body.text.trim().slice(0, 6000) : '';
     const today = typeof body?.today === 'string' ? body.today.slice(0, 40) : new Date().toISOString();
     if (text.length < 5) {
