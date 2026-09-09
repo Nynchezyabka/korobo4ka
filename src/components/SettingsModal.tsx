@@ -6,7 +6,9 @@ import {
 import {
   detectProvider, loadAiStore, addAiConnection, removeAiConnection,
   setActiveConnection, updateConnection, pickDefaultModel, AiConnection,
+  loadOwnerCode, saveOwnerCode, loadAiSource, saveAiSource,
 } from "@/lib/aiProviders";
+import { checkOwnerCode, fetchDemoStatus } from "@/lib/aiClient";
 import { APP_VERSION } from "@/lib/changelog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -309,6 +311,10 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
           </p>
         </Section>
 
+        <Section title="Режим ИИ" icon={<Sparkles size={16} />}>
+          <AiModeSection />
+        </Section>
+
         <Section title="Свои ИИ-ключи" icon={<KeyRound size={16} />}>
           <div className="space-y-3">
             <p className="text-xs text-muted-foreground">
@@ -453,6 +459,100 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
           </div>
         </Section>
       </div>
+    </div>
+  );
+}
+
+function AiModeSection() {
+  const [code, setCode] = useState(loadOwnerCode());
+  const [checking, setChecking] = useState(false);
+  const [owner, setOwner] = useState(!!loadOwnerCode());
+  const [source, setSource] = useState(loadAiSource());
+  const [left, setLeft] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetchDemoStatus().then((s) => s && setLeft(s.left));
+  }, []);
+
+  const verify = async () => {
+    setChecking(true);
+    try {
+      const ok = await checkOwnerCode(code.trim());
+      if (!ok) { toast.error("Код не подошёл"); return; }
+      saveOwnerCode(code.trim());
+      saveAiSource("builtin");
+      setOwner(true);
+      setSource("builtin");
+      toast.success("Встроенный ИИ включён");
+    } catch {
+      toast.error("Не удалось проверить код");
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  const forget = () => {
+    saveOwnerCode("");
+    saveAiSource("demo");
+    setOwner(false);
+    setCode("");
+    setSource("demo");
+  };
+
+  const choose = (s: "demo" | "builtin") => { saveAiSource(s); setSource(s); };
+
+  return (
+    <div className="space-y-2">
+      <p className="text-xs text-muted-foreground">
+        Демо-режим работает без настроек, но общий лимит — 50 разборов на всех.
+        {left !== null && ` Осталось: ${left}.`}
+      </p>
+      <div className="flex gap-2">
+        <button
+          onClick={() => choose("demo")}
+          className={cn(
+            "flex-1 py-2 rounded-md border text-sm",
+            source === "demo" ? "bg-primary/10 border-primary font-semibold" : "border-border text-muted-foreground",
+          )}
+        >
+          Демо
+        </button>
+        <button
+          onClick={() => owner && choose("builtin")}
+          disabled={!owner}
+          className={cn(
+            "flex-1 py-2 rounded-md border text-sm disabled:opacity-40",
+            source === "builtin" ? "bg-primary/10 border-primary font-semibold" : "border-border text-muted-foreground",
+          )}
+        >
+          Встроенный
+        </button>
+      </div>
+      {owner ? (
+        <button onClick={forget} className="text-[11px] text-muted-foreground underline">
+          Забыть код владельца
+        </button>
+      ) : (
+        <div className="flex gap-2">
+          <input
+            type="password"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="Код владельца"
+            className="flex-1 text-sm px-2 py-2 rounded-md border border-border bg-background"
+          />
+          <button
+            onClick={verify}
+            disabled={checking || code.trim().length < 3}
+            className="inline-flex items-center gap-1.5 text-sm px-3 rounded-md bg-primary text-primary-foreground disabled:opacity-40"
+          >
+            {checking ? <Loader2 size={14} className="animate-spin" /> : "Проверить"}
+          </button>
+        </div>
+      )}
+      <p className="text-[11px] text-muted-foreground">
+        Свой ключ ниже, если он выбран, всегда важнее этих режимов.
+      </p>
     </div>
   );
 }
