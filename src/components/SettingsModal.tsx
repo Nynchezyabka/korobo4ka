@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import {
   X, Bell, BellOff, BellRing, Type, RefreshCw, Download, Upload,
-  Archive, Info, Palette, Sparkles, KeyRound, Loader2,
+  Archive, Info, Palette, Sparkles, KeyRound, Loader2, Trash2,
 } from "lucide-react";
 import {
-  detectProvider, loadAiConfig, saveAiConfig, clearAiConfig, pickDefaultModel, UserAiConfig,
+  detectProvider, loadAiStore, addAiConnection, removeAiConnection,
+  setActiveConnection, updateConnection, pickDefaultModel, AiConnection,
 } from "@/lib/aiProviders";
 import { APP_VERSION } from "@/lib/changelog";
 import { cn } from "@/lib/utils";
@@ -97,19 +98,28 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
     applySkin(skin);
   }, [skin]);
 
-  // Свой ИИ-ключ
-  const [aiCfg, setAiCfg] = useState<UserAiConfig | null>(loadAiConfig);
+  // Свои ИИ-ключи (несколько подключений)
+  const [conns, setConns] = useState<AiConnection[]>(() => loadAiStore().connections);
+  const [activeId, setActiveId] = useState<string | null>(() => loadAiStore().activeId);
   const [keyInput, setKeyInput] = useState("");
   const [customUrl, setCustomUrl] = useState("");
   const [checkingKey, setCheckingKey] = useState(false);
+  const [keyError, setKeyError] = useState<string | null>(null);
+
+  const syncStore = () => {
+    const s = loadAiStore();
+    setConns(s.connections);
+    setActiveId(s.activeId);
+  };
 
   const checkKey = async () => {
     setCheckingKey(true);
+    setKeyError(null);
     try {
       const r = await detectProvider(keyInput, customUrl);
-      if (!r.ok) { toast.error(r.error); return; }
+      if (!r.ok) { setKeyError(r.error); toast.error(r.error); return; }
       const { provider, models } = r.result;
-      const cfg: UserAiConfig = {
+      addAiConnection({
         key: keyInput.trim(),
         providerId: provider.id,
         providerName: provider.name,
@@ -117,30 +127,36 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
         jsonSchema: provider.jsonSchema,
         models,
         model: pickDefaultModel(provider.id, models),
-      };
-      saveAiConfig(cfg);
-      setAiCfg(cfg);
+      });
+      syncStore();
       setKeyInput("");
+      setCustomUrl("");
       toast.success(`Подключено: ${provider.name}`);
-    } catch {
-      toast.error("Не удалось проверить ключ");
+    } catch (e: any) {
+      const msg = `Не удалось проверить ключ${e?.message ? `: ${e.message}` : ""}`;
+      setKeyError(msg);
+      toast.error(msg);
     } finally {
       setCheckingKey(false);
     }
   };
 
-  const removeKey = () => {
-    clearAiConfig();
-    setAiCfg(null);
-    toast.success("Ключ удалён — работает встроенный ИИ");
+  const removeConn = (id: string) => {
+    removeAiConnection(id);
+    syncStore();
+    toast.success("Подключение удалено");
   };
 
-  const chooseModel = (m: string) => {
-    if (!aiCfg) return;
-    const next = { ...aiCfg, model: m };
-    saveAiConfig(next);
-    setAiCfg(next);
+  const chooseActive = (id: string | null) => {
+    setActiveConnection(id);
+    syncStore();
   };
+
+  const chooseModel = (id: string, m: string) => {
+    updateConnection(id, { model: m });
+    syncStore();
+  };
+
 
   // Updates
   const [needRefresh, setNeedRefresh] = useState(false);
