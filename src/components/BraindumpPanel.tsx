@@ -136,8 +136,10 @@ export function BraindumpPanel() {
           </button>
         </div>
         <div className="mt-1.5 text-[11px] text-muted-foreground text-right">
-          {activeAiLabel() ?? "Встроенный ИИ"}
+          {currentAiLabel()}
+          {demoLeft !== null && ` · осталось бесплатных разборов: ${demoLeft}`}
         </div>
+
       </div>
 
       {items && (
