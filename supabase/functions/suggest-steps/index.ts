@@ -13,6 +13,15 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
+
+    const ownerCode = typeof (body as any)?.ownerCode === 'string' ? (body as any).ownerCode.trim() : '';
+    const expectedCode = Deno.env.get('OWNER_ACCESS_CODE') ?? '';
+    if (!expectedCode || ownerCode !== expectedCode) {
+      return new Response(
+        JSON.stringify({ error: 'Встроенный ИИ доступен только владельцу' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
     const title = typeof body?.title === 'string' ? body.title.trim().slice(0, 300) : '';
     if (!title) {
       return new Response(JSON.stringify({ error: 'Укажите название дела' }), {

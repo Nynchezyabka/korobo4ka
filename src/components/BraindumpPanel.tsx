@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { runAI, activeAiLabel } from "@/lib/aiClient";
+import { useState, useRef, useEffect } from "react";
+import { runAI, currentAiLabel, fetchDemoStatus } from "@/lib/aiClient";
 import { BRAINDUMP_INSTRUCTIONS, BRAINDUMP_SCHEMA } from "@/lib/aiPrompts";
 import { useApp } from "@/App";
 import { CATEGORIES, CategoryId, RECURRENCE_LABELS, WEEKDAYS, RecurrenceType } from "@/types";
@@ -27,6 +27,14 @@ export function BraindumpPanel() {
   const [items, setItems] = useState<DraftItem[] | null>(null);
   const [listening, setListening] = useState(false);
   const recogRef = useRef<any>(null);
+  const [demoLeft, setDemoLeft] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (currentAiLabel() !== "Демо-режим") { setDemoLeft(null); return; }
+    let alive = true;
+    fetchDemoStatus().then((s) => { if (alive && s) setDemoLeft(s.left); });
+    return () => { alive = false; };
+  }, []);
 
   const update = (uid: string, patch: Partial<DraftItem>) =>
     setItems((prev) => prev?.map((i) => (i.uid === uid ? { ...i, ...patch } : i)) ?? prev);
@@ -49,6 +57,7 @@ export function BraindumpPanel() {
       if (!normalized.length) {
         toast.info("Не нашла здесь конкретных дел — попробуйте описать подробнее");
       }
+      if (typeof (data as any)?.demo?.left === "number") setDemoLeft((data as any).demo.left);
       setSummary(String((data as any)?.summary ?? ""));
       setItems(normalized);
     } catch (e: any) {
@@ -136,8 +145,10 @@ export function BraindumpPanel() {
           </button>
         </div>
         <div className="mt-1.5 text-[11px] text-muted-foreground text-right">
-          {activeAiLabel() ?? "Встроенный ИИ"}
+          {currentAiLabel()}
+          {demoLeft !== null && ` · осталось бесплатных разборов: ${demoLeft}`}
         </div>
+
       </div>
 
       {items && (
