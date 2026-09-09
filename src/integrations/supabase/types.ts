@@ -14,13 +14,34 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      demo_usage: {
+        Row: {
+          id: string
+          limit_total: number
+          updated_at: string
+          used: number
+        }
+        Insert: {
+          id: string
+          limit_total?: number
+          updated_at?: string
+          used?: number
+        }
+        Update: {
+          id?: string
+          limit_total?: number
+          updated_at?: string
+          used?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      demo_consume: { Args: never; Returns: number }
+      demo_release: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
