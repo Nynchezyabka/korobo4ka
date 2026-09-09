@@ -1,5 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
-import { loadAiConfig, providerHeaders, humanError, UserAiConfig } from "@/lib/aiProviders";
+import {
+  loadAiConfig, providerHeaders, humanError, UserAiConfig,
+  loadAiSource, loadOwnerCode,
+} from "@/lib/aiProviders";
 import { parseLooseJson } from "@/lib/jsonRepair";
 
 export interface AiRequest {
@@ -18,6 +21,11 @@ export class AiError extends Error {}
 export function activeAiLabel(): string | null {
   const cfg = loadAiConfig();
   return cfg ? `${cfg.providerName} · ${cfg.model}` : null;
+}
+
+/** Подпись текущего режима для интерфейса. */
+export function currentAiLabel(): string {
+  return activeAiLabel() ?? (loadAiSource() === "builtin" ? "Встроенный ИИ" : "Демо-режим");
 }
 
 type FormatMode = "json_schema" | "json_object" | "none";
@@ -82,15 +90,44 @@ async function runWithUserKey(cfg: UserAiConfig, req: AiRequest): Promise<any> {
 }
 
 async function runBuiltin(req: AiRequest): Promise<any> {
-  const { data, error } = await supabase.functions.invoke(req.fallback.fn, { body: req.fallback.body });
-  if (error) throw new AiError((data as any)?.error || error.message || "ИИ недоступен");
+  const body = { ...req.fallback.body, ownerCode: loadOwnerCode() };
+  const { data, error } = await supabase.functions.invoke(req.fallback.fn, { body });
   if ((data as any)?.error) throw new AiError((data as any).error);
+  if (error) throw new AiError(error.message || "ИИ недоступен");
   return data;
 }
 
-/** Единая точка вызова ИИ: свой ключ, если настроен, иначе встроенный. */
+async function runDemo(req: AiRequest): Promise<any> {
+  const isSteps = req.fallback.fn === "suggest-steps";
+  const body = {
+    action: "run",
+    task: isSteps ? "steps" : "braindump",
+    ...req.fallback.body,
+  };
+  const { data, error } = await supabase.functions.invoke("demo-ai", { body });
+  if ((data as any)?.error) throw new AiError((data as any).error);
+  if (error) throw new AiError(error.message || "Демо недоступно");
+  return data;
+}
+
+export interface DemoStatus { used: number; limit: number; left: number }
+
+export async function fetchDemoStatus(): Promise<DemoStatus | null> {
+  try {
+    const { data } = await supabase.functions.invoke("demo-ai", { body: { action: "status" } });
+    if (data && typeof (data as any).left === "number") return data as DemoStatus;
+  } catch { /* ignore */ }
+  return null;
+}
+
+export async function checkOwnerCode(code: string): Promise<boolean> {
+  const { data } = await supabase.functions.invoke("demo-ai", { body: { action: "owner", code } });
+  return !!(data as any)?.ok;
+}
+
+/** Единая точка вызова ИИ: свой ключ, встроенный (только владелец) или демо. */
 export async function runAI(req: AiRequest): Promise<any> {
   const cfg = loadAiConfig();
   if (cfg) return runWithUserKey(cfg, req);
-  return runBuiltin(req);
+  return loadAiSource() === "builtin" ? runBuiltin(req) : runDemo(req);
 }
