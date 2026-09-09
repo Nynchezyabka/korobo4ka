@@ -100,66 +100,6 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
     applySkin(skin);
   }, [skin]);
 
-  // Свои ИИ-ключи (несколько подключений)
-  const [conns, setConns] = useState<AiConnection[]>(() => loadAiStore().connections);
-  const [activeId, setActiveId] = useState<string | null>(() => loadAiStore().activeId);
-  const [keyInput, setKeyInput] = useState("");
-  const [customUrl, setCustomUrl] = useState("");
-  const [checkingKey, setCheckingKey] = useState(false);
-  const [keyError, setKeyError] = useState<string | null>(null);
-
-  const syncStore = () => {
-    const s = loadAiStore();
-    setConns(s.connections);
-    setActiveId(s.activeId);
-  };
-
-  const checkKey = async () => {
-    setCheckingKey(true);
-    setKeyError(null);
-    try {
-      const r = await detectProvider(keyInput, customUrl);
-      if (!r.ok) { setKeyError(r.error); toast.error(r.error); return; }
-      const { provider, models } = r.result;
-      addAiConnection({
-        key: keyInput.trim(),
-        providerId: provider.id,
-        providerName: provider.name,
-        baseUrl: provider.baseUrl,
-        jsonSchema: provider.jsonSchema,
-        models,
-        model: pickDefaultModel(provider.id, models),
-      });
-      syncStore();
-      setKeyInput("");
-      setCustomUrl("");
-      toast.success(`Подключено: ${provider.name}`);
-    } catch (e: any) {
-      const msg = `Не удалось проверить ключ${e?.message ? `: ${e.message}` : ""}`;
-      setKeyError(msg);
-      toast.error(msg);
-    } finally {
-      setCheckingKey(false);
-    }
-  };
-
-  const removeConn = (id: string) => {
-    removeAiConnection(id);
-    syncStore();
-    toast.success("Подключение удалено");
-  };
-
-  const chooseActive = (id: string | null) => {
-    setActiveConnection(id);
-    syncStore();
-  };
-
-  const chooseModel = (id: string, m: string) => {
-    updateConnection(id, { model: m });
-    syncStore();
-  };
-
-
   // Updates
   const [needRefresh, setNeedRefresh] = useState(false);
 
@@ -311,94 +251,9 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
           </p>
         </Section>
 
-        <Section title="Режим ИИ" icon={<Sparkles size={16} />}>
-          <AiModeSection />
+        <Section title="Помощник" icon={<Sparkles size={16} />}>
+          <AssistantSection />
         </Section>
-
-        <Section title="Свои ИИ-ключи" icon={<KeyRound size={16} />}>
-          <div className="space-y-3">
-            <p className="text-xs text-muted-foreground">
-              Можно подключить несколько ключей (DeepSeek, OpenRouter, OpenAI, Groq, Mistral, Gemini и другие)
-              и переключаться между ними. Без ключа работает встроенный ИИ.
-              Ключи хранятся только на этом устройстве.
-            </p>
-
-            {conns.length > 0 && (
-              <div className="space-y-1.5">
-                <button
-                  onClick={() => chooseActive(null)}
-                  className={cn(
-                    "w-full text-left text-sm px-3 py-2 rounded-md border",
-                    activeId === null ? "border-primary bg-primary/10 font-semibold" : "border-border",
-                  )}
-                >
-                  Встроенный ИИ
-                </button>
-                {conns.map((c) => (
-                  <div
-                    key={c.id}
-                    className={cn(
-                      "rounded-md border p-2",
-                      activeId === c.id ? "border-primary bg-primary/10" : "border-border",
-                    )}
-                  >
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => chooseActive(c.id)} className="flex-1 text-left text-sm">
-                        <span className={cn(activeId === c.id && "font-semibold")}>{c.providerName}</span>
-                        <span className="block text-[11px] text-muted-foreground">{c.model}</span>
-                      </button>
-                      <button
-                        onClick={() => removeConn(c.id)}
-                        className="p-1.5 rounded-md text-muted-foreground hover:bg-muted"
-                        aria-label="Удалить подключение"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                    {activeId === c.id && (
-                      <select
-                        value={c.model}
-                        onChange={(e) => chooseModel(c.id, e.target.value)}
-                        className="mt-2 w-full text-sm px-2 py-1.5 rounded-md border border-border bg-background"
-                      >
-                        {c.models.map((m) => (
-                          <option key={m} value={m}>{m}</option>
-                        ))}
-                      </select>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="space-y-2 pt-1">
-              <div className="text-xs text-muted-foreground">Добавить ключ</div>
-              <input
-                type="password"
-                value={keyInput}
-                onChange={(e) => setKeyInput(e.target.value)}
-                placeholder="Вставьте ключ"
-                className="w-full text-sm px-2 py-2 rounded-md border border-border bg-background"
-              />
-              <input
-                value={customUrl}
-                onChange={(e) => setCustomUrl(e.target.value)}
-                placeholder="Свой адрес API (только для локальной модели)"
-                className="w-full text-xs px-2 py-2 rounded-md border border-border bg-background"
-              />
-              <button
-                onClick={checkKey}
-                disabled={checkingKey || keyInput.trim().length < 8}
-                className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-md bg-primary text-primary-foreground disabled:opacity-40"
-              >
-                {checkingKey && <Loader2 size={14} className="animate-spin" />}
-                {checkingKey ? "Проверяю…" : "Проверить и добавить"}
-              </button>
-              {keyError && <p className="text-[11px] text-destructive whitespace-pre-line">{keyError}</p>}
-            </div>
-          </div>
-        </Section>
-
 
         <Section title="Данные" icon={<Download size={16} />}>
           <div className="flex flex-col gap-1.5">
@@ -463,96 +318,215 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
   );
 }
 
-function AiModeSection() {
-  const [code, setCode] = useState(loadOwnerCode());
-  const [checking, setChecking] = useState(false);
-  const [owner, setOwner] = useState(!!loadOwnerCode());
+function AssistantSection() {
+  const [conns, setConns] = useState<AiConnection[]>(() => loadAiStore().connections);
+  const [activeId, setActiveId] = useState<string | null>(() => loadAiStore().activeId);
   const [source, setSource] = useState(loadAiSource());
+  const [owner, setOwner] = useState(!!loadOwnerCode());
   const [left, setLeft] = useState<number | null>(null);
+
+  const [showAddKey, setShowAddKey] = useState(false);
+  const [showCode, setShowCode] = useState(false);
+  const [keyInput, setKeyInput] = useState("");
+  const [customUrl, setCustomUrl] = useState("");
+  const [checkingKey, setCheckingKey] = useState(false);
+  const [keyError, setKeyError] = useState<string | null>(null);
+  const [code, setCode] = useState("");
+  const [checkingCode, setCheckingCode] = useState(false);
 
   useEffect(() => {
     fetchDemoStatus().then((s) => s && setLeft(s.left));
   }, []);
 
-  const verify = async () => {
-    setChecking(true);
+  const syncStore = () => {
+    const s = loadAiStore();
+    setConns(s.connections);
+    setActiveId(s.activeId);
+  };
+
+  const chooseKey = (id: string) => { setActiveConnection(id); syncStore(); };
+  const chooseBuiltinOrDemo = (s: "demo" | "builtin") => {
+    setActiveConnection(null);
+    saveAiSource(s);
+    setSource(s);
+    syncStore();
+  };
+  const chooseModel = (id: string, m: string) => { updateConnection(id, { model: m }); syncStore(); };
+  const removeConn = (id: string) => { removeAiConnection(id); syncStore(); toast.success("Подключение удалено"); };
+
+  const addKey = async () => {
+    setCheckingKey(true);
+    setKeyError(null);
+    try {
+      const r = await detectProvider(keyInput, customUrl);
+      if (!r.ok) { setKeyError(r.error); toast.error(r.error); return; }
+      const { provider, models } = r.result;
+      addAiConnection({
+        key: keyInput.trim(),
+        providerId: provider.id,
+        providerName: provider.name,
+        baseUrl: provider.baseUrl,
+        jsonSchema: provider.jsonSchema,
+        models,
+        model: pickDefaultModel(provider.id, models),
+      });
+      syncStore();
+      setKeyInput("");
+      setCustomUrl("");
+      setShowAddKey(false);
+      toast.success(`Подключено: ${provider.name}`);
+    } catch (e: any) {
+      const msg = `Не удалось проверить ключ${e?.message ? `: ${e.message}` : ""}`;
+      setKeyError(msg);
+      toast.error(msg);
+    } finally {
+      setCheckingKey(false);
+    }
+  };
+
+  const verifyCode = async () => {
+    setCheckingCode(true);
     try {
       const ok = await checkOwnerCode(code.trim());
       if (!ok) { toast.error("Код не подошёл"); return; }
       saveOwnerCode(code.trim());
-      saveAiSource("builtin");
       setOwner(true);
-      setSource("builtin");
-      toast.success("Встроенный ИИ включён");
+      setCode("");
+      setShowCode(false);
+      chooseBuiltinOrDemo("builtin");
+      toast.success("Встроенный помощник включён");
     } catch {
       toast.error("Не удалось проверить код");
     } finally {
-      setChecking(false);
+      setCheckingCode(false);
     }
   };
 
-  const forget = () => {
+  const forgetCode = () => {
     saveOwnerCode("");
-    saveAiSource("demo");
     setOwner(false);
-    setCode("");
-    setSource("demo");
+    chooseBuiltinOrDemo("demo");
   };
 
-  const choose = (s: "demo" | "builtin") => { saveAiSource(s); setSource(s); };
+  const row = (selected: boolean) =>
+    cn(
+      "w-full text-left rounded-lg border px-3 py-2 text-sm transition-colors",
+      selected ? "border-primary bg-primary/10" : "border-border hover:bg-muted/50",
+    );
 
   return (
     <div className="space-y-2">
       <p className="text-xs text-muted-foreground">
-        Демо-режим работает без настроек, но общий лимит — 50 разборов на всех.
-        {left !== null && ` Осталось: ${left}.`}
+        Кто разбирает ваши записи и подсказывает шаги. Ключи хранятся только на этом устройстве.
       </p>
-      <div className="flex gap-2">
-        <button
-          onClick={() => choose("demo")}
-          className={cn(
-            "flex-1 py-2 rounded-md border text-sm",
-            source === "demo" ? "bg-primary/10 border-primary font-semibold" : "border-border text-muted-foreground",
+
+      <button onClick={() => chooseBuiltinOrDemo("demo")} className={row(!activeId && source === "demo")}>
+        <span className={cn(!activeId && source === "demo" && "font-semibold")}>Демо</span>
+        <span className="block text-[11px] text-muted-foreground">
+          Без настроек{left !== null ? ` · осталось ${left} из 50 разборов на всех` : ""}
+        </span>
+      </button>
+
+      {conns.map((c) => (
+        <div key={c.id} className={row(activeId === c.id).replace("w-full text-left ", "")}>
+          <div className="flex items-center gap-2">
+            <button onClick={() => chooseKey(c.id)} className="flex-1 text-left">
+              <span className={cn(activeId === c.id && "font-semibold")}>Мой ключ · {c.providerName}</span>
+              <span className="block text-[11px] text-muted-foreground">{c.model}</span>
+            </button>
+            <button
+              onClick={() => removeConn(c.id)}
+              className="p-1.5 rounded-md text-muted-foreground hover:bg-muted"
+              aria-label="Удалить подключение"
+            >
+              <Trash2 size={15} />
+            </button>
+          </div>
+          {activeId === c.id && c.models.length > 1 && (
+            <select
+              value={c.model}
+              onChange={(e) => chooseModel(c.id, e.target.value)}
+              className="mt-2 w-full text-sm px-2 py-1.5 rounded-md border border-border bg-background"
+            >
+              {c.models.map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
           )}
-        >
-          Демо
-        </button>
-        <button
-          onClick={() => owner && choose("builtin")}
-          disabled={!owner}
-          className={cn(
-            "flex-1 py-2 rounded-md border text-sm disabled:opacity-40",
-            source === "builtin" ? "bg-primary/10 border-primary font-semibold" : "border-border text-muted-foreground",
-          )}
-        >
-          Встроенный
-        </button>
-      </div>
-      {owner ? (
-        <button onClick={forget} className="text-[11px] text-muted-foreground underline">
-          Забыть код владельца
-        </button>
-      ) : (
-        <div className="flex gap-2">
-          <input
-            type="password"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="Код владельца"
-            className="flex-1 text-sm px-2 py-2 rounded-md border border-border bg-background"
-          />
-          <button
-            onClick={verify}
-            disabled={checking || code.trim().length < 3}
-            className="inline-flex items-center gap-1.5 text-sm px-3 rounded-md bg-primary text-primary-foreground disabled:opacity-40"
-          >
-            {checking ? <Loader2 size={14} className="animate-spin" /> : "Проверить"}
-          </button>
         </div>
+      ))}
+
+      {owner && (
+        <button onClick={() => chooseBuiltinOrDemo("builtin")} className={row(!activeId && source === "builtin")}>
+          <span className={cn(!activeId && source === "builtin" && "font-semibold")}>Встроенный</span>
+          <span className="block text-[11px] text-muted-foreground">Только для владельца приложения</span>
+        </button>
       )}
-      <p className="text-[11px] text-muted-foreground">
-        Свой ключ ниже, если он выбран, всегда важнее этих режимов.
-      </p>
+
+      <div className="pt-1 space-y-2">
+        {showAddKey ? (
+          <div className="space-y-2 rounded-lg border border-border p-2">
+            <input
+              type="password"
+              value={keyInput}
+              onChange={(e) => setKeyInput(e.target.value)}
+              placeholder="Вставьте ключ (DeepSeek, OpenRouter, OpenAI…)"
+              className="w-full text-sm px-2 py-2 rounded-md border border-border bg-background"
+            />
+            <input
+              value={customUrl}
+              onChange={(e) => setCustomUrl(e.target.value)}
+              placeholder="Свой адрес API (только для локальной модели)"
+              className="w-full text-xs px-2 py-2 rounded-md border border-border bg-background"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={addKey}
+                disabled={checkingKey || keyInput.trim().length < 8}
+                className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-md bg-primary text-primary-foreground disabled:opacity-40"
+              >
+                {checkingKey && <Loader2 size={14} className="animate-spin" />}
+                {checkingKey ? "Проверяю…" : "Проверить и добавить"}
+              </button>
+              <button onClick={() => setShowAddKey(false)} className="text-sm px-3 py-1.5 rounded-md border border-border">
+                Отмена
+              </button>
+            </div>
+            {keyError && <p className="text-[11px] text-destructive whitespace-pre-line">{keyError}</p>}
+          </div>
+        ) : (
+          <button onClick={() => setShowAddKey(true)} className="text-xs text-primary underline">
+            + Подключить свой ключ
+          </button>
+        )}
+
+        {owner ? (
+          <button onClick={forgetCode} className="block text-[11px] text-muted-foreground underline">
+            Забыть код владельца
+          </button>
+        ) : showCode ? (
+          <div className="flex gap-2">
+            <input
+              type="password"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="Код владельца"
+              className="flex-1 text-sm px-2 py-2 rounded-md border border-border bg-background"
+            />
+            <button
+              onClick={verifyCode}
+              disabled={checkingCode || code.trim().length < 3}
+              className="inline-flex items-center gap-1.5 text-sm px-3 rounded-md bg-primary text-primary-foreground disabled:opacity-40"
+            >
+              {checkingCode ? <Loader2 size={14} className="animate-spin" /> : "Проверить"}
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => setShowCode(true)} className="block text-[11px] text-muted-foreground underline">
+            Код владельца
+          </button>
+        )}
+      </div>
     </div>
   );
 }
