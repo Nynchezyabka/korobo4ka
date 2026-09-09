@@ -397,3 +397,31 @@ export function pickDefaultModel(providerId: string, models: string[]): string {
   return chatty ?? models[0] ?? "";
 }
 
+
+// ---------- режим ИИ: демо / встроенный / свой ключ ----------
+
+const OWNER_CODE_KEY = "ai_owner_code";
+const SOURCE_KEY = "ai_source"; // "demo" | "builtin"
+
+export function loadOwnerCode(): string {
+  return localStorage.getItem(OWNER_CODE_KEY) || "";
+}
+export function saveOwnerCode(code: string) {
+  if (code) localStorage.setItem(OWNER_CODE_KEY, code);
+  else localStorage.removeItem(OWNER_CODE_KEY);
+}
+export function hasOwnerCode(): boolean {
+  return !!loadOwnerCode();
+}
+
+export type AiSource = "demo" | "builtin";
+
+export function loadAiSource(): AiSource {
+  const v = localStorage.getItem(SOURCE_KEY);
+  if (v === "builtin" && hasOwnerCode()) return "builtin";
+  if (v === "demo") return "demo";
+  return hasOwnerCode() ? "builtin" : "demo";
+}
+export function saveAiSource(s: AiSource) {
+  localStorage.setItem(SOURCE_KEY, s);
+}
