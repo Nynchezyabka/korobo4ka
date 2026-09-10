@@ -49,8 +49,8 @@ function LabelButtons({ stacked, textColor, onViewTasks, onAdd }: LabelButtonPro
   const plusTex = useMemo(() => makeIconButtonTexture("plus", textColor), [textColor]);
   const [hovered, setHovered] = useState<"list" | "plus" | null>(null);
 
-  const size = 0.10;
-  const gap = 0.14;
+  const size = 0.085;
+  const gap = 0.12;
 
   const Button = ({
     kind,
@@ -81,9 +81,9 @@ function LabelButtons({ stacked, textColor, onViewTasks, onAdd }: LabelButtonPro
   };
 
   if (stacked) {
-    // В стопке — компактные кнопки рядом с этикеткой на передней грани
+    // В стопке — маленькие наклейки под этикеткой на передней грани
     return (
-      <group position={[0, 0, D / 2 + 0.035]}>
+      <group position={[0, -0.38, D / 2 + 0.035]}>
         <Button kind="list" position={[-gap, 0, 0]} onClick={onViewTasks} />
         <Button kind="plus" position={[gap, 0, 0]} onClick={onAdd} />
       </group>
