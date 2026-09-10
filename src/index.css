@@ -125,10 +125,10 @@ body {
 
 /* В 3D-режиме боковая панель полупрозрачная, чтобы не закрывала сцену */
 .three-mode aside {
-  background: rgba(255, 248, 240, 0.55);
-  border-right-color: rgba(120, 100, 80, 0.22);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 248, 240, 0.34);
+  border-right-color: rgba(120, 100, 80, 0.18);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
   box-shadow: 0 0 24px rgba(60, 45, 30, 0.08);
 }
 
@@ -150,7 +150,30 @@ body {
 }
 
 @media (max-width: 640px) {
-  .three-header h1 { max-width: calc(100vw - 12rem); font-size: 1.15rem; white-space: nowrap; }
+  .three-header {
+    display: flex;
+    min-height: 5.5rem;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .three-header .theme-toggle-wrap {
+    position: relative;
+    right: auto;
+    top: auto;
+    order: 2;
+    margin-top: 0.35rem;
+  }
+
+  .three-header h1 {
+    order: 0;
+    max-width: calc(100vw - 4.5rem);
+    padding-inline: 0.25rem;
+    font-size: 1.15rem;
+    white-space: nowrap;
+  }
+
+  .three-header p { order: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

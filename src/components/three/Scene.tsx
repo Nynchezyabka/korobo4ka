@@ -22,7 +22,7 @@ interface Props {
 export function boxPosition(i: number, stacked: boolean): [number, number, number] {
   // В стопке дно верхней коробки опирается прямо на крышку нижней.
   // Стопка поднята, чтобы внизу кадра осталось место для неопознанных бумажек.
-  return stacked ? [0, 0.30 + (2 - i) * 0.95, 0] : [(i - 1) * 1.25, 0, 0];
+  return stacked ? [0, 0.20 + (2 - i) * 0.93, 0] : [(i - 1) * 1.25, 0, 0];
 }
 
 function CameraRig({ stacked }: { stacked: boolean }) {
@@ -40,8 +40,8 @@ function CameraRig({ stacked }: { stacked: boolean }) {
       // Камера намеренно ближе: стопка занимает одинаково крупную долю
       // вертикального кадра и в узком браузере, и во встроенном превью.
       // Стопка поднята, чтобы внизу осталось место для неопознанных бумажек.
-      pos.set(0.50, 1.85, 5.7);
-      look.set(-0.18, 1.38, 0);
+      pos.set(0, 1.72, 5.9);
+      look.set(0, 1.22, 0);
     } else {
       pos.set(0, 2.2, 4.0);
       look.set(0, 0.1, 0);
@@ -110,24 +110,26 @@ export function Scene({ tasks, stacked, onRandom, onViewTasks, onAdd, onPaper, f
         <shadowMaterial opacity={0.22} />
       </mesh>
 
-      {BOXES.map((def, i) => {
-        const boxTasks = visibleTasks.filter((t) => def.categories.includes(t.category));
-        const position = boxPosition(i, stacked);
-        return (
-          <Box3D
-            key={def.id}
-            def={def}
-            position={position}
-            tasks={boxTasks}
-            stacked={stacked}
-            onRandom={() => onRandom(def)}
-            onViewTasks={() => onViewTasks(def)}
-            onAdd={() => onAdd(def)}
-            onPaper={onPaper}
-            fontsReady={fontsReady}
-          />
-        );
-      })}
+      <group rotation-y={stacked ? -0.16 : 0}>
+        {BOXES.map((def, i) => {
+          const boxTasks = visibleTasks.filter((t) => def.categories.includes(t.category));
+          const position = boxPosition(i, stacked);
+          return (
+            <Box3D
+              key={def.id}
+              def={def}
+              position={position}
+              tasks={boxTasks}
+              stacked={stacked}
+              onRandom={() => onRandom(def)}
+              onViewTasks={() => onViewTasks(def)}
+              onAdd={() => onAdd(def)}
+              onPaper={onPaper}
+              fontsReady={fontsReady}
+            />
+          );
+        })}
+      </group>
 
       {/* задачи без категории лежат рядом */}
       {loosePositions.map((p) => (
