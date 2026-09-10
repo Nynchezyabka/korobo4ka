@@ -37,7 +37,6 @@ interface Props {
 
 interface LabelButtonProps {
   stacked: boolean;
-  labelColor: string;
   textColor: string;
   onViewTasks: () => void;
   onAdd: () => void;
