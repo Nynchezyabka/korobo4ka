@@ -1,9 +1,10 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import type { BoxDef } from "@/lib/three/categories";
 import { PAPER_COLORS } from "@/lib/three/categories";
 import {
+  makeIconButtonTexture,
   makeLabelTexture,
   rng,
   shellGeometry,
@@ -25,13 +26,77 @@ interface Props {
   def: BoxDef;
   position: [number, number, number];
   tasks: Task[];
-  open: boolean;
   stacked: boolean;
-  onSelect: () => void;
+  onRandom: () => void;
+  onViewTasks: () => void;
+  onAdd: () => void;
   onPaper: (task: Task) => void;
   fontsReady: boolean;
 }
 
+
+interface LabelButtonProps {
+  stacked: boolean;
+  textColor: string;
+  onViewTasks: () => void;
+  onAdd: () => void;
+}
+
+/** Две маленькие кнопки-наклейки: список и плюс */
+function LabelButtons({ stacked, textColor, onViewTasks, onAdd }: LabelButtonProps) {
+  const listTex = useMemo(() => makeIconButtonTexture("list", textColor), [textColor]);
+  const plusTex = useMemo(() => makeIconButtonTexture("plus", textColor), [textColor]);
+  const [hovered, setHovered] = useState<"list" | "plus" | null>(null);
+
+  const size = 0.085;
+  const gap = 0.12;
+
+  const Button = ({
+    kind,
+    position,
+    rotation,
+    onClick,
+  }: {
+    kind: "list" | "plus";
+    position: [number, number, number];
+    rotation?: [number, number, number];
+    onClick: () => void;
+  }) => {
+    const tex = kind === "list" ? listTex : plusTex;
+    const isHovered = hovered === kind;
+    return (
+      <mesh
+        position={position}
+        rotation={rotation}
+        renderOrder={5}
+        onPointerOver={(e) => { e.stopPropagation(); setHovered(kind); document.body.style.cursor = "pointer"; }}
+        onPointerOut={() => { setHovered(null); document.body.style.cursor = "auto"; }}
+        onClick={(e) => { e.stopPropagation(); onClick(); }}
+      >
+        <circleGeometry args={[size, 32]} />
+        <meshBasicMaterial map={tex} transparent opacity={isHovered ? 1 : 0.9} />
+      </mesh>
+    );
+  };
+
+  if (stacked) {
+    // В стопке — маленькие наклейки под этикеткой на передней грани
+    return (
+      <group position={[0, -0.38, D / 2 + 0.035]}>
+        <Button kind="list" position={[-gap, 0, 0]} onClick={onViewTasks} />
+        <Button kind="plus" position={[gap, 0, 0]} onClick={onAdd} />
+      </group>
+    );
+  }
+
+  // В ландшафте — отдельные наклейки на боковой (передней) стенке коробочки
+  return (
+    <group position={[0, 0, D / 2 + 0.018]}>
+      <Button kind="list" position={[-gap, 0, 0]} onClick={onViewTasks} />
+      <Button kind="plus" position={[gap, 0, 0]} onClick={onAdd} />
+    </group>
+  );
+}
 
 /** Матовый полупрозрачный пластик: свет проходит сквозь стенку и рассеивается */
 function Plastic({ opacity = 0.34 }: { opacity?: number }) {
@@ -59,9 +124,10 @@ export function Box3D({
   def,
   position,
   tasks,
-  open,
   stacked,
-  onSelect,
+  onRandom,
+  onViewTasks,
+  onAdd,
   onPaper,
   fontsReady,
 }: Props) {
@@ -111,18 +177,14 @@ export function Box3D({
   useFrame((_, delta) => {
     const k = 1 - Math.exp(-8 * Math.min(delta, 0.05));
     if (lidRef.current) {
-      const y = H / 2 + (open ? 0.5 : 0.06);
+      const y = H / 2 + 0.06;
       lidRef.current.position.y += (y - lidRef.current.position.y) * k;
-      // крышка уходит назад и откидывается от зрителя
-      const z = open ? -0.5 : 0;
-      lidRef.current.position.z += (z - lidRef.current.position.z) * k;
-      const rot = open ? -0.5 : 0;
-      lidRef.current.rotation.x += (rot - lidRef.current.rotation.x) * k;
+      lidRef.current.position.z += (0 - lidRef.current.position.z) * k;
+      lidRef.current.rotation.x += (0 - lidRef.current.rotation.x) * k;
       lidRef.current.rotation.z += (0 - lidRef.current.rotation.z) * k;
     }
     if (groupRef.current) {
-      const s = open ? 1.05 : 1;
-      groupRef.current.scale.lerp(new THREE.Vector3(s, s, s), k);
+      groupRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), k);
     }
   });
 
@@ -133,8 +195,7 @@ export function Box3D({
       <group
         onClick={(e) => {
           e.stopPropagation();
-          if (open) return;
-          onSelect();
+          onRandom();
         }}
         onPointerOver={() => (document.body.style.cursor = "pointer")}
         onPointerOut={() => (document.body.style.cursor = "auto")}
@@ -167,12 +228,30 @@ export function Box3D({
         )}
       </group>
 
+      {/* В ландшафте кнопки — отдельные наклейки на передней стенке */}
+      {!stacked && (
+        <LabelButtons
+          stacked={false}
+          textColor={def.labelTextColor}
+          onViewTasks={onViewTasks}
+          onAdd={onAdd}
+        />
+      )}
+
       {/* в стопке этикетка видна спереди */}
       {stacked && (
         <mesh position={[0, 0.0, D / 2 + 0.032]} renderOrder={4}>
           <circleGeometry args={[0.31, 48]} />
           <meshStandardMaterial map={labelTex} transparent roughness={0.85} />
         </mesh>
+      )}
+      {stacked && (
+        <LabelButtons
+          stacked={true}
+          textColor={def.labelTextColor}
+          onViewTasks={onViewTasks}
+          onAdd={onAdd}
+        />
       )}
 
 

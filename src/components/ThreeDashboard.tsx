@@ -1,9 +1,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Dices, ListChecks, Plus } from "lucide-react";
 import { useApp } from "@/App";
 import type { CategoryId, Task } from "@/types";
-import { BOXES } from "@/lib/three/categories";
 import { Scene } from "@/components/three/Scene";
 import bgLandscape from "@/assets/bg-landscape.webp.asset.json";
 import bgPortrait from "@/assets/bg-portrait-desk.png.asset.json";
@@ -15,7 +13,6 @@ interface Props {
 
 export function ThreeDashboard({ onRandomTask, onViewTasks }: Props) {
   const { tasks, openTimer, openAddModal } = useApp();
-  const [selectedBox, setSelectedBox] = useState<number | null>(null);
   const [stacked, setStacked] = useState(false);
   const [fontsReady, setFontsReady] = useState(false);
 
@@ -36,7 +33,6 @@ export function ThreeDashboard({ onRandomTask, onViewTasks }: Props) {
     const now = Date.now();
     return tasks.filter((task) => !task.completed && (!task.scheduledFor || task.scheduledFor <= now));
   }, [tasks]);
-  const selected = BOXES.find((box) => box.id === selectedBox);
 
   const openPaper = (task: Task) => openTimer(task);
 
@@ -59,30 +55,14 @@ export function ThreeDashboard({ onRandomTask, onViewTasks }: Props) {
           <Scene
             tasks={visibleTasks}
             stacked={stacked}
-            openBox={selectedBox}
-            onSelectBox={setSelectedBox}
+            onRandom={(box) => onRandomTask(box.categories)}
+            onViewTasks={(box) => onViewTasks(box.categories)}
+            onAdd={(box) => openAddModal(box.categories[0], box.categories)}
             onPaper={openPaper}
             fontsReady={fontsReady}
           />
         </Suspense>
       </Canvas>
-
-      {selected && (
-        <div className="three-actions absolute left-1/2 z-20 -translate-x-1/2 rounded-xl border px-2 py-2 shadow-xl backdrop-blur-md">
-          <p className="max-w-52 truncate px-2 pb-1 text-center text-xs font-semibold">{selected.label.replace("\n", " ")}</p>
-          <div className="flex items-center justify-center gap-1.5">
-            <button onClick={() => onRandomTask(selected.categories)} className="three-action-button" title="Случайная задача" aria-label="Выбрать случайную задачу">
-              <Dices size={18} />
-            </button>
-            <button onClick={() => onViewTasks(selected.categories)} className="three-action-button" title="Посмотреть задачи" aria-label="Посмотреть задачи этой группы">
-              <ListChecks size={18} />
-            </button>
-            <button onClick={() => openAddModal(selected.categories[0], selected.categories)} className="three-action-button" title="Добавить задачу" aria-label="Добавить задачу в эту группу">
-              <Plus size={18} />
-            </button>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Environment, Lightformer } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { BOXES, PAPER_COLORS } from "@/lib/three/categories";
+import { BOXES, PAPER_COLORS, type BoxDef } from "@/lib/three/categories";
 import { rng } from "@/lib/three/geometry";
 import type { Task } from "@/types";
 import { Box3D } from "./Box3D";
@@ -11,8 +11,9 @@ import { PaperBall } from "./PaperBall";
 interface Props {
   tasks: Task[];
   stacked: boolean;
-  openBox: number | null;
-  onSelectBox: (id: number | null) => void;
+  onRandom: (box: BoxDef) => void;
+  onViewTasks: (box: BoxDef) => void;
+  onAdd: (box: BoxDef) => void;
   onPaper: (task: Task) => void;
   fontsReady: boolean;
 }
@@ -24,7 +25,7 @@ export function boxPosition(i: number, stacked: boolean): [number, number, numbe
   return stacked ? [0, 0.30 + (2 - i) * 0.95, 0] : [(i - 1) * 1.25, 0, 0];
 }
 
-function CameraRig({ stacked, openBox }: { stacked: boolean; openBox: number | null }) {
+function CameraRig({ stacked }: { stacked: boolean }) {
   const { camera } = useThree();
   const pos = useMemo(() => new THREE.Vector3(), []);
   const look = useMemo(() => new THREE.Vector3(), []);
@@ -32,7 +33,6 @@ function CameraRig({ stacked, openBox }: { stacked: boolean; openBox: number | n
 
   useFrame((_, delta) => {
     const k = 1 - Math.exp(-3.5 * Math.min(delta, 0.05));
-    const p = openBox ? boxPosition(openBox - 1, stacked) : null;
 
     if (stacked) {
       // Более фронтальный ракурс: стопка помещается в размеченную зону,
@@ -42,14 +42,10 @@ function CameraRig({ stacked, openBox }: { stacked: boolean; openBox: number | n
       // Стопка поднята, чтобы внизу осталось место для неопознанных бумажек.
       pos.set(0.50, 1.85, 5.7);
       look.set(-0.18, 1.38, 0);
-    } else if (p) {
-      pos.set(p[0], 1.9, 2.6);
-      look.set(p[0], 0.15, 0);
     } else {
       pos.set(0, 2.2, 4.0);
       look.set(0, 0.1, 0);
     }
-
 
     camera.position.lerp(pos, k);
     cur.lerp(look, k);
@@ -58,7 +54,7 @@ function CameraRig({ stacked, openBox }: { stacked: boolean; openBox: number | n
   return null;
 }
 
-export function Scene({ tasks, stacked, openBox, onSelectBox, onPaper, fontsReady }: Props) {
+export function Scene({ tasks, stacked, onRandom, onViewTasks, onAdd, onPaper, fontsReady }: Props) {
   const visibleTasks = tasks.filter((t) => !t.completed);
 
   const loose = visibleTasks.filter((t) => t.category === 0);
@@ -114,12 +110,6 @@ export function Scene({ tasks, stacked, openBox, onSelectBox, onPaper, fontsRead
         <shadowMaterial opacity={0.22} />
       </mesh>
 
-      {/* фон-кликер: закрывает коробочку */}
-      <mesh position={[0, 0, -6]} onClick={() => onSelectBox(null)}>
-        <planeGeometry args={[40, 40]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-      </mesh>
-
       {BOXES.map((def, i) => {
         const boxTasks = visibleTasks.filter((t) => def.categories.includes(t.category));
         const position = boxPosition(i, stacked);
@@ -130,15 +120,9 @@ export function Scene({ tasks, stacked, openBox, onSelectBox, onPaper, fontsRead
             position={position}
             tasks={boxTasks}
             stacked={stacked}
-            open={!stacked && openBox === def.id}
-
-            onSelect={() => {
-              if (stacked) {
-                onSelectBox(openBox === def.id ? null : def.id);
-              } else {
-                onSelectBox(openBox === def.id ? null : def.id);
-              }
-            }}
+            onRandom={() => onRandom(def)}
+            onViewTasks={() => onViewTasks(def)}
+            onAdd={() => onAdd(def)}
             onPaper={onPaper}
             fontsReady={fontsReady}
           />
@@ -159,7 +143,7 @@ export function Scene({ tasks, stacked, openBox, onSelectBox, onPaper, fontsRead
         />
       ))}
 
-      <CameraRig stacked={stacked} openBox={openBox} />
+      <CameraRig stacked={stacked} />
     </>
   );
 }

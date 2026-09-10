@@ -123,35 +123,38 @@ body {
   backdrop-filter: blur(4px);
 }
 
-.three-actions {
-  bottom: 6.3rem;
-  color: hsl(20 22% 22%);
-  border-color: rgb(255 255 255 / 0.65);
-  background: rgb(255 255 255 / 0.76);
+/* В 3D-режиме боковая панель полупрозрачная, чтобы не закрывала сцену */
+.three-mode aside {
+  background: rgba(255, 248, 240, 0.55);
+  border-right-color: rgba(120, 100, 80, 0.22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 0 24px rgba(60, 45, 30, 0.08);
 }
 
-.three-action-button {
-  display: flex;
-  width: 2.5rem;
-  height: 2.5rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.5rem;
-  background: rgb(255 255 255 / 0.72);
+.three-mode aside button {
   color: hsl(20 22% 22%);
-  transition: transform 150ms ease, background-color 150ms ease;
 }
 
-.three-action-button:hover { background: rgb(255 255 255 / 0.95); }
-.three-action-button:active { transform: scale(0.95); }
+.three-mode aside button:hover {
+  background: rgba(255, 255, 255, 0.55);
+  color: hsl(20 22% 18%);
+}
+
+.three-mode aside .bg-primary\/10 {
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.three-mode aside .text-primary {
+  color: hsl(20 22% 18%);
+}
 
 @media (max-width: 640px) {
-  .three-actions { bottom: 6.7rem; }
   .three-header h1 { max-width: calc(100vw - 12rem); font-size: 1.15rem; white-space: nowrap; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .three-action-button { transition: none; }
+  .three-mode aside { transition: none; }
 }
 
 .dark body,

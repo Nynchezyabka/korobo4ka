@@ -170,3 +170,102 @@ export function makeLabelTexture(text: string, bg: string, fg: string): THREE.Ca
   tex.anisotropy = 4;
   return tex;
 }
+
+const iconTextureCache = new Map<string, THREE.CanvasTexture>();
+
+function drawIconTexture(kind: "list" | "plus", fg: string): THREE.CanvasTexture {
+  const key = `${kind}|${fg}`;
+  const hit = iconTextureCache.get(key);
+  if (hit) return hit;
+
+  const size = 128;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    const t = new THREE.CanvasTexture(canvas);
+    iconTextureCache.set(key, t);
+    return t;
+  }
+
+  ctx.clearRect(0, 0, size, size);
+  ctx.fillStyle = fg;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  if (kind === "list") {
+    const w = size * 0.62;
+    const h = size * 0.38;
+    const left = (size - w) / 2;
+    const top = (size - h) / 2;
+    const lineH = h / 3;
+    const r = lineH * 0.35;
+    for (let i = 0; i < 3; i++) {
+      const y = top + i * lineH + lineH / 2;
+      ctx.beginPath();
+      ctx.roundRect(left, y - r / 2, w, r, r / 2);
+      ctx.fill();
+    }
+  } else {
+    const thickness = size * 0.13;
+    const cx = size / 2;
+    const cy = size / 2;
+    const len = size * 0.56;
+    ctx.beginPath();
+    ctx.roundRect(cx - len / 2, cy - thickness / 2, len, thickness, thickness / 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(cx - thickness / 2, cy - len / 2, thickness, len, thickness / 2);
+    ctx.fill();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  iconTextureCache.set(key, tex);
+  return tex;
+}
+
+/** Маленькая круглая кнопка-иконка для этикетки коробочки */
+export function makeIconButtonTexture(kind: "list" | "plus", fg: string): THREE.CanvasTexture {
+  const key = `btn:${kind}|${fg}`;
+  const hit = iconTextureCache.get(key);
+  if (hit) return hit;
+
+  const size = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    const t = new THREE.CanvasTexture(canvas);
+    iconTextureCache.set(key, t);
+    return t;
+  }
+
+  ctx.clearRect(0, 0, size, size);
+
+  // faint circular background
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, size / 2 - 4, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(255,255,255,0.35)";
+  ctx.fill();
+
+  // subtle border
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, size / 2 - 8, 0, Math.PI * 2);
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = "rgba(255,255,255,0.55)";
+  ctx.stroke();
+
+  const icon = drawIconTexture(kind, fg);
+  const iconCanvas = icon.image as HTMLCanvasElement;
+  ctx.drawImage(iconCanvas, size * 0.22, size * 0.22, size * 0.56, size * 0.56);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  iconTextureCache.set(key, tex);
+  return tex;
+}
