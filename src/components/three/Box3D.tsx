@@ -232,7 +232,6 @@ export function Box3D({
       {!stacked && (
         <LabelButtons
           stacked={false}
-          labelColor={def.labelColor}
           textColor={def.labelTextColor}
           onViewTasks={onViewTasks}
           onAdd={onAdd}
@@ -249,7 +248,6 @@ export function Box3D({
       {stacked && (
         <LabelButtons
           stacked={true}
-          labelColor={def.labelColor}
           textColor={def.labelTextColor}
           onViewTasks={onViewTasks}
           onAdd={onAdd}
