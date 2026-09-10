@@ -40,8 +40,8 @@ function CameraRig({ stacked }: { stacked: boolean }) {
       // Камера намеренно ближе: стопка занимает одинаково крупную долю
       // вертикального кадра и в узком браузере, и во встроенном превью.
       // Стопка поднята, чтобы внизу осталось место для неопознанных бумажек.
-      pos.set(0, 1.64, 6.35);
-      look.set(0, 1.08, 0);
+      pos.set(0, 1.60, 7.0);
+      look.set(0, 0.98, 0);
     } else {
       pos.set(0, 2.2, 4.0);
       look.set(0, 0.1, 0);
@@ -110,7 +110,7 @@ export function Scene({ tasks, stacked, onRandom, onViewTasks, onAdd, onPaper, f
         <shadowMaterial opacity={0.22} />
       </mesh>
 
-      <group position={stacked ? [0, -0.14, 0] : [0, 0, 0]} rotation-y={stacked ? -0.16 : 0}>
+      <group position={stacked ? [0, -0.48, 0] : [0, 0, 0]} rotation-y={stacked ? -0.16 : 0}>
         {BOXES.map((def, i) => {
           const boxTasks = visibleTasks.filter((t) => def.categories.includes(t.category));
           const position = boxPosition(i, stacked);
