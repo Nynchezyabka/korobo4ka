@@ -7,8 +7,8 @@
 - [x] Verify TypeScript and live WebGL rendering on desktop and mobile dimensions.
 - [x] Resize the list/plus label buttons smaller.
 - [x] In landscape mode, place the list/plus buttons as separate stickers on the front wall of the boxes.
-- [ ] Remove the overflow dots from every 3D box.
-- [ ] Place portrait list/plus actions vertically on the right side of each box.
-- [ ] Center and slightly rotate the portrait stack to match the supplied reference.
-- [ ] Separate the portrait title and appearance selector so they never overlap.
-- [ ] Increase the 3D sidebar transparency while preserving icon readability.
+- [x] Remove the overflow dots from every 3D box.
+- [x] Place portrait list/plus actions vertically on the right side of each box.
+- [x] Center and slightly rotate the portrait stack to match the supplied reference.
+- [x] Separate the portrait title and appearance selector so they never overlap.
+- [x] Increase the 3D sidebar transparency while preserving icon readability.
