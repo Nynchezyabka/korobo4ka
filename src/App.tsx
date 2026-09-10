@@ -9,7 +9,8 @@ import { BraindumpPanel } from "@/components/BraindumpPanel";
 
 import { TimerScreen } from "@/components/TimerScreen";
 import { AddTaskModal } from "@/components/AddTaskModal";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { ThemeToggle, VisualMode } from "@/components/ThemeToggle";
+import { ThreeDashboard } from "@/components/ThreeDashboard";
 import { InfoPage } from "@/components/InfoPage";
 import { TemplatesPanel } from "@/components/TemplatesPanel";
 import { AppSidebar, PageId } from "@/components/AppSidebar";
@@ -77,6 +78,21 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [overlayOpen, setOverlayOpen] = useState(false);
   const [whatsNew, setWhatsNew] = useState<ChangelogEntry[] | null>(null);
+  const [visualMode, setVisualMode] = useState<VisualMode>(() => {
+    const saved = localStorage.getItem("visual_mode");
+    if (saved === "light" || saved === "dark" || saved === "3d") return saved;
+    return localStorage.getItem("theme") === "dark" || (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("visual_mode", visualMode);
+    const root = document.documentElement;
+    root.classList.toggle("three-mode", visualMode === "3d");
+    if (visualMode !== "3d") {
+      root.classList.toggle("dark", visualMode === "dark");
+      localStorage.setItem("theme", visualMode);
+    }
+  }, [visualMode]);
 
   // Show "What's new" once after an update
   useEffect(() => {
@@ -384,7 +400,9 @@ export default function App() {
       case "info":
         return <InfoPage />;
       default:
-        return <Dashboard onRandomTask={handleRandomTask} onViewTasks={handleViewTasks} />;
+        return visualMode === "3d"
+          ? <ThreeDashboard onRandomTask={handleRandomTask} onViewTasks={handleViewTasks} />
+          : <Dashboard onRandomTask={handleRandomTask} onViewTasks={handleViewTasks} />;
     }
   };
 
@@ -397,11 +415,11 @@ export default function App() {
       />
 
       <div className="ml-12 transition-all duration-300">
-        <div className="max-w-4xl mx-auto p-2.5 pb-32">
+        <div className={visualMode === "3d" && currentPage === "home" ? "relative z-10 mx-auto p-2.5" : "max-w-4xl mx-auto p-2.5 pb-32"}>
           {/* Header */}
-          <header className="text-center mb-4 pt-1 relative">
+          <header className={visualMode === "3d" && currentPage === "home" ? "three-header pointer-events-none relative z-20 text-center pt-1" : "text-center mb-4 pt-1 relative"}>
             <div className="absolute right-0 top-1 flex items-center gap-1.5 z-10">
-              <ThemeToggle />
+              <div className="pointer-events-auto"><ThemeToggle mode={visualMode} onChange={setVisualMode} /></div>
             </div>
             <h1 className="font-display text-2xl sm:text-4xl text-primary drop-shadow-sm animate-fade-in px-10">
               🎁 КОРОБОЧКА {APP_VERSION}

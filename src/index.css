@@ -105,6 +105,55 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+.three-home-shade {
+  background: linear-gradient(to bottom, rgb(255 255 255 / 0.08), transparent 45%, rgb(35 24 16 / 0.12));
+}
+
+.three-header h1,
+.three-header p {
+  color: hsl(20 22% 22%);
+  text-shadow: 0 1px 2px rgb(255 255 255 / 0.7);
+}
+
+.three-header h1 {
+  display: inline-block;
+  border-radius: 0.5rem;
+  padding: 0.1rem 0.55rem;
+  background: rgb(255 255 255 / 0.48);
+  backdrop-filter: blur(4px);
+}
+
+.three-actions {
+  bottom: 6.3rem;
+  color: hsl(20 22% 22%);
+  border-color: rgb(255 255 255 / 0.65);
+  background: rgb(255 255 255 / 0.76);
+}
+
+.three-action-button {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background: rgb(255 255 255 / 0.72);
+  color: hsl(20 22% 22%);
+  transition: transform 150ms ease, background-color 150ms ease;
+}
+
+.three-action-button:hover { background: rgb(255 255 255 / 0.95); }
+.three-action-button:active { transform: scale(0.95); }
+
+@media (max-width: 640px) {
+  .three-actions { bottom: 6.7rem; }
+  .three-header h1 { max-width: calc(100vw - 12rem); font-size: 1.15rem; white-space: nowrap; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .three-action-button { transition: none; }
+}
+
 .dark body,
 body:is(.dark *) {
   background-image:

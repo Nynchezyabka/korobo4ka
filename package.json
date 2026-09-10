@@ -12,6 +12,8 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@react-three/drei": "^10",
+    "@react-three/fiber": "^9",
     "@supabase/supabase-js": "^2.112.0",
     "@tailwindcss/postcss": "^4.2.1",
     "@types/react": "^19.2.14",
@@ -23,9 +25,11 @@
     "react-dom": "^19",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
+    "three": "^0.185.1",
     "vite-plugin-pwa": "1.2.0"
   },
   "devDependencies": {
+    "@types/three": "^0.185.4",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vite": "^7"
