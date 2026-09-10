@@ -418,7 +418,7 @@ export default function App() {
         <div className={visualMode === "3d" && currentPage === "home" ? "relative z-10 mx-auto p-2.5" : "max-w-4xl mx-auto p-2.5 pb-32"}>
           {/* Header */}
           <header className={visualMode === "3d" && currentPage === "home" ? "three-header pointer-events-none relative z-20 text-center pt-1" : "text-center mb-4 pt-1 relative"}>
-            <div className="absolute right-0 top-1 flex items-center gap-1.5 z-10">
+            <div className="theme-toggle-wrap absolute right-0 top-1 flex items-center gap-1.5 z-10">
               <div className="pointer-events-auto"><ThemeToggle mode={visualMode} onChange={setVisualMode} /></div>
             </div>
             <h1 className="font-display text-2xl sm:text-4xl text-primary drop-shadow-sm animate-fade-in px-10">

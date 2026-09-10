@@ -80,11 +80,11 @@ function LabelButtons({ stacked, textColor, onViewTasks, onAdd }: LabelButtonPro
   };
 
   if (stacked) {
-    // В стопке — маленькие наклейки под этикеткой на передней грани
+    // В стопке — две маленькие наклейки столбиком справа от этикетки.
     return (
-      <group position={[0, -0.38, D / 2 + 0.035]}>
-        <Button kind="list" position={[-gap, 0, 0]} onClick={onViewTasks} />
-        <Button kind="plus" position={[gap, 0, 0]} onClick={onAdd} />
+      <group position={[0.39, 0, D / 2 + 0.035]}>
+        <Button kind="plus" position={[0, gap, 0]} onClick={onAdd} />
+        <Button kind="list" position={[0, -gap, 0]} onClick={onViewTasks} />
       </group>
     );
   }
@@ -147,7 +147,6 @@ export function Box3D({
   const lidSkirt = useMemo(() => shellGeometry(W + 0.08, D + 0.08, 0.11, 0.045, R + 0.01), []);
 
   const visible = tasks.slice(0, MAX_VISIBLE);
-  const hidden = tasks.length - visible.length;
 
   const layout = useMemo(() => {
     const CELL = 0.28;
@@ -279,13 +278,6 @@ export function Box3D({
           D / 2 + 0.032,
         ]}
       />
-
-      {hidden > 0 && (
-        <mesh position={[-W / 2 + 0.12, -H / 2 + 0.03, D / 2 + 0.035]}>
-          <circleGeometry args={[0.05, 32]} />
-          <meshBasicMaterial color="#ffffff" transparent opacity={0.85} />
-        </mesh>
-      )}
 
     </group>
   );
