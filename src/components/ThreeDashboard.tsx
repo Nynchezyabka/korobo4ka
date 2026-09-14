@@ -37,7 +37,7 @@ export function ThreeDashboard({ onRandomTask, onViewTasks }: Props) {
   const openPaper = (task: Task) => openTimer(task);
 
   return (
-    <main className="three-home fixed inset-y-0 left-12 right-0 overflow-hidden" aria-label="Трёхмерная главная">
+    <main className="three-home fixed inset-0 overflow-hidden" aria-label="Трёхмерная главная">
       <div
         className="three-home-bg absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${stacked ? bgPortrait.url : bgLandscape.url})` }}
@@ -45,7 +45,7 @@ export function ThreeDashboard({ onRandomTask, onViewTasks }: Props) {
       <div className="three-home-shade absolute inset-0 pointer-events-none" />
 
       <Canvas
-        className="absolute inset-0"
+        className="three-home-canvas absolute inset-y-0 left-12 right-0"
         shadows
         dpr={[1, 1.6]}
         gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
