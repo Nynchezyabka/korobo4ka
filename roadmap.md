@@ -16,3 +16,5 @@
 - [x] Extend the 3D background beneath the translucent sidebar.
 - [x] Stack the appearance controls vertically at the mobile top-right.
 - [x] Verify portrait layouts, sidebar states, and 3D interactions without publishing.
+- [x] Keep the portrait table below the complete bottom box and its label.
+- [x] Replace the three-option appearance selector with one cycling icon button.
