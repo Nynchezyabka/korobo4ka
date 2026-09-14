@@ -122,7 +122,7 @@ export function Scene({ tasks, stacked, onRandom, onViewTasks, onAdd, onPaper, f
         <shadowMaterial opacity={0.22} />
       </mesh>
 
-      <group position={stacked ? [0, -0.45, 0] : [0, 0, 0]} rotation-y={stacked ? -0.16 : 0}>
+      <group position={stacked ? [0, -0.18, 0] : [0, 0, 0]} rotation-y={stacked ? -0.16 : 0}>
         {BOXES.map((def, i) => {
           const boxTasks = visibleTasks.filter((t) => def.categories.includes(t.category));
           const position = boxPosition(i, stacked);
