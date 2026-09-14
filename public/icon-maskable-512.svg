@@ -1,12 +1,16 @@
-<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="512" height="512" fill="#5d4037"/>
-<g transform="translate(80, 72)">
-  <rect x="16" y="172" width="320" height="200" rx="16" fill="#FFD54F" stroke="#fffaf0" stroke-width="6"/>
-  <path d="M8 172 L176 108 L344 172" fill="#FFA727" stroke="#fffaf0" stroke-width="6" stroke-linejoin="round"/>
-  <rect x="8" y="152" width="336" height="28" rx="8" fill="#FFB74F" stroke="#fffaf0" stroke-width="4"/>
-  <rect x="80" y="32" width="64" height="84" rx="6" fill="#fff9c4" stroke="#fffaf0" stroke-width="3" transform="rotate(-15 112 74)"/>
-  <rect x="190" y="12" width="64" height="84" rx="6" fill="#c8e6c9" stroke="#fffaf0" stroke-width="3" transform="rotate(10 222 54)"/>
-  <rect x="130" y="4" width="56" height="72" rx="6" fill="#bbdefb" stroke="#fffaf0" stroke-width="3" transform="rotate(-5 158 40)"/>
-  <rect x="220" y="60" width="48" height="64" rx="5" fill="#ffcdd2" stroke="#fffaf0" stroke-width="2.5" transform="rotate(18 244 92)"/>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 192 192">
+  <rect width="192" height="192" fill="#2E4034"/>
+  <g transform="translate(96 96) scale(0.72) translate(-96 -96)">
+    <g stroke="#F5B830" stroke-width="6" stroke-linecap="round">
+      <line x1="96" y1="22" x2="96" y2="42"/>
+      <line x1="73" y1="30" x2="79" y2="46"/>
+      <line x1="119" y1="30" x2="113" y2="46"/>
+    </g>
+    <rect x="52" y="76" width="36" height="44" rx="6" fill="#86CFC0" transform="rotate(-14 70 98)"/>
+    <rect x="66" y="66" width="38" height="52" rx="6" fill="#93C7E8" transform="rotate(-4 85 92)"/>
+    <rect x="104" y="70" width="34" height="48" rx="6" fill="#F19BAF" transform="rotate(14 121 94)"/>
+    <rect x="76" y="58" width="44" height="58" rx="7" fill="#FBF4E4" transform="rotate(3 98 87)"/>
+    <rect x="38" y="98" width="116" height="20" rx="9" fill="#FBB040"/>
+    <rect x="44" y="110" width="104" height="58" rx="14" fill="#F59E2E"/>
+  </g>
 </svg>
