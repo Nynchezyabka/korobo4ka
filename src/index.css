@@ -149,6 +149,44 @@ body {
   color: hsl(20 22% 18%);
 }
 
+/* Тёмный вариант 3D: вечерняя сцена, тёмная панель, светлая шапка */
+.three-mode.dark .three-home-shade {
+  background: linear-gradient(to bottom, rgb(10 8 14 / 0.42), rgb(10 8 14 / 0.28) 45%, rgb(5 4 10 / 0.55));
+}
+
+.three-mode.dark .three-header h1,
+.three-mode.dark .three-header p {
+  color: hsl(35 40% 92%);
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.7);
+}
+
+.three-mode.dark .three-header h1 {
+  background: rgb(10 8 14 / 0.42);
+}
+
+.three-mode.dark aside {
+  background: rgba(16, 13, 18, 0.42);
+  border-right-color: rgba(255, 240, 220, 0.14);
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.28);
+}
+
+.three-mode.dark aside button {
+  color: hsl(35 32% 88%);
+}
+
+.three-mode.dark aside button:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: hsl(35 40% 95%);
+}
+
+.three-mode.dark aside .bg-primary\/10 {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.three-mode.dark aside .text-primary {
+  color: hsl(35 40% 95%);
+}
+
 @media (max-width: 640px) {
   .three-header {
     min-height: 4rem;
