@@ -80,16 +80,16 @@ export default function App() {
   const [whatsNew, setWhatsNew] = useState<ChangelogEntry[] | null>(null);
   const [visualMode, setVisualMode] = useState<VisualMode>(() => {
     const saved = localStorage.getItem("visual_mode");
-    if (saved === "light" || saved === "dark" || saved === "3d") return saved;
+    if (saved === "light" || saved === "dark" || saved === "3d" || saved === "3d-dark") return saved;
     return localStorage.getItem("theme") === "dark" || (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
   });
 
   useEffect(() => {
     localStorage.setItem("visual_mode", visualMode);
     const root = document.documentElement;
-    root.classList.toggle("three-mode", visualMode === "3d");
-    if (visualMode !== "3d") {
-      root.classList.toggle("dark", visualMode === "dark");
+    root.classList.toggle("three-mode", is3dMode(visualMode));
+    root.classList.toggle("dark", isDarkMode(visualMode));
+    if (!is3dMode(visualMode)) {
       localStorage.setItem("theme", visualMode);
     }
   }, [visualMode]);
