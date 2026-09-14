@@ -26,7 +26,7 @@ export function boxPosition(i: number, stacked: boolean): [number, number, numbe
 }
 
 function CameraRig({ stacked }: { stacked: boolean }) {
-  const { camera } = useThree();
+  const { camera, size } = useThree();
   const pos = useMemo(() => new THREE.Vector3(), []);
   const look = useMemo(() => new THREE.Vector3(), []);
   const cur = useMemo(() => new THREE.Vector3(0, 0.1, 0), []);
@@ -35,13 +35,25 @@ function CameraRig({ stacked }: { stacked: boolean }) {
     const k = 1 - Math.exp(-3.5 * Math.min(delta, 0.05));
 
     if (stacked) {
-      // Более фронтальный ракурс: стопка помещается в размеченную зону,
-      // при этом остаётся видна правая грань и хорошо читаются этикетки.
-      // Камера намеренно ближе: стопка занимает одинаково крупную долю
-      // вертикального кадра и в узком браузере, и во встроенном превью.
-      // Стопка поднята, чтобы внизу осталось место для неопознанных бумажек.
-      pos.set(0, 1.60, 7.0);
-      look.set(0, 0.98, 0);
+      // Вписываем стопку в свободную область между шапкой и быстрым вводом.
+      // Так её размер остаётся стабильным на низких и высоких телефонах.
+      const safeTop = 112;
+      const safeBottom = 118;
+      const usableFraction = THREE.MathUtils.clamp(
+        (size.height - safeTop - safeBottom) / size.height,
+        0.58,
+        0.76,
+      );
+      // Дополнительный запас учитывает крышки, поворот и перспективу ближней грани.
+      const framedHeight = 3.4;
+      const fov = THREE.MathUtils.degToRad((camera as THREE.PerspectiveCamera).fov);
+      const distance = THREE.MathUtils.clamp(
+        framedHeight / (2 * Math.tan(fov / 2) * usableFraction),
+        6.2,
+        7.2,
+      );
+      pos.set(0, 1.48, distance);
+      look.set(0, 1.08, 0);
     } else {
       pos.set(0, 2.2, 4.0);
       look.set(0, 0.1, 0);
@@ -110,7 +122,7 @@ export function Scene({ tasks, stacked, onRandom, onViewTasks, onAdd, onPaper, f
         <shadowMaterial opacity={0.22} />
       </mesh>
 
-      <group position={stacked ? [0, -0.48, 0] : [0, 0, 0]} rotation-y={stacked ? -0.16 : 0}>
+      <group position={stacked ? [0, -0.45, 0] : [0, 0, 0]} rotation-y={stacked ? -0.16 : 0}>
         {BOXES.map((def, i) => {
           const boxTasks = visibleTasks.filter((t) => def.categories.includes(t.category));
           const position = boxPosition(i, stacked);
