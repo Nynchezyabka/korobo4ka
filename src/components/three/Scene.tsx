@@ -25,6 +25,13 @@ export function boxPosition(i: number, stacked: boolean): [number, number, numbe
   return stacked ? [0, 0.20 + (2 - i) * 0.93, 0] : [(i - 1) * 1.25, 0, 0];
 }
 
+// Масштаб стопки на мобильном — чуть крупнее, но нижняя граница остаётся на месте.
+const STACK_SCALE = 1.12;
+// Нижняя точка нижней коробочки относительно центра группы (box y=0.20, половина высоты H=0.86/2=0.43).
+const STACK_BOTTOM_Y = -0.23;
+// Сдвиг группы компенсирует масштаб, чтобы нижняя граница не ушла вниз.
+const STACK_GROUP_Y = -0.18 - (STACK_SCALE - 1) * STACK_BOTTOM_Y;
+
 function CameraRig({ stacked }: { stacked: boolean }) {
   const { camera, size } = useThree();
   const pos = useMemo(() => new THREE.Vector3(), []);
