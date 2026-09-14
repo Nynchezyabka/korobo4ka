@@ -162,10 +162,6 @@ body {
     margin: 0;
   }
 
-  .three-header .theme-toggle-wrap [role="group"] {
-    flex-direction: column;
-  }
-
   .three-header h1 {
     max-width: calc(100vw - 7rem);
     margin-inline: auto;

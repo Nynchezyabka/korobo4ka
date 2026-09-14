@@ -116,8 +116,8 @@ export function Scene({ tasks, stacked, onRandom, onViewTasks, onAdd, onPaper, f
         />
       </Environment>
 
-      {/* мягкая тень на поверхности */}
-      <mesh rotation-x={-Math.PI / 2} position={[0, -0.46, 0]} receiveShadow>
+      {/* В портрете стол проходит ниже всей нижней коробочки и её наклейки. */}
+      <mesh rotation-x={-Math.PI / 2} position={[0, stacked ? -0.72 : -0.46, 0]} receiveShadow>
         <planeGeometry args={[24, 24]} />
         <shadowMaterial opacity={0.22} />
       </mesh>
