@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "prompt",
-      includeAssets: ["Assets/**/*", "favicon.jpg", "icon-192.svg", "icon-512.svg", "icon-maskable-192.svg", "icon-maskable-512.svg"],
+      includeAssets: ["Assets/**/*", "favicon.png", "favicon.jpg", "icon-192.svg", "icon-512.svg", "icon-maskable-192.svg", "icon-maskable-512.svg"],
       manifest: {
         name: "🎁 КОРОБОЧКА",
         short_name: "КОРОБОЧКА",
@@ -17,7 +17,7 @@ export default defineConfig({
         scope: "/",
         display: "standalone",
         background_color: "#fffaf0",
-        theme_color: "#5d4037",
+        theme_color: "#2E4034",
         orientation: "portrait-primary",
         icons: [
           {
