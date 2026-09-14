@@ -1,11 +1,16 @@
-<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="192" height="192" fill="#5d4037"/>
-<g transform="translate(32, 28)">
-  <rect x="8" y="64" width="112" height="72" rx="8" fill="#FFD54F" stroke="#fffaf0" stroke-width="3"/>
-  <path d="M4 64 L64 40 L124 64" fill="#FFA727" stroke="#fffaf0" stroke-width="3" stroke-linejoin="round"/>
-  <rect x="4" y="56" width="120" height="12" rx="4" fill="#FFB74F" stroke="#fffaf0" stroke-width="2"/>
-  <rect x="30" y="16" width="24" height="30" rx="3" fill="#fff9c4" stroke="#fffaf0" stroke-width="1.5" transform="rotate(-15 42 31)"/>
-  <rect x="70" y="8" width="24" height="30" rx="3" fill="#c8e6c9" stroke="#fffaf0" stroke-width="1.5" transform="rotate(10 82 23)"/>
-  <rect x="50" y="4" width="20" height="26" rx="3" fill="#bbdefb" stroke="#fffaf0" stroke-width="1.5" transform="rotate(-5 60 17)"/>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <rect width="192" height="192" fill="#2E4034"/>
+  <g transform="translate(96 96) scale(0.72) translate(-96 -96)">
+    <g stroke="#F5B830" stroke-width="6" stroke-linecap="round">
+      <line x1="96" y1="22" x2="96" y2="42"/>
+      <line x1="73" y1="30" x2="79" y2="46"/>
+      <line x1="119" y1="30" x2="113" y2="46"/>
+    </g>
+    <rect x="52" y="76" width="36" height="44" rx="6" fill="#86CFC0" transform="rotate(-14 70 98)"/>
+    <rect x="66" y="66" width="38" height="52" rx="6" fill="#93C7E8" transform="rotate(-4 85 92)"/>
+    <rect x="104" y="70" width="34" height="48" rx="6" fill="#F19BAF" transform="rotate(14 121 94)"/>
+    <rect x="76" y="58" width="44" height="58" rx="7" fill="#FBF4E4" transform="rotate(3 98 87)"/>
+    <rect x="38" y="98" width="116" height="20" rx="9" fill="#FBB040"/>
+    <rect x="44" y="110" width="104" height="58" rx="14" fill="#F59E2E"/>
+  </g>
 </svg>
