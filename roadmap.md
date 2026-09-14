@@ -12,7 +12,7 @@
 - [x] Center and slightly rotate the portrait stack to match the supplied reference.
 - [x] Separate the portrait title and appearance selector so they never overlap.
 - [x] Increase the 3D sidebar transparency while preserving icon readability.
-- [ ] Fit the portrait stack into the safe area on varying phone heights.
-- [ ] Extend the 3D background beneath the translucent sidebar.
-- [ ] Stack the appearance controls vertically at the mobile top-right.
-- [ ] Verify portrait layouts, sidebar states, and 3D interactions without publishing.
+- [x] Fit the portrait stack into the safe area on varying phone heights.
+- [x] Extend the 3D background beneath the translucent sidebar.
+- [x] Stack the appearance controls vertically at the mobile top-right.
+- [x] Verify portrait layouts, sidebar states, and 3D interactions without publishing.
