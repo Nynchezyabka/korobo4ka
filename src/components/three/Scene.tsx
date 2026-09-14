@@ -44,15 +44,16 @@ function CameraRig({ stacked }: { stacked: boolean }) {
         0.58,
         0.76,
       );
-      const stackHeight = 2.82;
+      // Дополнительный запас учитывает крышки, поворот и перспективу ближней грани.
+      const framedHeight = 3.4;
       const fov = THREE.MathUtils.degToRad((camera as THREE.PerspectiveCamera).fov);
       const distance = THREE.MathUtils.clamp(
-        stackHeight / (2 * Math.tan(fov / 2) * usableFraction),
-        4.9,
-        6.4,
+        framedHeight / (2 * Math.tan(fov / 2) * usableFraction),
+        6.2,
+        7.2,
       );
       pos.set(0, 1.48, distance);
-      look.set(0, 0.91, 0);
+      look.set(0, 1.08, 0);
     } else {
       pos.set(0, 2.2, 4.0);
       look.set(0, 0.1, 0);
@@ -121,7 +122,7 @@ export function Scene({ tasks, stacked, onRandom, onViewTasks, onAdd, onPaper, f
         <shadowMaterial opacity={0.22} />
       </mesh>
 
-      <group position={stacked ? [0, -0.22, 0] : [0, 0, 0]} rotation-y={stacked ? -0.16 : 0}>
+      <group position={stacked ? [0, -0.45, 0] : [0, 0, 0]} rotation-y={stacked ? -0.16 : 0}>
         {BOXES.map((def, i) => {
           const boxTasks = visibleTasks.filter((t) => def.categories.includes(t.category));
           const position = boxPosition(i, stacked);

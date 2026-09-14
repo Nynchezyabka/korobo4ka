@@ -125,10 +125,10 @@ body {
 
 /* В 3D-режиме боковая панель полупрозрачная, чтобы не закрывала сцену */
 .three-mode aside {
-  background: rgba(255, 248, 240, 0.24);
+  background: rgba(255, 248, 240, 0.18);
   border-right-color: rgba(120, 100, 80, 0.18);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   box-shadow: 0 0 24px rgba(60, 45, 30, 0.08);
 }
 

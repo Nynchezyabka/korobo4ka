@@ -44,25 +44,27 @@ export function ThreeDashboard({ onRandomTask, onViewTasks }: Props) {
       />
       <div className="three-home-shade absolute inset-0 pointer-events-none" />
 
-      <Canvas
-        className="three-home-canvas absolute inset-y-0 left-12 right-0"
-        shadows
-        dpr={[1, 1.6]}
-        gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
-        camera={{ position: [0, 1.7, 4.2], fov: 42 }}
-      >
-        <Suspense fallback={null}>
-          <Scene
-            tasks={visibleTasks}
-            stacked={stacked}
-            onRandom={(box) => onRandomTask(box.categories)}
-            onViewTasks={(box) => onViewTasks(box.categories)}
-            onAdd={(box) => openAddModal(box.categories[0], box.categories)}
-            onPaper={openPaper}
-            fontsReady={fontsReady}
-          />
-        </Suspense>
-      </Canvas>
+      <div className="absolute inset-y-0 left-12 right-0">
+        <Canvas
+          className="absolute inset-0"
+          shadows
+          dpr={[1, 1.6]}
+          gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
+          camera={{ position: [0, 1.7, 4.2], fov: 42 }}
+        >
+          <Suspense fallback={null}>
+            <Scene
+              tasks={visibleTasks}
+              stacked={stacked}
+              onRandom={(box) => onRandomTask(box.categories)}
+              onViewTasks={(box) => onViewTasks(box.categories)}
+              onAdd={(box) => openAddModal(box.categories[0], box.categories)}
+              onPaper={openPaper}
+              fontsReady={fontsReady}
+            />
+          </Suspense>
+        </Canvas>
+      </div>
     </main>
   );
 }
