@@ -1,6 +1,9 @@
-import { Box, Sun, Moon } from "lucide-react";
+import { Box, Sun, Moon, MoonStar } from "lucide-react";
 
-export type VisualMode = "light" | "dark" | "3d";
+export type VisualMode = "light" | "dark" | "3d" | "3d-dark";
+
+export const is3dMode = (mode: VisualMode) => mode === "3d" || mode === "3d-dark";
+export const isDarkMode = (mode: VisualMode) => mode === "dark" || mode === "3d-dark";
 
 interface Props {
   mode: VisualMode;
@@ -12,6 +15,7 @@ export function ThemeToggle({ mode, onChange }: Props) {
     { mode: "light" as const, label: "Светлая тема", icon: <Sun size={16} /> },
     { mode: "dark" as const, label: "Тёмная тема", icon: <Moon size={16} /> },
     { mode: "3d" as const, label: "3D-режим", icon: <Box size={16} /> },
+    { mode: "3d-dark" as const, label: "3D тёмный", icon: <MoonStar size={16} /> },
   ];
   const currentIndex = options.findIndex((option) => option.mode === mode);
   const current = options[currentIndex] ?? options[0];
