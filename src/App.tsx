@@ -9,7 +9,7 @@ import { BraindumpPanel } from "@/components/BraindumpPanel";
 
 import { TimerScreen } from "@/components/TimerScreen";
 import { AddTaskModal } from "@/components/AddTaskModal";
-import { ThemeToggle, VisualMode } from "@/components/ThemeToggle";
+import { ThemeToggle, VisualMode, is3dMode, isDarkMode } from "@/components/ThemeToggle";
 import { ThreeDashboard } from "@/components/ThreeDashboard";
 import { InfoPage } from "@/components/InfoPage";
 import { TemplatesPanel } from "@/components/TemplatesPanel";
@@ -400,7 +400,7 @@ export default function App() {
       case "info":
         return <InfoPage />;
       default:
-        return visualMode === "3d"
+        return is3dMode(visualMode)
           ? <ThreeDashboard onRandomTask={handleRandomTask} onViewTasks={handleViewTasks} />
           : <Dashboard onRandomTask={handleRandomTask} onViewTasks={handleViewTasks} />;
     }
@@ -415,9 +415,9 @@ export default function App() {
       />
 
       <div className="ml-12 transition-all duration-300">
-        <div className={visualMode === "3d" && currentPage === "home" ? "relative z-10 mx-auto p-2.5" : "max-w-4xl mx-auto p-2.5 pb-32"}>
+        <div className={is3dMode(visualMode) && currentPage === "home" ? "relative z-10 mx-auto p-2.5" : "max-w-4xl mx-auto p-2.5 pb-32"}>
           {/* Header */}
-          <header className={visualMode === "3d" && currentPage === "home" ? "three-header pointer-events-none relative z-20 text-center pt-1" : "text-center mb-4 pt-1 relative"}>
+          <header className={is3dMode(visualMode) && currentPage === "home" ? "three-header pointer-events-none relative z-20 text-center pt-1" : "text-center mb-4 pt-1 relative"}>
             <div className="theme-toggle-wrap absolute right-0 top-1 flex items-center gap-1.5 z-10">
               <div className="pointer-events-auto"><ThemeToggle mode={visualMode} onChange={setVisualMode} /></div>
             </div>
