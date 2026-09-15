@@ -1,64 +1,65 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useApp } from "@/App";
 import { parseVoice } from "@/lib/voiceParse";
-import { Mic, Plus, Clock, Repeat, X } from "lucide-react";
+import { Mic, Plus, CalendarClock, Repeat, X } from "lucide-react";
 import { CategoryId, RecurrenceType, RECURRENCE_LABELS, WEEKDAYS } from "@/types";
+import { DateTimePicker, pad2 } from "@/components/DateTimePicker";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-
 
 interface Props {
   inTimer?: boolean;
 }
 
-const TIME_PRESETS = ["09:00", "12:00", "15:00", "18:00", "21:00"];
+function nextHour(): number {
+  const d = new Date();
+  d.setMinutes(0, 0, 0);
+  d.setHours(d.getHours() + 1);
+  return d.getTime();
+}
+
+function formatWhen(ts: number): string {
+  const d = new Date(ts);
+  return `${d.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
 
 export function QuickAddBar({ inTimer }: Props) {
-  const { addQuickTask, templates, saveTemplates, tasks } = useApp() as any;
+  const { addQuickTask, templates, saveTemplates } = useApp() as any;
   const [text, setText] = useState("");
-  const [time, setTime] = useState<string>(""); // "HH:MM" today
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [scheduled, setScheduled] = useState<number | null>(null);
+  const [showWhen, setShowWhen] = useState(false);
   const [showRecur, setShowRecur] = useState(false);
   const [recur, setRecur] = useState<RecurrenceType | null>(null);
   const [recurDay, setRecurDay] = useState(1);
   const [listening, setListening] = useState(false);
-  const [pendingTimePrompt, setPendingTimePrompt] = useState<string | null>(null);
+  const [pendingVoiceText, setPendingVoiceText] = useState<string | null>(null);
+  const [pendingWhen, setPendingWhen] = useState<number | null>(null);
   const recogRef = useRef<any>(null);
-
-  const computeScheduled = (): number | undefined => {
-    if (!time) return undefined;
-    const [h, m] = time.split(":").map(Number);
-    const d = new Date();
-    d.setHours(h, m, 0, 0);
-    if (d.getTime() < Date.now() - 60_000) d.setDate(d.getDate() + 1);
-    return d.getTime();
-  };
 
   const submit = () => {
     if (!text.trim()) return;
-    const scheduled = computeScheduled();
     if (recur) {
-      // create a recurring template + first instance
-      const hour = time ? parseInt(time.split(":")[0], 10) : 9;
+      const base = scheduled ? new Date(scheduled) : new Date();
       const startId = (templates as any[]).reduce((m, t) => Math.max(m, t.id), 0) + 1;
       const tpl = {
         id: startId,
         text: text.trim(),
         category: 0 as CategoryId,
         recurrence: recur,
-        recurrenceHour: hour,
+        recurrenceHour: base.getHours(),
+        recurrenceMinute: base.getMinutes(),
         recurrenceDay: recur === "daily" ? undefined : recurDay,
         active: true,
       };
       saveTemplates([...(templates as any[]), tpl]);
-      addQuickTask(text.trim(), scheduled, 0);
+      addQuickTask(text.trim(), scheduled ?? undefined, 0);
       toast.success("Создан повторяющийся шаблон");
     } else {
-      addQuickTask(text.trim(), scheduled, 0);
+      addQuickTask(text.trim(), scheduled ?? undefined, 0);
     }
     setText("");
-    setTime("");
-    setShowTimePicker(false);
+    setScheduled(null);
+    setShowWhen(false);
     setShowRecur(false);
     setRecur(null);
   };
@@ -80,14 +81,14 @@ export function QuickAddBar({ inTimer }: Props) {
     r.onresult = (e: any) => {
       const transcript = e.results[0][0].transcript;
       const parsed = parseVoice(transcript);
-      if (parsed.scheduledFor) {
+      if (parsed.scheduledFor && parsed.timeKnown) {
         addQuickTask(parsed.text, parsed.scheduledFor, 0);
-        const d = new Date(parsed.scheduledFor);
-        toast.success(`«${parsed.text}» — ${d.toLocaleDateString("ru-RU")} ${d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}`);
+        toast.success(`«${parsed.text}» — ${formatWhen(parsed.scheduledFor)}`);
       } else {
-        // ask for time
+        // время не распознали — уточняем календарём и часами
         setText(parsed.text);
-        setPendingTimePrompt(parsed.text);
+        setPendingVoiceText(parsed.text);
+        setPendingWhen(parsed.scheduledFor ?? nextHour());
       }
     };
     r.onerror = () => { setListening(false); toast.error("Не удалось распознать"); };
@@ -97,19 +98,14 @@ export function QuickAddBar({ inTimer }: Props) {
     r.start();
   };
 
-  const acceptPendingTime = (timeStr: string | null) => {
-    const txt = pendingTimePrompt || text;
-    if (!txt.trim()) { setPendingTimePrompt(null); return; }
-    let scheduled: number | undefined;
-    if (timeStr) {
-      const [h, m] = timeStr.split(":").map(Number);
-      const d = new Date();
-      d.setHours(h, m, 0, 0);
-      if (d.getTime() < Date.now() - 60_000) d.setDate(d.getDate() + 1);
-      scheduled = d.getTime();
-    }
-    addQuickTask(txt, scheduled, 0);
-    setPendingTimePrompt(null);
+  const acceptPending = (withTime: boolean) => {
+    const txt = (pendingVoiceText || text).trim();
+    if (!txt) { setPendingVoiceText(null); return; }
+    const when = withTime ? pendingWhen ?? undefined : undefined;
+    addQuickTask(txt, when, 0);
+    if (when) toast.success(`«${txt}» — ${formatWhen(when)}`);
+    setPendingVoiceText(null);
+    setPendingWhen(null);
     setText("");
   };
 
@@ -119,36 +115,30 @@ export function QuickAddBar({ inTimer }: Props) {
 
   return (
     <>
-      {/* Time-prompt popup after voice */}
-      {pendingTimePrompt !== null && (
-        <div className="fixed inset-0 z-[10200] flex items-end sm:items-center justify-center bg-black/40 p-4" onClick={() => acceptPendingTime(null)}>
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-xl bg-background p-4 shadow-xl border border-border">
-            <h4 className="font-display text-lg mb-1">Уточните время</h4>
-            <p className="text-sm text-muted-foreground mb-3 truncate">«{pendingTimePrompt}»</p>
-            <div className="grid grid-cols-3 gap-2 mb-2">
-              {TIME_PRESETS.map((t) => (
-                <button key={t} onClick={() => acceptPendingTime(t)} className="py-2 rounded-md border border-border bg-muted/40 text-sm font-medium hover:bg-muted">{t}</button>
-              ))}
+      {/* Уточнение даты и времени после голосового ввода */}
+      {pendingVoiceText !== null && (
+        <div className="fixed inset-0 z-[10200] flex items-end sm:items-center justify-center bg-black/40 p-4 overflow-y-auto" onClick={() => acceptPending(false)}>
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-xl bg-background p-4 shadow-xl border border-border">
+            <h4 className="font-display text-lg mb-1">Когда напомнить?</h4>
+            <p className="text-sm text-muted-foreground mb-3 truncate">«{pendingVoiceText}»</p>
+            <DateTimePicker value={pendingWhen} onChange={setPendingWhen} title="Дата и время" clearable={false} />
+            <div className="flex gap-2 mt-3">
+              <button onClick={() => acceptPending(true)} className="flex-1 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium">Сохранить</button>
+              <button onClick={() => acceptPending(false)} className="px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-muted">Без времени</button>
             </div>
-            <button onClick={() => acceptPendingTime(null)} className="w-full py-2 mt-1 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted">Без времени</button>
           </div>
         </div>
       )}
 
       <div className={containerCls}>
-        {/* Time picker dropdown */}
-        {showTimePicker && (
-          <div className="mb-2 rounded-xl bg-background border border-border shadow-lg p-2 flex flex-wrap gap-1.5">
-            {TIME_PRESETS.map((t) => (
-              <button key={t} onClick={() => { setTime(t); setShowTimePicker(false); }} className={cn("px-2.5 py-1 rounded-md text-xs border", time === t ? "bg-primary text-primary-foreground border-primary" : "border-border bg-muted/40")}>{t}</button>
-            ))}
-            <input
-              type="time"
-              value={time || ""}
-              onChange={(e) => setTime(e.target.value)}
-              className="px-2 py-1 rounded-md border border-border bg-muted/40 text-xs"
+        {/* Дата и время */}
+        {showWhen && (
+          <div className="mb-2 max-h-[70vh] overflow-y-auto rounded-xl bg-background border border-border shadow-lg p-2">
+            <DateTimePicker
+              value={scheduled}
+              onChange={(v) => setScheduled(v)}
+              title="Когда напомнить"
             />
-            {time && <button onClick={() => { setTime(""); }} className="px-2 py-1 rounded-md text-xs text-muted-foreground hover:bg-muted"><X size={12} /></button>}
           </div>
         )}
 
@@ -169,6 +159,7 @@ export function QuickAddBar({ inTimer }: Props) {
             {recur === "monthly" && (
               <input type="number" min={1} max={31} value={recurDay} onChange={(e) => setRecurDay(parseInt(e.target.value) || 1)} className="text-xs px-2 py-1 rounded border border-border bg-muted/40 w-full" />
             )}
+            <p className="text-[11px] text-muted-foreground mt-1.5">Время повтора берётся из «Дата и время».</p>
           </div>
         )}
 
@@ -182,14 +173,15 @@ export function QuickAddBar({ inTimer }: Props) {
             className="flex-1 min-w-0 px-2 sm:px-3 py-2 rounded-xl bg-transparent text-base sm:text-sm outline-none placeholder:text-muted-foreground/60"
           />
           <button
-            onClick={() => { setShowTimePicker((v) => !v); setShowRecur(false); }}
-            className={cn("flex items-center gap-1 px-2 h-10 sm:h-9 rounded-md text-xs border shrink-0", time ? "bg-primary/10 border-primary/30 text-primary" : "border-border text-muted-foreground hover:bg-muted")}
-            title="Время"
+            onClick={() => { setShowWhen((v) => !v); setShowRecur(false); }}
+            className={cn("flex items-center gap-1 px-2 h-10 sm:h-9 rounded-md text-xs border shrink-0", scheduled ? "bg-primary/10 border-primary/30 text-primary" : "border-border text-muted-foreground hover:bg-muted")}
+            title="Дата и время"
           >
-            <Clock size={16} /> <span className="hidden sm:inline">{time || "время"}</span>{time && <span className="sm:hidden">{time}</span>}
+            <CalendarClock size={16} />
+            {scheduled && <span className="tabular-nums">{formatWhen(scheduled)}</span>}
           </button>
           <button
-            onClick={() => { setShowRecur((v) => !v); setShowTimePicker(false); }}
+            onClick={() => { setShowRecur((v) => !v); setShowWhen(false); }}
             className={cn("flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-md border shrink-0", recur ? "bg-primary/10 border-primary/30 text-primary" : "border-border text-muted-foreground hover:bg-muted")}
             title="Повтор"
           >

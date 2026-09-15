@@ -2,12 +2,19 @@ import { useState, useRef, useEffect } from "react";
 import { CategoryId, CATEGORIES, DEFAULT_SUBCATEGORIES, RecurrenceType, RECURRENCE_LABELS, WEEKDAYS } from "@/types";
 import { getCustomSubcategoriesSync, saveCustomSubcategories } from "@/lib/taskStore";
 import { cn } from "@/lib/utils";
-import { X, Plus, Repeat } from "lucide-react";
+import { X, Plus, Repeat, CalendarClock } from "lucide-react";
+import { DateTimePicker, ClockPicker, pad2 } from "@/components/DateTimePicker";
 
 interface Props {
   defaultCategory: CategoryId;
   restrictCategories: CategoryId[] | null;
-  onAdd: (text: string, category: CategoryId, subcategory?: string, recurrence?: { type: "daily"|"weekly"|"monthly"; hour: number; day?: number }) => void;
+  onAdd: (
+    text: string,
+    category: CategoryId,
+    subcategory?: string,
+    recurrence?: { type: "daily"|"weekly"|"monthly"; hour: number; minute?: number; day?: number },
+    scheduledFor?: number | null
+  ) => void;
   onClose: () => void;
 }
 
@@ -21,7 +28,11 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
   const [recurEnabled, setRecurEnabled] = useState(false);
   const [recurType, setRecurType] = useState<RecurrenceType>("daily");
   const [recurHour, setRecurHour] = useState(9);
+  const [recurMinute, setRecurMinute] = useState(0);
   const [recurDay, setRecurDay] = useState(1);
+  const [showClock, setShowClock] = useState(false);
+  const [whenEnabled, setWhenEnabled] = useState(false);
+  const [scheduledFor, setScheduledFor] = useState<number | null>(null);
   const textRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -78,9 +89,9 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
   const handleSubmit = () => {
     if (!text.trim()) return;
     const recurrence = recurEnabled
-      ? { type: recurType, hour: recurHour, day: recurType === "daily" ? undefined : recurDay }
+      ? { type: recurType, hour: recurHour, minute: recurMinute, day: recurType === "daily" ? undefined : recurDay }
       : undefined;
-    onAdd(text, category, subcategory || undefined, recurrence);
+    onAdd(text, category, subcategory || undefined, recurrence, whenEnabled ? scheduledFor : null);
     setText("");
     textRef.current?.focus();
   };
@@ -189,6 +200,31 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
           </div>
         )}
 
+        {/* Дата и время (опционально) */}
+        <div className="mt-3 rounded-lg bg-white/40 border border-white/60 p-2.5">
+          <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+            <input
+              type="checkbox"
+              checked={whenEnabled}
+              onChange={(e) => {
+                setWhenEnabled(e.target.checked);
+                if (e.target.checked && scheduledFor === null) {
+                  const d = new Date();
+                  d.setMinutes(0, 0, 0);
+                  d.setHours(d.getHours() + 1);
+                  setScheduledFor(d.getTime());
+                }
+              }}
+            />
+            <CalendarClock size={14} /> Дата и время
+          </label>
+          {whenEnabled && (
+            <div className="mt-2">
+              <DateTimePicker value={scheduledFor} onChange={setScheduledFor} title="Когда напомнить" clearable={false} />
+            </div>
+          )}
+        </div>
+
         {/* Recurrence block */}
         <div className="mt-3 rounded-lg bg-white/40 border border-white/60 p-2.5">
           <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
@@ -215,9 +251,23 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
                 <input type="number" min={1} max={31} value={recurDay} onChange={(e) => setRecurDay(Math.max(1, Math.min(31, parseInt(e.target.value) || 1)))} className="w-14 text-xs px-2 py-1 rounded border border-border bg-white/70 text-center" />
               )}
               <span className="text-xs">в</span>
-              <input type="number" min={0} max={23} value={recurHour} onChange={(e) => setRecurHour(Math.max(0, Math.min(23, parseInt(e.target.value) || 0)))} className="w-12 text-xs px-2 py-1 rounded border border-border bg-white/70 text-center" />
-              <span className="text-xs">:00</span>
-              <span className="text-xs text-foreground/60 basis-full">Шаблон автоматически появится в разделе «Шаблоны».</span>
+              <button
+                onClick={() => setShowClock((v) => !v)}
+                className="text-xs px-2.5 py-1 rounded-full border border-border bg-white/70 tabular-nums font-medium"
+              >
+                {pad2(recurHour)}:{pad2(recurMinute)}
+              </button>
+              {showClock && (
+                <div className="basis-full flex justify-center py-2">
+                  <ClockPicker
+                    hour={recurHour}
+                    minute={recurMinute}
+                    onChange={(h, m) => { setRecurHour(h); setRecurMinute(m); }}
+                    compact
+                  />
+                </div>
+              )}
+              <span className="text-xs text-foreground/60 basis-full">Шаблон автоматически появится в разделе «Повторяющиеся задачи».</span>
             </div>
           )}
         </div>

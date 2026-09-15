@@ -4,6 +4,7 @@ import { useApp } from "@/App";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { ChevronLeft, ChevronRight, Plus, Clock, Undo2, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ClockPicker, pad2 } from "@/components/DateTimePicker";
 
 const MONTH_NAMES = [
   "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
@@ -55,6 +56,7 @@ export function HistoryModal() {
   const [manualCategory, setManualCategory] = useState<CategoryId>(1);
   const [manualDuration, setManualDuration] = useState(15);
   const [manualHour, setManualHour] = useState(12);
+  const [showManualClock, setShowManualClock] = useState(false);
   const [manualMinute, setManualMinute] = useState(0);
 
   // #1: Show tasks that are completed OR have timeSpent > 0
@@ -389,25 +391,13 @@ export function HistoryModal() {
               <span className="text-xs sm:text-sm text-muted-foreground">мин</span>
             </div>
           )}
-          <div className="flex items-center gap-0.5">
-            <input
-              type="number"
-              min={0}
-              max={23}
-              value={manualHour}
-              onChange={(e) => setManualHour(Math.min(23, Math.max(0, parseInt(e.target.value) || 0)))}
-              className="w-10 rounded-md border border-border bg-muted/30 px-1 py-1.5 text-xs sm:text-sm text-center"
-            />
-            <span className="text-xs sm:text-sm">:</span>
-            <input
-              type="number"
-              min={0}
-              max={59}
-              value={manualMinute}
-              onChange={(e) => setManualMinute(Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))}
-              className="w-10 rounded-md border border-border bg-muted/30 px-1 py-1.5 text-xs sm:text-sm text-center"
-            />
-          </div>
+          <button
+            onClick={() => setShowManualClock((v) => !v)}
+            className="rounded-md border border-border bg-muted/30 px-2.5 py-1.5 text-xs sm:text-sm tabular-nums font-medium"
+            title="Выбрать время"
+          >
+            🕐 {pad2(manualHour)}:{pad2(manualMinute)}
+          </button>
           <button
             onClick={handleAddManual}
             disabled={!manualText.trim()}
@@ -415,6 +405,16 @@ export function HistoryModal() {
           >
             <Plus size={12} /> Добавить
           </button>
+          {showManualClock && (
+            <div className="basis-full flex justify-center py-2">
+              <ClockPicker
+                hour={manualHour}
+                minute={manualMinute}
+                onChange={(h, m) => { setManualHour(h); setManualMinute(m); }}
+                compact
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

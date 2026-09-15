@@ -6,7 +6,7 @@ import { Task, TaskTemplate } from "@/types";
 export function nextOccurrence(tpl: TaskTemplate, from: Date = new Date()): number {
   const candidate = new Date(from);
   candidate.setSeconds(0, 0);
-  candidate.setMinutes(0);
+  candidate.setMinutes(tpl.recurrenceMinute ?? 0);
   candidate.setHours(tpl.recurrenceHour);
 
   const interval = Math.max(1, tpl.recurrenceInterval ?? 1);
@@ -79,7 +79,7 @@ function startOfWeek(d: Date): number {
 export function describeRecurrence(tpl: TaskTemplate): string {
   const WD = ["воскресеньям", "понедельникам", "вторникам", "средам", "четвергам", "пятницам", "субботам"];
   const interval = Math.max(1, tpl.recurrenceInterval ?? 1);
-  const hour = `${String(tpl.recurrenceHour).padStart(2, "0")}:00`;
+  const hour = `${String(tpl.recurrenceHour).padStart(2, "0")}:${String(tpl.recurrenceMinute ?? 0).padStart(2, "0")}`;
   let base: string;
   if (tpl.recurrence === "daily") {
     base = interval === 1 ? "Каждый день" : `Каждые ${interval} дн.`;

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { NextMinuteSheet } from "@/components/NextMinuteSheet";
 import { setTaskReminder, clearTaskReminder, hasActiveReminder } from "@/lib/notifications";
+import { DateTimePicker } from "@/components/DateTimePicker";
 import {
   Play, Eye, EyeOff, Trash2, Check, Undo2, FolderOpen, Plus, Pencil, GripVertical, MoreVertical,
   Bell, BellRing, BellOff, Lightbulb, X, CalendarClock,
@@ -380,8 +381,7 @@ function TaskCard({
   const [showDropdown, setShowDropdown] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const [showReminder, setShowReminder] = useState(false);
-  const [reminderDate, setReminderDate] = useState<string>("");
-  const [reminderTime, setReminderTime] = useState<string>("12:00");
+  const [reminderTs, setReminderTs] = useState<number | null>(null);
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(task.text);
   const [editingSub, setEditingSub] = useState(false);
@@ -394,11 +394,8 @@ function TaskCard({
   const hasReminder = Boolean(task.scheduledFor && task.scheduledFor > Date.now());
 
   const applyReminder = () => {
-    if (!reminderDate || !reminderTime) return;
-    const [h, m] = reminderTime.split(":").map(Number);
-    const d = new Date(reminderDate);
-    d.setHours(h, m, 0, 0);
-    onSetReminder(d.getTime());
+    if (!reminderTs) return;
+    onSetReminder(reminderTs);
     setShowReminder(false);
   };
 
@@ -409,8 +406,8 @@ function TaskCard({
 
   const openReminder = () => {
     const initial = task.scheduledFor && task.scheduledFor > Date.now() ? new Date(task.scheduledFor) : new Date();
-    setReminderDate(initial.toISOString().split("T")[0]);
-    setReminderTime(`${String(initial.getHours()).padStart(2, "0")}:${String(initial.getMinutes()).padStart(2, "0")}`);
+    initial.setSeconds(0, 0);
+    setReminderTs(initial.getTime());
     setShowReminder(true);
     setShowActions(false);
   };
@@ -694,7 +691,7 @@ function TaskCard({
       {showReminder && (
         <div
           ref={reminderRef}
-          className="absolute z-[10300] top-8 right-0 bg-background rounded-lg shadow-lg p-3 min-w-[220px] border border-border animate-scale-in"
+          className="absolute z-[10300] top-8 right-0 bg-background rounded-lg shadow-lg p-3 w-[290px] max-w-[calc(100vw-2rem)] max-h-[70vh] overflow-y-auto border border-border animate-scale-in"
         >
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm font-display flex items-center gap-1.5">
@@ -705,18 +702,7 @@ function TaskCard({
             </button>
           </div>
           <div className="flex flex-col gap-2">
-            <input
-              type="date"
-              value={reminderDate}
-              onChange={(e) => setReminderDate(e.target.value)}
-              className="w-full text-xs sm:text-sm px-2 py-1.5 rounded border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-            <input
-              type="time"
-              value={reminderTime}
-              onChange={(e) => setReminderTime(e.target.value)}
-              className="w-full text-xs sm:text-sm px-2 py-1.5 rounded border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary"
-            />
+            <DateTimePicker value={reminderTs} onChange={setReminderTs} clearable={false} compact />
             <div className="flex gap-2 mt-1">
               {hasReminder && (
                 <button

@@ -235,7 +235,7 @@ export default function App() {
     setAddModalOpen(true);
   }, []);
 
-  const handleAddTask = useCallback((text: string, category: CategoryId, subcategory?: string, recurrence?: { type: "daily"|"weekly"|"monthly"; hour: number; day?: number }) => {
+  const handleAddTask = useCallback((text: string, category: CategoryId, subcategory?: string, recurrence?: { type: "daily"|"weekly"|"monthly"; hour: number; minute?: number; day?: number }, scheduledFor?: number | null) => {
     const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
     if (lines.length === 0) return;
 
@@ -250,6 +250,7 @@ export default function App() {
           subcategory,
           recurrence: recurrence.type,
           recurrenceHour: recurrence.hour,
+          recurrenceMinute: recurrence.minute ?? 0,
           recurrenceDay: recurrence.type === "daily" ? undefined : recurrence.day,
           active: true,
         }));
@@ -279,6 +280,7 @@ export default function App() {
           statusChangedAt: Date.now(),
         };
         if (subcategory) t.subcategory = subcategory;
+        if (scheduledFor) t.scheduledFor = scheduledFor;
         return t;
       });
       return [...prev, ...newTasks];
