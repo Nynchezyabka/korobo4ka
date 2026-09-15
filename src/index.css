@@ -139,6 +139,12 @@ body {
   color: hsl(20 22% 22%);
 }
 
+/* Полупрозрачная тёмная подложка под полем ввода — чтобы светлая надпись читалась */
+.three-mode .quick-add-bar input {
+  background: rgb(60 40 25 / 0.22);
+  border-radius: 0.75rem;
+}
+
 /* Значки и надписи кнопок нижней панели — как на боковой панели */
 .three-mode .quick-add-bar button:not(.bg-primary) {
   color: hsl(20 22% 22%);
