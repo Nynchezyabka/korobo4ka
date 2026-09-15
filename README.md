@@ -5,7 +5,7 @@
 **Планировщик для тех, кто устал решать, с чего начать.**
 Ссыпьте дела в коробочку, вытяните одно наугад, включите таймер. Всё — на вашем телефоне, без регистрации и без интернета.
 
-[![Версия 6.2](https://img.shields.io/badge/версия-6.2-FFD54F?style=flat-square&labelColor=5d4037)](#-что-нового)
+[![Версия 6.3](https://img.shields.io/badge/версия-6.3-FFD54F?style=flat-square&labelColor=5d4037)](#-что-нового)
 [![PWA](https://img.shields.io/badge/PWA-ставится_на_телефон-64B5F6?style=flat-square&labelColor=5d4037)](#-установить-на-телефон)
 [![Офлайн](https://img.shields.io/badge/работает-офлайн-81C784?style=flat-square&labelColor=5d4037)](#-приватность)
 [![Без регистрации](https://img.shields.io/badge/без-регистрации-9575CD?style=flat-square&labelColor=5d4037)](#-приватность)
