@@ -139,6 +139,21 @@ body {
   color: hsl(20 22% 22%);
 }
 
+/* Значки и надписи кнопок нижней панели — как на боковой панели */
+.three-mode .quick-add-bar button:not(.bg-primary) {
+  color: hsl(20 22% 22%);
+}
+
+.three-mode .quick-add-bar button {
+  border-color: rgba(120, 100, 80, 0.4);
+}
+
+.three-mode .quick-add-bar button.border-red-400 {
+  color: #b91c1c;
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(220, 80, 70, 0.6);
+}
+
 .three-mode aside button:hover,
 .three-mode .quick-add-bar button:hover {
   background: rgba(255, 255, 255, 0.55);
