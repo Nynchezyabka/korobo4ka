@@ -690,7 +690,7 @@ function TaskCard({
       {showReminder && (
         <div
           ref={reminderRef}
-          className="absolute z-[10300] top-8 right-0 bg-background rounded-lg shadow-lg p-3 min-w-[220px] border border-border animate-scale-in"
+          className="absolute z-[10300] top-8 right-0 bg-background rounded-lg shadow-lg p-3 w-[290px] max-w-[calc(100vw-2rem)] max-h-[70vh] overflow-y-auto border border-border animate-scale-in"
         >
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm font-display flex items-center gap-1.5">
@@ -701,18 +701,7 @@ function TaskCard({
             </button>
           </div>
           <div className="flex flex-col gap-2">
-            <input
-              type="date"
-              value={reminderDate}
-              onChange={(e) => setReminderDate(e.target.value)}
-              className="w-full text-xs sm:text-sm px-2 py-1.5 rounded border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-            <input
-              type="time"
-              value={reminderTime}
-              onChange={(e) => setReminderTime(e.target.value)}
-              className="w-full text-xs sm:text-sm px-2 py-1.5 rounded border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary"
-            />
+            <DateTimePicker value={reminderTs} onChange={setReminderTs} clearable={false} compact />
             <div className="flex gap-2 mt-1">
               {hasReminder && (
                 <button
