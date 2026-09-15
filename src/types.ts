@@ -138,6 +138,8 @@ export interface TaskTemplate {
   until?: string;
   /** Hour to create task (0-23) */
   recurrenceHour: number;
+  /** Minute to create task (0-59) */
+  recurrenceMinute?: number;
   active: boolean;
   lastCreated?: string; // ISO date string YYYY-MM-DD
 }
