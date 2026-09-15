@@ -4,6 +4,7 @@ import { useApp } from "@/App";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { ChevronLeft, ChevronRight, Plus, Clock, Undo2, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ClockPicker, pad2 } from "@/components/DateTimePicker";
 
 const MONTH_NAMES = [
   "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
@@ -55,6 +56,7 @@ export function HistoryModal() {
   const [manualCategory, setManualCategory] = useState<CategoryId>(1);
   const [manualDuration, setManualDuration] = useState(15);
   const [manualHour, setManualHour] = useState(12);
+  const [showManualClock, setShowManualClock] = useState(false);
   const [manualMinute, setManualMinute] = useState(0);
 
   // #1: Show tasks that are completed OR have timeSpent > 0
