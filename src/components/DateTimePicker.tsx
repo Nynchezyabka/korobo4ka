@@ -41,8 +41,6 @@ export function ClockPicker({ hour, minute, onChange, compact }: ClockProps) {
 
   const pick = (value: number) => {
     if (step === "hour") {
-      onChange(pm ? (value === 0 ? 12 : value + 12 > 23 ? value : value + 12) : value, minute);
-      // нормализация: 12-часовой круг + признак PM
       const h = pm ? (value % 12) + 12 : value % 12;
       onChange(h, minute);
       setStep("minute");
