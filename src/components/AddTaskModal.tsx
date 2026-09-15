@@ -2,12 +2,19 @@ import { useState, useRef, useEffect } from "react";
 import { CategoryId, CATEGORIES, DEFAULT_SUBCATEGORIES, RecurrenceType, RECURRENCE_LABELS, WEEKDAYS } from "@/types";
 import { getCustomSubcategoriesSync, saveCustomSubcategories } from "@/lib/taskStore";
 import { cn } from "@/lib/utils";
-import { X, Plus, Repeat } from "lucide-react";
+import { X, Plus, Repeat, CalendarClock } from "lucide-react";
+import { DateTimePicker, ClockPicker, pad2 } from "@/components/DateTimePicker";
 
 interface Props {
   defaultCategory: CategoryId;
   restrictCategories: CategoryId[] | null;
-  onAdd: (text: string, category: CategoryId, subcategory?: string, recurrence?: { type: "daily"|"weekly"|"monthly"; hour: number; day?: number }) => void;
+  onAdd: (
+    text: string,
+    category: CategoryId,
+    subcategory?: string,
+    recurrence?: { type: "daily"|"weekly"|"monthly"; hour: number; minute?: number; day?: number },
+    scheduledFor?: number | null
+  ) => void;
   onClose: () => void;
 }
 
