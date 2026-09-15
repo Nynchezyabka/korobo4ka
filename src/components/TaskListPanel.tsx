@@ -380,8 +380,7 @@ function TaskCard({
   const [showDropdown, setShowDropdown] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const [showReminder, setShowReminder] = useState(false);
-  const [reminderDate, setReminderDate] = useState<string>("");
-  const [reminderTime, setReminderTime] = useState<string>("12:00");
+  const [reminderTs, setReminderTs] = useState<number | null>(null);
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(task.text);
   const [editingSub, setEditingSub] = useState(false);
