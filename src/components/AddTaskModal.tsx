@@ -28,7 +28,11 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
   const [recurEnabled, setRecurEnabled] = useState(false);
   const [recurType, setRecurType] = useState<RecurrenceType>("daily");
   const [recurHour, setRecurHour] = useState(9);
+  const [recurMinute, setRecurMinute] = useState(0);
   const [recurDay, setRecurDay] = useState(1);
+  const [showClock, setShowClock] = useState(false);
+  const [whenEnabled, setWhenEnabled] = useState(false);
+  const [scheduledFor, setScheduledFor] = useState<number | null>(null);
   const textRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -85,9 +89,9 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
   const handleSubmit = () => {
     if (!text.trim()) return;
     const recurrence = recurEnabled
-      ? { type: recurType, hour: recurHour, day: recurType === "daily" ? undefined : recurDay }
+      ? { type: recurType, hour: recurHour, minute: recurMinute, day: recurType === "daily" ? undefined : recurDay }
       : undefined;
-    onAdd(text, category, subcategory || undefined, recurrence);
+    onAdd(text, category, subcategory || undefined, recurrence, whenEnabled ? scheduledFor : null);
     setText("");
     textRef.current?.focus();
   };
