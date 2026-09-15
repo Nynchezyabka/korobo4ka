@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { NextMinuteSheet } from "@/components/NextMinuteSheet";
 import { setTaskReminder, clearTaskReminder, hasActiveReminder } from "@/lib/notifications";
+import { DateTimePicker } from "@/components/DateTimePicker";
 import {
   Play, Eye, EyeOff, Trash2, Check, Undo2, FolderOpen, Plus, Pencil, GripVertical, MoreVertical,
   Bell, BellRing, BellOff, Lightbulb, X, CalendarClock,
