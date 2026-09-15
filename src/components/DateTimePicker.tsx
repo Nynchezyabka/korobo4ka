@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, CalendarDays, Clock, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const MONTH_NAMES = [
@@ -246,10 +246,6 @@ export function DateTimePicker({ value, onChange, title = "Когда", clearabl
     d.setDate(d.getDate() + offset);
     setDay(dateKey(d));
   };
-
-  const todayKey = dateKey(new Date());
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
 
   const todayKey = dateKey(new Date());
   const tomorrow = new Date();
