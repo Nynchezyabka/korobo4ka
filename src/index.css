@@ -134,9 +134,20 @@ body {
   box-shadow: 0 0 24px rgba(60, 45, 30, 0.08);
 }
 
-.three-mode aside button,
-.three-mode .quick-add-bar input {
+.three-mode aside button {
   color: hsl(20 22% 22%);
+}
+
+/* Полупрозрачная тёмная подложка под полем ввода — чтобы светлая надпись читалась */
+.three-mode .quick-add-bar input {
+  color: hsl(35 40% 97%);
+  background: rgb(50 33 20 / 0.45);
+  border-radius: 0.75rem;
+}
+
+/* В тёмном 3D подложка не нужна — панель и так тёмная */
+.three-mode.dark .quick-add-bar input {
+  background: transparent;
 }
 
 /* Значки и надписи кнопок нижней панели — как на боковой панели */
@@ -169,7 +180,8 @@ body {
 }
 
 .three-mode .quick-add-bar .placeholder\:text-muted-foreground\/60::placeholder {
-  color: hsl(20 22% 22% / 0.9);
+  color: hsl(35 40% 97%);
+  text-shadow: none;
 }
 
 /* Тёмный вариант 3D: вечерняя сцена, тёмная панель, светлая шапка */
@@ -216,7 +228,7 @@ body {
 }
 
 .three-mode.dark .quick-add-bar .placeholder\:text-muted-foreground\/60::placeholder {
-  color: hsl(30 10% 60% / 0.8);
+  color: hsl(35 25% 80%);
 }
 
 @media (max-width: 640px) {
