@@ -88,7 +88,7 @@ export function TemplatesPanel({ templates, onSave }: Props) {
 
       {showForm ? (
         <TemplateForm
-          initial={editing || { id: nextId, text: "", category: 1 as CategoryId, recurrence: "daily", recurrenceHour: 9, active: true }}
+          initial={editing || { id: nextId, text: "", category: 1 as CategoryId, recurrence: "daily", recurrenceHour: 9, recurrenceMinute: 0, active: true }}
           onSave={saveTemplate}
           onCancel={() => { setShowForm(false); setEditing(null); }}
         />
@@ -115,6 +115,8 @@ function TemplateForm({ initial, onSave, onCancel }: {
   const [recurrence, setRecurrence] = useState<RecurrenceType>(initial.recurrence);
   const [recurrenceDay, setRecurrenceDay] = useState(initial.recurrenceDay ?? 1);
   const [recurrenceHour, setRecurrenceHour] = useState(initial.recurrenceHour);
+  const [recurrenceMinute, setRecurrenceMinute] = useState(initial.recurrenceMinute ?? 0);
+  const [showClock, setShowClock] = useState(false);
   const [recurrenceDays, setRecurrenceDays] = useState<number[]>(
     initial.recurrenceDays?.length
       ? initial.recurrenceDays
@@ -149,6 +151,7 @@ function TemplateForm({ initial, onSave, onCancel }: {
       recurrenceInterval: Math.max(1, interval),
       until: until || undefined,
       recurrenceHour,
+      recurrenceMinute,
     });
   };
 
