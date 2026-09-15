@@ -123,30 +123,38 @@ body {
   backdrop-filter: blur(4px);
 }
 
-/* В 3D-режиме боковая панель полупрозрачная, чтобы не закрывала сцену */
-.three-mode aside {
+/* В 3D-режиме боковая панель и нижняя панель добавления полупрозрачные,
+   чтобы не закрывать сцену */
+.three-mode aside,
+.three-mode .quick-add-bar {
   background: rgba(255, 248, 240, 0.18);
-  border-right-color: rgba(120, 100, 80, 0.18);
+  border-color: rgba(120, 100, 80, 0.18);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
   box-shadow: 0 0 24px rgba(60, 45, 30, 0.08);
 }
 
-.three-mode aside button {
+.three-mode aside button,
+.three-mode .quick-add-bar input {
   color: hsl(20 22% 22%);
 }
 
-.three-mode aside button:hover {
+.three-mode aside button:hover,
+.three-mode .quick-add-bar button:hover {
   background: rgba(255, 255, 255, 0.55);
   color: hsl(20 22% 18%);
 }
 
-.three-mode aside .bg-primary\/10 {
+.three-mode .quick-add-bar .bg-primary\/10 {
   background: rgba(255, 255, 255, 0.72);
 }
 
-.three-mode aside .text-primary {
+.three-mode .quick-add-bar .text-primary {
   color: hsl(20 22% 18%);
+}
+
+.three-mode .quick-add-bar .placeholder\:text-muted-foreground\/60::placeholder {
+  color: hsl(16 10% 45% / 0.75);
 }
 
 /* Тёмный вариант 3D: вечерняя сцена, тёмная панель, светлая шапка */
@@ -164,27 +172,36 @@ body {
   background: rgb(10 8 14 / 0.42);
 }
 
-.three-mode.dark aside {
+.three-mode.dark aside,
+.three-mode.dark .quick-add-bar {
   background: rgba(16, 13, 18, 0.42);
-  border-right-color: rgba(255, 240, 220, 0.14);
+  border-color: rgba(255, 240, 220, 0.14);
   box-shadow: 0 0 24px rgba(0, 0, 0, 0.28);
 }
 
-.three-mode.dark aside button {
+.three-mode.dark aside button,
+.three-mode.dark .quick-add-bar input {
   color: hsl(35 32% 88%);
 }
 
-.three-mode.dark aside button:hover {
+.three-mode.dark aside button:hover,
+.three-mode.dark .quick-add-bar button:hover {
   background: rgba(255, 255, 255, 0.14);
   color: hsl(35 40% 95%);
 }
 
-.three-mode.dark aside .bg-primary\/10 {
+.three-mode.dark aside .bg-primary\/10,
+.three-mode.dark .quick-add-bar .bg-primary\/10 {
   background: rgba(255, 255, 255, 0.2);
 }
 
-.three-mode.dark aside .text-primary {
+.three-mode.dark aside .text-primary,
+.three-mode.dark .quick-add-bar .text-primary {
   color: hsl(35 40% 95%);
+}
+
+.three-mode.dark .quick-add-bar .placeholder\:text-muted-foreground\/60::placeholder {
+  color: hsl(30 10% 60% / 0.8);
 }
 
 @media (max-width: 640px) {
