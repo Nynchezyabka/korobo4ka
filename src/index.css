@@ -140,8 +140,8 @@ body {
 
 /* Полупрозрачная тёмная подложка под полем ввода — чтобы светлая надпись читалась */
 .three-mode .quick-add-bar input {
-  color: hsl(35 40% 96%);
-  background: rgb(60 40 25 / 0.22);
+  color: hsl(35 40% 97%);
+  background: rgb(50 33 20 / 0.45);
   border-radius: 0.75rem;
 }
 
@@ -175,8 +175,8 @@ body {
 }
 
 .three-mode .quick-add-bar .placeholder\:text-muted-foreground\/60::placeholder {
-  color: hsl(35 40% 96% / 0.95);
-  text-shadow: 0 1px 2px rgb(60 40 25 / 0.55);
+  color: hsl(35 40% 97%);
+  text-shadow: none;
 }
 
 /* Тёмный вариант 3D: вечерняя сцена, тёмная панель, светлая шапка */
