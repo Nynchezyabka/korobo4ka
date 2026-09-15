@@ -405,6 +405,16 @@ export function HistoryModal() {
           >
             <Plus size={12} /> Добавить
           </button>
+          {showManualClock && (
+            <div className="basis-full flex justify-center py-2">
+              <ClockPicker
+                hour={manualHour}
+                minute={manualMinute}
+                onChange={(h, m) => { setManualHour(h); setManualMinute(m); }}
+                compact
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
