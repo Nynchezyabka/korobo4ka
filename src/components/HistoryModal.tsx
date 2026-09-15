@@ -389,25 +389,13 @@ export function HistoryModal() {
               <span className="text-xs sm:text-sm text-muted-foreground">мин</span>
             </div>
           )}
-          <div className="flex items-center gap-0.5">
-            <input
-              type="number"
-              min={0}
-              max={23}
-              value={manualHour}
-              onChange={(e) => setManualHour(Math.min(23, Math.max(0, parseInt(e.target.value) || 0)))}
-              className="w-10 rounded-md border border-border bg-muted/30 px-1 py-1.5 text-xs sm:text-sm text-center"
-            />
-            <span className="text-xs sm:text-sm">:</span>
-            <input
-              type="number"
-              min={0}
-              max={59}
-              value={manualMinute}
-              onChange={(e) => setManualMinute(Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))}
-              className="w-10 rounded-md border border-border bg-muted/30 px-1 py-1.5 text-xs sm:text-sm text-center"
-            />
-          </div>
+          <button
+            onClick={() => setShowManualClock((v) => !v)}
+            className="rounded-md border border-border bg-muted/30 px-2.5 py-1.5 text-xs sm:text-sm tabular-nums font-medium"
+            title="Выбрать время"
+          >
+            🕐 {pad2(manualHour)}:{pad2(manualMinute)}
+          </button>
           <button
             onClick={handleAddManual}
             disabled={!manualText.trim()}
