@@ -393,11 +393,8 @@ function TaskCard({
   const hasReminder = Boolean(task.scheduledFor && task.scheduledFor > Date.now());
 
   const applyReminder = () => {
-    if (!reminderDate || !reminderTime) return;
-    const [h, m] = reminderTime.split(":").map(Number);
-    const d = new Date(reminderDate);
-    d.setHours(h, m, 0, 0);
-    onSetReminder(d.getTime());
+    if (!reminderTs) return;
+    onSetReminder(reminderTs);
     setShowReminder(false);
   };
 
