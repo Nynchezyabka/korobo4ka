@@ -200,6 +200,31 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
           </div>
         )}
 
+        {/* Дата и время (опционально) */}
+        <div className="mt-3 rounded-lg bg-white/40 border border-white/60 p-2.5">
+          <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+            <input
+              type="checkbox"
+              checked={whenEnabled}
+              onChange={(e) => {
+                setWhenEnabled(e.target.checked);
+                if (e.target.checked && scheduledFor === null) {
+                  const d = new Date();
+                  d.setMinutes(0, 0, 0);
+                  d.setHours(d.getHours() + 1);
+                  setScheduledFor(d.getTime());
+                }
+              }}
+            />
+            <CalendarClock size={14} /> Дата и время
+          </label>
+          {whenEnabled && (
+            <div className="mt-2">
+              <DateTimePicker value={scheduledFor} onChange={setScheduledFor} title="Когда напомнить" clearable={false} />
+            </div>
+          )}
+        </div>
+
         {/* Recurrence block */}
         <div className="mt-3 rounded-lg bg-white/40 border border-white/60 p-2.5">
           <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
