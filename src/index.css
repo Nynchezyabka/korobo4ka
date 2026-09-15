@@ -134,13 +134,13 @@ body {
   box-shadow: 0 0 24px rgba(60, 45, 30, 0.08);
 }
 
-.three-mode aside button,
-.three-mode .quick-add-bar input {
+.three-mode aside button {
   color: hsl(20 22% 22%);
 }
 
 /* Полупрозрачная тёмная подложка под полем ввода — чтобы светлая надпись читалась */
 .three-mode .quick-add-bar input {
+  color: hsl(35 40% 96%);
   background: rgb(60 40 25 / 0.22);
   border-radius: 0.75rem;
 }
