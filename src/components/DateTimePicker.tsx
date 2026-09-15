@@ -251,9 +251,17 @@ export function DateTimePicker({ value, onChange, title = "Когда", clearabl
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
 
+  const todayKey = dateKey(new Date());
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  // ничего не раскрыто по умолчанию — календарь и часы выпадают по щелчку
+  const [open, setOpen] = useState<null | "date" | "time">(null);
+  const toggle = (which: "date" | "time") => setOpen((cur) => (cur === which ? null : which));
+
   return (
-    <div className="rounded-xl border border-border bg-background/80 p-3">
-      <div className="flex items-center justify-between mb-2">
+    <div className="rounded-xl border border-border bg-background/80 p-2.5">
+      <div className="flex items-center justify-between mb-1.5">
         <span className="text-xs font-semibold text-muted-foreground">{title}</span>
         {clearable && value !== null && (
           <button onClick={() => onChange(null)} className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
@@ -262,28 +270,54 @@ export function DateTimePicker({ value, onChange, title = "Когда", clearabl
         )}
       </div>
 
-      <div className="flex flex-wrap gap-1.5 mb-2.5">
+      {/* Поля: дата и время — выпадают по щелчку */}
+      <div className="flex flex-wrap items-center gap-1.5">
+        <button
+          onClick={() => toggle("date")}
+          className={cn(
+            "flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-full border tabular-nums",
+            open === "date" ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-muted"
+          )}
+        >
+          <CalendarDays size={13} />
+          {dayKey === todayKey ? "Сегодня" : dayKey === dateKey(tomorrow) ? "Завтра" : dayKey.split("-").reverse().join(".")}
+          <ChevronDown size={12} className={cn("transition-transform", open === "date" && "rotate-180")} />
+        </button>
+        <button
+          onClick={() => toggle("time")}
+          className={cn(
+            "flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-full border tabular-nums",
+            open === "time" ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-muted"
+          )}
+        >
+          <Clock size={13} />
+          {pad2(hour)}:{pad2(minute)}
+          <ChevronDown size={12} className={cn("transition-transform", open === "time" && "rotate-180")} />
+        </button>
         <button
           onClick={() => shiftDay(0)}
-          className={cn("text-xs px-2.5 py-1 rounded-full border", dayKey === todayKey ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-muted")}
+          className={cn("text-xs px-2 py-1.5 rounded-full border", dayKey === todayKey ? "border-primary/50 text-primary" : "border-border text-muted-foreground hover:bg-muted")}
         >
           Сегодня
         </button>
         <button
           onClick={() => shiftDay(1)}
-          className={cn("text-xs px-2.5 py-1 rounded-full border", dayKey === dateKey(tomorrow) ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-muted")}
+          className={cn("text-xs px-2 py-1.5 rounded-full border", dayKey === dateKey(tomorrow) ? "border-primary/50 text-primary" : "border-border text-muted-foreground hover:bg-muted")}
         >
           Завтра
         </button>
-        <span className="text-xs px-2.5 py-1 rounded-full bg-muted/60 tabular-nums">
-          {dayKey.split("-").reverse().join(".")} · {pad2(hour)}:{pad2(minute)}
-        </span>
       </div>
 
-      <div className={cn("flex gap-4", compact ? "flex-col items-center" : "flex-col sm:flex-row sm:items-start")}>
-        <MiniCalendar value={dayKey} onChange={setDay} compact />
-        <ClockPicker hour={hour} minute={minute} onChange={setTime} compact />
-      </div>
+      {open === "date" && (
+        <div className="mt-2 flex justify-center animate-fade-in">
+          <MiniCalendar value={dayKey} onChange={(k) => { setDay(k); setOpen(null); }} compact />
+        </div>
+      )}
+      {open === "time" && (
+        <div className="mt-2 flex justify-center animate-fade-in">
+          <ClockPicker hour={hour} minute={minute} onChange={setTime} compact />
+        </div>
+      )}
     </div>
   );
 }
