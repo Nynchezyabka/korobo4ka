@@ -5,6 +5,7 @@ import { CategoryIcon } from "@/components/CategoryIcon";
 import { cn } from "@/lib/utils";
 import { Plus, Trash2, ToggleLeft, ToggleRight, Repeat } from "lucide-react";
 import { getCustomSubcategoriesSync } from "@/lib/taskStore";
+import { ClockPicker, pad2 } from "@/components/DateTimePicker";
 
 interface Props {
   templates: TaskTemplate[];
@@ -309,18 +310,27 @@ function TemplateForm({ initial, onSave, onCancel }: {
         )}
       </div>
 
-      {/* Hour */}
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-xs">Час создания:</span>
-        <input
-          type="number"
-          min={0}
-          max={23}
-          value={recurrenceHour}
-          onChange={(e) => setRecurrenceHour(Math.max(0, Math.min(23, parseInt(e.target.value) || 0)))}
-          className="w-14 text-center text-sm rounded border border-border px-2 py-1"
-        />
-        <span className="text-xs text-muted-foreground">:00</span>
+      {/* Время */}
+      <div className="mb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-xs">Время:</span>
+          <button
+            onClick={() => setShowClock((v) => !v)}
+            className="text-sm px-3 py-1 rounded-full border border-border bg-background tabular-nums font-medium"
+          >
+            {pad2(recurrenceHour)}:{pad2(recurrenceMinute)}
+          </button>
+        </div>
+        {showClock && (
+          <div className="mt-2 flex justify-center">
+            <ClockPicker
+              hour={recurrenceHour}
+              minute={recurrenceMinute}
+              onChange={(h, m) => { setRecurrenceHour(h); setRecurrenceMinute(m); }}
+              compact
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex gap-2">
