@@ -228,7 +228,7 @@ body {
 }
 
 .three-mode.dark .quick-add-bar .placeholder\:text-muted-foreground\/60::placeholder {
-  color: hsl(30 10% 60% / 0.8);
+  color: hsl(35 25% 80%);
 }
 
 @media (max-width: 640px) {
