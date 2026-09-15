@@ -251,9 +251,23 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
                 <input type="number" min={1} max={31} value={recurDay} onChange={(e) => setRecurDay(Math.max(1, Math.min(31, parseInt(e.target.value) || 1)))} className="w-14 text-xs px-2 py-1 rounded border border-border bg-white/70 text-center" />
               )}
               <span className="text-xs">в</span>
-              <input type="number" min={0} max={23} value={recurHour} onChange={(e) => setRecurHour(Math.max(0, Math.min(23, parseInt(e.target.value) || 0)))} className="w-12 text-xs px-2 py-1 rounded border border-border bg-white/70 text-center" />
-              <span className="text-xs">:00</span>
-              <span className="text-xs text-foreground/60 basis-full">Шаблон автоматически появится в разделе «Шаблоны».</span>
+              <button
+                onClick={() => setShowClock((v) => !v)}
+                className="text-xs px-2.5 py-1 rounded-full border border-border bg-white/70 tabular-nums font-medium"
+              >
+                {pad2(recurHour)}:{pad2(recurMinute)}
+              </button>
+              {showClock && (
+                <div className="basis-full flex justify-center py-2">
+                  <ClockPicker
+                    hour={recurHour}
+                    minute={recurMinute}
+                    onChange={(h, m) => { setRecurHour(h); setRecurMinute(m); }}
+                    compact
+                  />
+                </div>
+              )}
+              <span className="text-xs text-foreground/60 basis-full">Шаблон автоматически появится в разделе «Повторяющиеся задачи».</span>
             </div>
           )}
         </div>
