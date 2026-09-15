@@ -123,30 +123,38 @@ body {
   backdrop-filter: blur(4px);
 }
 
-/* В 3D-режиме боковая панель полупрозрачная, чтобы не закрывала сцену */
-.three-mode aside {
+/* В 3D-режиме боковая панель и нижняя панель добавления полупрозрачные,
+   чтобы не закрывать сцену */
+.three-mode aside,
+.three-mode .quick-add-bar {
   background: rgba(255, 248, 240, 0.18);
-  border-right-color: rgba(120, 100, 80, 0.18);
+  border-color: rgba(120, 100, 80, 0.18);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
   box-shadow: 0 0 24px rgba(60, 45, 30, 0.08);
 }
 
-.three-mode aside button {
+.three-mode aside button,
+.three-mode .quick-add-bar input {
   color: hsl(20 22% 22%);
 }
 
-.three-mode aside button:hover {
+.three-mode aside button:hover,
+.three-mode .quick-add-bar button:hover {
   background: rgba(255, 255, 255, 0.55);
   color: hsl(20 22% 18%);
 }
 
-.three-mode aside .bg-primary\/10 {
+.three-mode .quick-add-bar .bg-primary\/10 {
   background: rgba(255, 255, 255, 0.72);
 }
 
-.three-mode aside .text-primary {
+.three-mode .quick-add-bar .text-primary {
   color: hsl(20 22% 18%);
+}
+
+.three-mode .quick-add-bar .placeholder\:text-muted-foreground\/60::placeholder {
+  color: hsl(16 10% 45% / 0.75);
 }
 
 /* Тёмный вариант 3D: вечерняя сцена, тёмная панель, светлая шапка */

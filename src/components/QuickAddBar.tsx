@@ -164,7 +164,7 @@ export function QuickAddBar({ inTimer }: Props) {
         )}
 
         {/* Main bar */}
-        <div className="flex items-center gap-1 sm:gap-1.5 rounded-2xl bg-background border border-border shadow-lg p-2">
+        <div className="quick-add-bar flex items-center gap-1 sm:gap-1.5 rounded-2xl bg-background border border-border shadow-lg p-2">
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
