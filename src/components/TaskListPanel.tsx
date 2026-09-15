@@ -405,8 +405,8 @@ function TaskCard({
 
   const openReminder = () => {
     const initial = task.scheduledFor && task.scheduledFor > Date.now() ? new Date(task.scheduledFor) : new Date();
-    setReminderDate(initial.toISOString().split("T")[0]);
-    setReminderTime(`${String(initial.getHours()).padStart(2, "0")}:${String(initial.getMinutes()).padStart(2, "0")}`);
+    initial.setSeconds(0, 0);
+    setReminderTs(initial.getTime());
     setShowReminder(true);
     setShowActions(false);
   };
