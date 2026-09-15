@@ -169,7 +169,8 @@ body {
 }
 
 .three-mode .quick-add-bar .placeholder\:text-muted-foreground\/60::placeholder {
-  color: hsl(20 22% 22% / 0.9);
+  color: hsl(35 40% 96% / 0.95);
+  text-shadow: 0 1px 2px rgb(60 40 25 / 0.55);
 }
 
 /* Тёмный вариант 3D: вечерняя сцена, тёмная панель, светлая шапка */
