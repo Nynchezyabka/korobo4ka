@@ -172,27 +172,36 @@ body {
   background: rgb(10 8 14 / 0.42);
 }
 
-.three-mode.dark aside {
+.three-mode.dark aside,
+.three-mode.dark .quick-add-bar {
   background: rgba(16, 13, 18, 0.42);
-  border-right-color: rgba(255, 240, 220, 0.14);
+  border-color: rgba(255, 240, 220, 0.14);
   box-shadow: 0 0 24px rgba(0, 0, 0, 0.28);
 }
 
-.three-mode.dark aside button {
+.three-mode.dark aside button,
+.three-mode.dark .quick-add-bar input {
   color: hsl(35 32% 88%);
 }
 
-.three-mode.dark aside button:hover {
+.three-mode.dark aside button:hover,
+.three-mode.dark .quick-add-bar button:hover {
   background: rgba(255, 255, 255, 0.14);
   color: hsl(35 40% 95%);
 }
 
-.three-mode.dark aside .bg-primary\/10 {
+.three-mode.dark aside .bg-primary\/10,
+.three-mode.dark .quick-add-bar .bg-primary\/10 {
   background: rgba(255, 255, 255, 0.2);
 }
 
-.three-mode.dark aside .text-primary {
+.three-mode.dark aside .text-primary,
+.three-mode.dark .quick-add-bar .text-primary {
   color: hsl(35 40% 95%);
+}
+
+.three-mode.dark .quick-add-bar .placeholder\:text-muted-foreground\/60::placeholder {
+  color: hsl(30 10% 60% / 0.8);
 }
 
 @media (max-width: 640px) {
