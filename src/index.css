@@ -145,7 +145,7 @@ body {
 }
 
 .three-mode .quick-add-bar button {
-  border-color: var(--border);
+  border-color: var(--color-border);
 }
 
 .three-mode .quick-add-bar button.border-red-400 {
