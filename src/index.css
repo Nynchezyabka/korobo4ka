@@ -145,6 +145,11 @@ body {
   border-radius: 0.75rem;
 }
 
+/* В тёмном 3D подложка не нужна — панель и так тёмная */
+.three-mode.dark .quick-add-bar input {
+  background: transparent;
+}
+
 /* Значки и надписи кнопок нижней панели — как на боковой панели */
 .three-mode .quick-add-bar button:not(.bg-primary) {
   color: hsl(20 22% 22%);
