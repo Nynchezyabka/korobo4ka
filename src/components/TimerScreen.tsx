@@ -104,6 +104,14 @@ export function TimerScreen({ task, onClose }: Props) {
     setTimeLeft(minutes * 60);
   };
 
+  const extendBy = (m: number) => {
+    setFinished(false);
+    endAtRef.current = Date.now() + m * 60 * 1000;
+    sessionStartRef.current = Date.now();
+    setTimeLeft(m * 60);
+    setRunning(true);
+  };
+
   const completeTask = () => {
     saveTimeSpent();
     completeTaskWithRecurrence(task.id);
@@ -251,6 +259,11 @@ export function TimerScreen({ task, onClose }: Props) {
                 {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
               </button>
             </div>
+            {!running && (
+              <p className="text-xs opacity-70 -mt-2 mb-4 text-center max-w-xs">
+                Если дело обычно занимает 30 минут, поставьте 25 — оставьте время на переключение.
+              </p>
+            )}
 
             {/* Timer controls — main START is large & primary; others are secondary */}
             <div className="flex flex-col items-center gap-3 mb-6">
@@ -316,6 +329,17 @@ export function TimerScreen({ task, onClose }: Props) {
             >
               <Undo2 size={18} /> Вернуть в коробочку
             </button>
+            <div className="flex gap-2 justify-center">
+              {[5, 10, 15].map((m) => (
+                <button
+                  key={m}
+                  onClick={() => extendBy(m)}
+                  className="px-3 py-1.5 rounded-md bg-white/60 text-sm active:scale-95 transition-all border border-border/30"
+                >
+                  Ещё {m} мин
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
