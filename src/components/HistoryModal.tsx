@@ -163,7 +163,7 @@ export function HistoryModal() {
 
   // Delete task entirely
   const deleteFromHistory = (taskId: number) => {
-    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    deleteWithUndo(setTasks as any, taskId);
   };
 
   const selParts = selectedDate.split("-").map(Number);

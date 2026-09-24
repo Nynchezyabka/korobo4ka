@@ -7,6 +7,7 @@ import { CategoryIcon } from "@/components/CategoryIcon";
 import { NextMinuteSheet } from "@/components/NextMinuteSheet";
 import { setTaskReminder, clearTaskReminder, hasActiveReminder } from "@/lib/notifications";
 import { DateTimePicker } from "@/components/DateTimePicker";
+import { deleteWithUndo } from "@/lib/undoDelete";
 import {
   Play, Eye, EyeOff, Trash2, Check, Undo2, FolderOpen, Plus, Pencil, GripVertical, MoreVertical,
   Bell, BellRing, BellOff, Lightbulb, X, CalendarClock,
@@ -57,8 +58,7 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
   };
 
   const deleteTask = (id: number) => {
-    clearTaskReminder(id);
-    setTasks((prev) => prev.filter((t) => t.id !== id));
+    deleteWithUndo(setTasks as any, id, () => clearTaskReminder(id));
   };
 
   const completeTask = (id: number) => {
