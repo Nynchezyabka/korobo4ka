@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Task, CATEGORIES, CategoryId } from "@/types";
 import { useApp } from "@/App";
+import { deleteWithUndo } from "@/lib/undoDelete";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { ChevronLeft, ChevronRight, Plus, Clock, Undo2, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
