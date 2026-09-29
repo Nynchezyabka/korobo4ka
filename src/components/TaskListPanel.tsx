@@ -294,7 +294,7 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
               )}
             </div>
             
-            {!collapsedCats.has(cat) && (
+            {(filtering || !collapsedCats.has(cat)) && (
               <div className="pl-1 space-y-3 mt-2">
                 {subKeys.map((sub) => {
                   const subKey = `${cat}-${sub}`;
