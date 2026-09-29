@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
 import { useApp } from "@/App";
 import { parseVoice } from "@/lib/voiceParse";
-import { Mic, Plus, CalendarClock, Repeat, X } from "lucide-react";
+import { Mic, Plus, CalendarClock, Repeat, X, StickyNote, ListTodo } from "lucide-react";
+import { addNote } from "@/lib/notes";
 import { CategoryId, RecurrenceType, RECURRENCE_LABELS, WEEKDAYS } from "@/types";
 import { DateTimePicker, pad2 } from "@/components/DateTimePicker";
 import { cn } from "@/lib/utils";
@@ -36,8 +37,16 @@ export function QuickAddBar({ inTimer }: Props) {
   const [pendingWhen, setPendingWhen] = useState<number | null>(null);
   const recogRef = useRef<any>(null);
 
+  const [asNote, setAsNote] = useState(false);
+
   const submit = () => {
     if (!text.trim()) return;
+    if (asNote) {
+      addNote(text);
+      toast.success("Заметка сохранена — она ждёт в «Разборе»");
+      setText("");
+      return;
+    }
     if (recur) {
       const base = scheduled ? new Date(scheduled) : new Date();
       const startId = (templates as any[]).reduce((m, t) => Math.max(m, t.id), 0) + 1;
@@ -165,28 +174,36 @@ export function QuickAddBar({ inTimer }: Props) {
 
         {/* Main bar */}
         <div className="quick-add-bar flex items-center gap-1 sm:gap-1.5 rounded-2xl bg-background border border-border shadow-lg p-2">
+          <button
+            onClick={() => { setAsNote((v) => !v); setShowWhen(false); setShowRecur(false); }}
+            className={cn("flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-md border shrink-0", asNote ? "bg-primary/10 border-primary/30 text-primary" : "border-border text-muted-foreground hover:bg-muted")}
+            title={asNote ? "Сейчас: заметка. Нажмите, чтобы добавить задачу" : "Сейчас: задача. Нажмите, чтобы записать заметку"}
+            aria-label="Задача или заметка"
+          >
+            {asNote ? <StickyNote size={16} /> : <ListTodo size={16} />}
+          </button>
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
-            placeholder={inTimer ? "Записать идею…" : "Задача…"}
+            placeholder={asNote ? "Заметка…" : inTimer ? "Записать идею…" : "Задача…"}
             className="flex-1 min-w-0 px-2 sm:px-3 py-2 rounded-xl bg-transparent text-base sm:text-sm outline-none placeholder:text-muted-foreground/60"
           />
-          <button
+          {!asNote && <button
             onClick={() => { setShowWhen((v) => !v); setShowRecur(false); }}
             className={cn("flex items-center gap-1 px-2 h-10 sm:h-9 rounded-md text-xs border shrink-0", scheduled ? "bg-primary/10 border-primary/30 text-primary" : "border-border text-muted-foreground hover:bg-muted")}
             title="Дата и время"
           >
             <CalendarClock size={16} />
             {scheduled && <span className="tabular-nums">{formatWhen(scheduled)}</span>}
-          </button>
-          <button
+          </button>}
+          {!asNote && <button
             onClick={() => { setShowRecur((v) => !v); setShowWhen(false); }}
             className={cn("flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-md border shrink-0", recur ? "bg-primary/10 border-primary/30 text-primary" : "border-border text-muted-foreground hover:bg-muted")}
             title="Повтор"
           >
             <Repeat size={16} />
-          </button>
+          </button>}
           <button
             onClick={handleVoice}
             className={cn("flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-md border shrink-0", listening ? "bg-red-500/15 border-red-400 text-red-600 animate-pulse" : "border-border text-muted-foreground hover:bg-muted")}
