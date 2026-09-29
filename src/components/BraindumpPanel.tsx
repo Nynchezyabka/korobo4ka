@@ -6,7 +6,8 @@ import { CATEGORIES, CategoryId, RECURRENCE_LABELS, WEEKDAYS, RecurrenceType } f
 import { DraftItem, DraftKind, normalizeItems, applyDraft } from "@/lib/braindump";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Wand2, Mic, Loader2, Trash2, Check } from "lucide-react";
+import { Wand2, Mic, Loader2, Trash2, Check, StickyNote } from "lucide-react";
+import { useNotes, markNotesProcessed, removeNote } from "@/lib/notes";
 
 const GROUPS: { kind: DraftKind; title: string; hint: string }[] = [
   { kind: "event", title: "Со сроком", hint: "Привязано к дате и времени" },
@@ -35,6 +36,15 @@ export function BraindumpPanel() {
     fetchDemoStatus().then((s) => { if (alive && s) setDemoLeft(s.left); });
     return () => { alive = false; };
   }, []);
+
+  const notes = useNotes();
+  const pendingNotes = notes.filter((n) => !n.processed);
+  const takeNotes = (ids: string[]) => {
+    const picked = pendingNotes.filter((n) => ids.includes(n.id)).map((n) => n.text);
+    if (!picked.length) return;
+    setText((prev) => [prev.trim(), ...picked].filter(Boolean).join("\n"));
+    markNotesProcessed(ids);
+  };
 
   const update = (uid: string, patch: Partial<DraftItem>) =>
     setItems((prev) => prev?.map((i) => (i.uid === uid ? { ...i, ...patch } : i)) ?? prev);
@@ -150,6 +160,23 @@ export function BraindumpPanel() {
         </div>
 
       </div>
+
+      {pendingNotes.length > 0 && (
+        <div className="rounded-xl border border-dashed border-border p-2.5 space-y-1.5">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-sm sm:text-base font-semibold flex items-center gap-1.5"><StickyNote size={15} /> Накопленные заметки</h3>
+            <button onClick={() => takeNotes(pendingNotes.map((n) => n.id))} className="text-xs px-2.5 py-1 rounded-full border border-border hover:bg-muted">Все в разбор</button>
+          </div>
+          <p className="text-[11px] text-muted-foreground">Заметка уходит в поле выше — после «Разобрать» её можно подтвердить как задачу, проект или повтор. Можно и оставить как есть.</p>
+          {pendingNotes.map((n) => (
+            <div key={n.id} className="flex items-start gap-2 rounded-lg bg-muted/30 p-2">
+              <p className="flex-1 min-w-0 text-sm whitespace-pre-wrap break-words">{n.text}</p>
+              <button onClick={() => takeNotes([n.id])} className="text-xs px-2 py-1 rounded border border-border hover:bg-muted shrink-0">В разбор</button>
+              <button onClick={() => removeNote(n.id)} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
+            </div>
+          ))}
+        </div>
+      )}
 
       {items && (
         <div className="space-y-3">

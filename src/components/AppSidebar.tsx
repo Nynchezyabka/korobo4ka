@@ -25,6 +25,7 @@ const NAV_ITEMS: { id: PageId; label: string; icon: React.ReactNode }[] = [
 
 export function AppSidebar({ currentPage, onNavigate, onOpenSettings }: Props) {
   const [expanded, setExpanded] = useState(false);
+  const pendingNotes = usePendingNotesCount();
 
   const itemClass = (active: boolean) =>
     cn(
@@ -66,7 +67,10 @@ export function AppSidebar({ currentPage, onNavigate, onOpenSettings }: Props) {
                 <span className="absolute left-0 top-1 bottom-1 w-1 rounded-r bg-primary" />
               )}
               <span className="shrink-0">{item.icon}</span>
-              {expanded && <span className="truncate">{item.label}</span>}
+              {expanded && <span className="truncate">{item.label}{item.id === "braindump" && pendingNotes > 0 && <span className="text-muted-foreground font-normal"> · {pendingNotes}</span>}</span>}
+              {!expanded && item.id === "braindump" && pendingNotes > 0 && (
+                <span className="absolute top-1 right-1 text-[9px] leading-none text-muted-foreground tabular-nums">{pendingNotes}</span>
+              )}
             </button>
           );
         })}
