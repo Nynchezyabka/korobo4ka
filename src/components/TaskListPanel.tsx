@@ -35,9 +35,18 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
   const [nextMinuteTask, setNextMinuteTask] = useState<Task | null>(null);
   const [reminderTask, setReminderTask] = useState<Task | null>(null);
 
+  const [query, setQuery] = useState("");
+  const [onlyDated, setOnlyDated] = useState(false);
+  const [onlyHidden, setOnlyHidden] = useState(false);
+  const q = query.trim().toLowerCase();
+  const filtering = !!q || onlyDated || onlyHidden;
+
   const source = tasks
     .filter((t) => (showArchive ? t.completed : !t.completed))
-    .filter((t) => !restrictCategories || restrictCategories.includes(t.category));
+    .filter((t) => !restrictCategories || restrictCategories.includes(t.category))
+    .filter((t) => !q || t.text.toLowerCase().includes(q) || (t.subcategory || "").toLowerCase().includes(q))
+    .filter((t) => !onlyDated || !!t.scheduledFor)
+    .filter((t) => !onlyHidden || !t.active);
 
   // Group by category
   const groups = new Map<CategoryId, Task[]>();
@@ -198,9 +207,28 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
         </div>
       )}
 
+      <div className="mb-3 flex flex-wrap items-center gap-1.5">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Найти…"
+          aria-label="Поиск задач"
+          className="flex-1 min-w-[140px] h-9 px-3 rounded-lg border border-border bg-background text-sm outline-none focus:border-primary/50"
+        />
+        {!showArchive && (
+          <>
+            <button onClick={() => setOnlyDated((v) => !v)} className={cn("h-9 px-2.5 rounded-full text-xs border", onlyDated ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:bg-muted")}>С датой</button>
+            <button onClick={() => setOnlyHidden((v) => !v)} className={cn("h-9 px-2.5 rounded-full text-xs border", onlyHidden ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:bg-muted")}>Скрытые</button>
+          </>
+        )}
+        {filtering && (
+          <button onClick={() => { setQuery(""); setOnlyDated(false); setOnlyHidden(false); }} className="h-9 px-2 text-xs text-muted-foreground hover:text-foreground">Сбросить</button>
+        )}
+      </div>
+
       {categoryOrder.length === 0 && (
         <p className="text-center text-muted-foreground py-8 animate-fade-in">
-          {showArchive ? "Нет выполненных задач" : "Нет задач. Добавьте первую!"}
+          {filtering ? "Ничего не нашлось" : showArchive ? "Нет выполненных задач" : "Нет задач. Добавьте первую!"}
         </p>
       )}
 
@@ -266,7 +294,7 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
               )}
             </div>
             
-            {!collapsedCats.has(cat) && (
+            {(filtering || !collapsedCats.has(cat)) && (
               <div className="pl-1 space-y-3 mt-2">
                 {subKeys.map((sub) => {
                   const subKey = `${cat}-${sub}`;
