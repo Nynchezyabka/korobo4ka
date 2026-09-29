@@ -18,3 +18,8 @@
 - [x] Verify portrait layouts, sidebar states, and 3D interactions without publishing.
 - [x] Keep the portrait table below the complete bottom box and its label.
 - [x] Replace the three-option appearance selector with one cycling icon button.
+
+## Разбор: ничего не пропадает
+- [ ] Неподтверждённые карточки разбора («не задача» + снятые галочки) сохраняются как обработанные заметки
+- [ ] Блок «Обработанные · N» в «Накопленных заметках» с раскрытием и удалением
+- [ ] Починить нечитаемые чипы «Предложенные шаги» в тёмной теме (ProjectsPanel)
