@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { usePendingNotesCount } from "@/lib/notes";
 import {
   Home, List, CalendarDays, Repeat, ChevronLeft, ChevronRight, Settings, Puzzle, Wand2,
 } from "lucide-react";
