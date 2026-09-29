@@ -31,10 +31,10 @@ async function ensureLoaded() {
   }
 }
 
-export function addNote(text: string) {
+export function addNote(text: string, processed = false) {
   const t = text.trim();
   if (!t) return;
-  notes = [...notes, { id: crypto.randomUUID(), text: t.slice(0, 2000), createdAt: Date.now() }];
+  notes = [...notes, { id: crypto.randomUUID(), text: t.slice(0, 2000), createdAt: Date.now(), processed: processed || undefined }];
   persist();
   emit();
 }

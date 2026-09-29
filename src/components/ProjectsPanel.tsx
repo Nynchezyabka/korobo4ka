@@ -102,13 +102,13 @@ export function ProjectsPanel() {
           <Plus size={16} /> Новый проект
         </button>
       ) : (
-        <div className="mb-4 p-3 rounded-lg bg-white/40 dark:bg-white/5 border border-border/60 space-y-2">
+        <div className="mb-4 p-3 rounded-lg bg-muted/50 border border-border/60 space-y-2">
           <input
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") createProject(); }}
             placeholder="Например: Забор на даче"
-            className="w-full text-sm px-2.5 py-2 rounded-md border border-border bg-white/80 dark:bg-white/10 outline-none"
+            className="w-full text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none"
             autoFocus
           />
           <div className="flex flex-wrap gap-1.5">
@@ -118,7 +118,7 @@ export function ProjectsPanel() {
                 onClick={() => setNewCat(c)}
                 className={cn(
                   "text-xs px-2 py-1 rounded-full border flex items-center gap-1",
-                  newCat === c ? "border-primary bg-primary/10 font-semibold" : "border-border/60 bg-white/40"
+                  newCat === c ? "border-primary bg-primary/10 font-semibold" : "border-border/60 bg-muted/50"
                 )}
               >
                 <CategoryIcon category={c} size={12} /> {getCategoryDisplayName(c)}
@@ -132,7 +132,7 @@ export function ProjectsPanel() {
                 onClick={() => setNewMode(m)}
                 className={cn(
                   "text-xs px-2.5 py-1 rounded-full border",
-                  newMode === m ? "border-primary bg-primary/10 font-semibold" : "border-border/60 bg-white/40"
+                  newMode === m ? "border-primary bg-primary/10 font-semibold" : "border-border/60 bg-muted/50"
                 )}
               >
                 {m === "sequential" ? "По порядку" : "В любом порядке"}
@@ -143,7 +143,7 @@ export function ProjectsPanel() {
             <button onClick={createProject} className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-sm">
               Создать
             </button>
-            <button onClick={() => setCreating(false)} className="px-3 py-1.5 rounded-md bg-white/60 text-sm border border-border/50">
+            <button onClick={() => setCreating(false)} className="px-3 py-1.5 rounded-md bg-muted/60 text-sm border border-border/50">
               Отмена
             </button>
           </div>
@@ -162,7 +162,7 @@ export function ProjectsPanel() {
           const done = steps.filter((t) => t.completed).length;
           const next = steps.filter((t) => !t.completed).sort((a, b) => (a.stepOrder ?? 0) - (b.stepOrder ?? 0))[0];
           return (
-            <div key={p.id} className="p-3 rounded-lg bg-white/40 dark:bg-white/5 border border-border/60">
+            <div key={p.id} className="p-3 rounded-lg bg-muted/50 border border-border/60">
               <button onClick={() => setOpenId(p.id)} className="w-full text-left">
                 <div className="flex items-center gap-2">
                   <CategoryIcon category={p.category} size={16} />
@@ -299,7 +299,7 @@ function ProjectDetail({
 
       <div className="flex items-start gap-2 mb-1">
         <h2 className="font-display text-xl sm:text-2xl text-primary flex-1">{project.title}</h2>
-        <button onClick={onDelete} className="p-1.5 rounded hover:bg-black/5 text-red-600" title="Удалить проект">
+        <button onClick={onDelete} className="p-1.5 rounded hover:bg-muted/60 text-red-600" title="Удалить проект">
           <Trash2 size={16} />
         </button>
       </div>
@@ -311,7 +311,7 @@ function ProjectDetail({
             onClick={() => onUpdate({ mode: m })}
             className={cn(
               "text-xs px-2.5 py-1 rounded-full border",
-              project.mode === m ? "border-primary bg-primary/10 font-semibold" : "border-border/60 bg-white/40"
+              project.mode === m ? "border-primary bg-primary/10 font-semibold" : "border-border/60 bg-muted/50"
             )}
           >
             {m === "sequential" ? "По порядку" : "В любом порядке"}
@@ -333,7 +333,7 @@ function ProjectDetail({
             <div
               key={s.id}
               className={cn(
-                "flex items-center gap-2 p-2 rounded-md border border-border/50 bg-white/40 dark:bg-white/5",
+                "flex items-center gap-2 p-2 rounded-md border border-border/50 bg-muted/50",
                 s.completed && "opacity-60",
                 blocked && "opacity-50"
               )}
@@ -342,7 +342,7 @@ function ProjectDetail({
                 onClick={() => toggleStep(s)}
                 className={cn(
                   "w-5 h-5 shrink-0 rounded border flex items-center justify-center",
-                  s.completed ? "bg-emerald-600/80 border-emerald-700 text-white" : "border-border bg-white/70"
+                  s.completed ? "bg-emerald-600/80 border-emerald-700 text-white" : "border-border bg-muted/70"
                 )}
               >
                 {s.completed && <Check size={12} />}
@@ -350,11 +350,11 @@ function ProjectDetail({
               <span className={cn("flex-1 text-sm sm:text-base", s.completed && "line-through")}>{s.text}</span>
               {blocked && <Lock size={12} className="opacity-50" />}
               {!s.completed && (
-                <button onClick={() => openTimer(s)} className="p-1.5 rounded hover:bg-black/5" title="Таймер">
+                <button onClick={() => openTimer(s)} className="p-1.5 rounded hover:bg-muted/60" title="Таймер">
                   <Play size={14} />
                 </button>
               )}
-              <button onClick={() => removeStep(s.id)} className="p-1.5 rounded hover:bg-black/5 opacity-50" title="Убрать шаг">
+              <button onClick={() => removeStep(s.id)} className="p-1.5 rounded hover:bg-muted/60 opacity-50" title="Убрать шаг">
                 <Trash2 size={13} />
               </button>
             </div>
@@ -369,7 +369,7 @@ function ProjectDetail({
           onChange={(e) => setStepText(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { addSteps([stepText]); setStepText(""); } }}
           placeholder="Новый шаг..."
-          className="flex-1 text-sm px-2.5 py-2 rounded-md border border-border bg-white/70 dark:bg-white/10 outline-none"
+          className="flex-1 text-sm px-2.5 py-2 rounded-md border border-border bg-muted/70 outline-none"
         />
         <button
           onClick={() => { addSteps([stepText]); setStepText(""); }}
@@ -381,7 +381,7 @@ function ProjectDetail({
 
       {/* Hint actions */}
       <div className="flex flex-wrap gap-2 mb-3">
-        <button onClick={offline} className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-white/60 border border-border/50">
+        <button onClick={offline} className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-muted/60 border border-border/50">
           <Lightbulb size={13} /> Подсказать шаги
         </button>
         <button
@@ -391,18 +391,18 @@ function ProjectDetail({
         >
           {aiLoading ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />} Спросить AI
         </button>
-        <button onClick={() => setShowLibrary(!showLibrary)} className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-white/60 border border-border/50">
+        <button onClick={() => setShowLibrary(!showLibrary)} className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-muted/60 border border-border/50">
           <Library size={13} /> Библиотека чек-листов
         </button>
         {steps.length > 0 && (
-          <button onClick={saveAsTemplate} className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-white/60 border border-border/50">
+          <button onClick={saveAsTemplate} className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-muted/60 border border-border/50">
             <BookmarkPlus size={13} /> Сохранить как чек-лист
           </button>
         )}
       </div>
 
       {hints && (
-        <div className="mb-3 p-2.5 rounded-lg bg-white/50 dark:bg-white/5 border border-border/50">
+        <div className="mb-3 p-2.5 rounded-lg bg-muted/50 border border-border/50">
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-xs font-semibold opacity-70">Предложенные шаги</span>
             <button
@@ -417,7 +417,7 @@ function ProjectDetail({
               <button
                 key={i}
                 onClick={() => addSteps([h])}
-                className="text-xs px-2 py-1 rounded-full bg-white/70 border border-border/50 hover:border-primary/50"
+                className="text-xs px-2 py-1 rounded-full bg-muted/70 text-foreground border border-border/50 hover:border-primary/50"
               >
                 + {h}
               </button>
@@ -427,7 +427,7 @@ function ProjectDetail({
       )}
 
       {showLibrary && (
-        <div className="mb-3 p-2.5 rounded-lg bg-white/50 dark:bg-white/5 border border-border/50 space-y-1.5">
+        <div className="mb-3 p-2.5 rounded-lg bg-muted/50 border border-border/50 space-y-1.5">
           <span className="text-xs font-semibold opacity-70 flex items-center gap-1"><ListChecks size={12} /> Готовые чек-листы</span>
           {library.map((tpl) => (
             <div key={tpl.id} className="flex items-center gap-2">
@@ -441,7 +441,7 @@ function ProjectDetail({
               {!tpl.builtin && (
                 <button
                   onClick={() => onSaveChecklists(checklists.filter((c) => c.id !== tpl.id))}
-                  className="p-1 rounded hover:bg-black/5 text-red-600"
+                  className="p-1 rounded hover:bg-muted/60 text-red-600"
                 >
                   <Trash2 size={12} />
                 </button>

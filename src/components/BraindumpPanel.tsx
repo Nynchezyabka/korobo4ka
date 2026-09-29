@@ -6,8 +6,8 @@ import { CATEGORIES, CategoryId, RECURRENCE_LABELS, WEEKDAYS, RecurrenceType } f
 import { DraftItem, DraftKind, normalizeItems, applyDraft } from "@/lib/braindump";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Wand2, Mic, Loader2, Trash2, Check, StickyNote } from "lucide-react";
-import { useNotes, markNotesProcessed, removeNote } from "@/lib/notes";
+import { Wand2, Mic, Loader2, Trash2, Check, StickyNote, ChevronDown } from "lucide-react";
+import { useNotes, markNotesProcessed, removeNote, addNote } from "@/lib/notes";
 
 const GROUPS: { kind: DraftKind; title: string; hint: string }[] = [
   { kind: "event", title: "Со сроком", hint: "Привязано к дате и времени" },
@@ -26,8 +26,12 @@ export function BraindumpPanel() {
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState("");
   const [items, setItems] = useState<DraftItem[] | null>(null);
+  const [showProcessed, setShowProcessed] = useState(false);
   const [listening, setListening] = useState(false);
   const recogRef = useRef<any>(null);
+  const draftRef = useRef<DraftItem[] | null>(null);
+  draftRef.current = items;
+  const doneRef = useRef(false);
   const [demoLeft, setDemoLeft] = useState<number | null>(null);
 
   useEffect(() => {
@@ -39,6 +43,7 @@ export function BraindumpPanel() {
 
   const notes = useNotes();
   const pendingNotes = notes.filter((n) => !n.processed);
+  const processedNotes = notes.filter((n) => n.processed);
   const takeNotes = (ids: string[]) => {
     const picked = pendingNotes.filter((n) => ids.includes(n.id)).map((n) => n.text);
     if (!picked.length) return;
@@ -48,6 +53,16 @@ export function BraindumpPanel() {
 
   const update = (uid: string, patch: Partial<DraftItem>) =>
     setItems((prev) => prev?.map((i) => (i.uid === uid ? { ...i, ...patch } : i)) ?? prev);
+
+  /** Сохранить неподтверждённые карточки как обработанные заметки — ничего не пропадает. */
+  const saveUnconfirmed = (draft: DraftItem[]): number => {
+    const rest = draft.filter((i) => i.text.trim() && !(i.selected && i.kind !== "not_task"));
+    if (!rest.length) return 0;
+    for (const i of rest) addNote(i.kind === "not_task" ? `(контекст) ${i.text}` : i.text, true);
+    return rest.length;
+  };
+
+  const resetDraft = () => { setItems(null); setSummary(""); };
 
   const analyze = async () => {
     if (text.trim().length < 5) {
@@ -70,6 +85,7 @@ export function BraindumpPanel() {
       if (typeof (data as any)?.demo?.left === "number") setDemoLeft((data as any).demo.left);
       setSummary(String((data as any)?.summary ?? ""));
       setItems(normalized);
+      doneRef.current = false;
     } catch (e: any) {
       toast.error(e?.message || "Не удалось разобрать текст");
     } finally {
@@ -104,16 +120,32 @@ export function BraindumpPanel() {
       templates: app.templates,
       saveTemplates: app.saveTemplates,
     });
+    const saved = saveUnconfirmed(items);
+    doneRef.current = true;
     const parts: string[] = [];
     if (res.tasks) parts.push(`задач: ${res.tasks}`);
     if (res.projects) parts.push(`проектов: ${res.projects}`);
     if (res.recurring) parts.push(`повторяющихся: ${res.recurring}`);
-    if (!parts.length) { toast.info("Ничего не выбрано"); return; }
+    if (!parts.length) {
+      if (saved) toast.info(`Добавлять нечего — остальное сохранила в заметки (${saved})`);
+      else toast.info("Ничего не выбрано");
+      resetDraft();
+      return;
+    }
     toast.success(`Добавлено — ${parts.join(", ")}`);
-    setItems(null);
-    setSummary("");
+    if (saved) toast.info(`Остальное сохранила в заметки (${saved})`);
+    resetDraft();
     setText("");
   };
+
+  // При уходе с экрана черновик не пропадает: неподтверждённое уходит в заметки.
+  useEffect(() => {
+    return () => {
+      const draft = draftRef.current;
+      if (draft && !doneRef.current) saveUnconfirmed(draft);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const selectedCount = items?.filter((i) => i.selected && i.kind !== "not_task").length ?? 0;
 
@@ -175,6 +207,28 @@ export function BraindumpPanel() {
               <button onClick={() => removeNote(n.id)} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
             </div>
           ))}
+        </div>
+      )}
+
+      {processedNotes.length > 0 && (
+        <div className="rounded-xl border border-dashed border-border p-2.5">
+          <button
+            onClick={() => setShowProcessed(!showProcessed)}
+            className="flex w-full items-center justify-between text-sm font-semibold text-muted-foreground"
+          >
+            <span className="flex items-center gap-1.5"><StickyNote size={15} /> Обработанные · {processedNotes.length}</span>
+            <ChevronDown size={15} className={cn("transition-transform", showProcessed && "rotate-180")} />
+          </button>
+          {showProcessed && (
+            <div className="mt-2 space-y-1.5">
+              {processedNotes.map((n) => (
+                <div key={n.id} className="flex items-start gap-2 rounded-lg bg-muted/20 p-2 opacity-70">
+                  <p className="flex-1 min-w-0 text-sm whitespace-pre-wrap break-words">{n.text}</p>
+                  <button onClick={() => removeNote(n.id)} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -333,7 +387,7 @@ export function BraindumpPanel() {
               <Check size={18} /> Добавить выбранное ({selectedCount})
             </button>
             <button
-              onClick={() => { setItems(null); setSummary(""); }}
+              onClick={() => { const saved = items ? saveUnconfirmed(items) : 0; doneRef.current = true; resetDraft(); if (saved) toast.info(`Остальное сохранила в заметки (${saved})`); }}
               className="px-4 h-11 rounded-xl bg-muted text-muted-foreground text-sm font-medium"
             >
               Отмена
