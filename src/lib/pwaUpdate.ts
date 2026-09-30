@@ -98,8 +98,10 @@ export async function checkForUpdates(): Promise<"unavailable" | "current" | "av
     registration = reg;
     await reg.update();
     // Дать новой версии время установиться
-    for (let i = 0; i < 12; i++) {
+    // Новая версия качает все файлы (включая 3D-модели) — ждём до ~20 с, пока идёт установка
+    for (let i = 0; i < 80; i++) {
       if (hasWaiting(reg) || needRefresh) break;
+      if (i >= 12 && !reg.installing) break;
       await new Promise((r) => setTimeout(r, 250));
     }
     if (hasWaiting(reg)) setNeedRefresh(true);
@@ -122,6 +124,8 @@ export async function applyUpdate() {
       { once: true }
     );
   }
+  // Страховка: если новая версия не взяла управление за 4 с — просто перезагружаем
+  setTimeout(() => window.location.reload(), 4000);
   if (updateSWFn) {
     await updateSWFn(true); // skipWaiting + перезагрузка
     return;

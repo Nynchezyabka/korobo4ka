@@ -356,7 +356,7 @@ export function ProjectsPanel() {
             </button>
             <button
               onClick={() => setCreating(false)}
-              className="ml-auto px-2.5 py-2 rounded-md text-sm text-muted-foreground transition-all duration-150 hover:text-foreground hover:bg-muted/60 active:scale-95"
+              className="ml-auto px-3 py-2 rounded-md text-sm font-medium text-foreground/80 bg-muted border border-border transition-all duration-150 hover:text-foreground hover:bg-muted/80 active:scale-95"
             >
               Отмена
             </button>
