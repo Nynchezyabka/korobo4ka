@@ -237,7 +237,7 @@ export function ProjectsPanel() {
             {([1, 2, 5, 3, 4, 0] as CategoryId[]).map((c) => (
               <button
                 key={c}
-                onClick={() => setNewCat(c)}
+                onClick={() => { setNewCat(c); setNewSub(""); }}
                 className={cn(
                   "text-xs px-2 py-1 rounded-full border flex items-center gap-1",
                   newCat === c ? "border-primary bg-primary/10 font-semibold" : "border-border/60 bg-muted/50"
@@ -247,6 +247,7 @@ export function ProjectsPanel() {
               </button>
             ))}
           </div>
+          <SubcategoryPicker category={newCat} value={newSub} onChange={setNewSub} />
           <div className="flex gap-1.5">
             {(["sequential", "parallel"] as const).map((m) => (
               <button
