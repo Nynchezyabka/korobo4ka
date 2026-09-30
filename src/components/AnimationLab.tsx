@@ -1,4 +1,6 @@
 import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
+
 import { X, Package, Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { playFold, playBurn, type FoldVariant, type BurnVariant } from "@/lib/paperFxLab";
