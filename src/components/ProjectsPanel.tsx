@@ -39,17 +39,22 @@ export function ProjectsPanel() {
     saveChecklists(list);
   };
 
-  const createProject = () => {
+  const createProject = async () => {
     const title = newTitle.trim();
     if (!title) return;
+    // Reload fresh list: "Разбор" may have added projects meanwhile.
+    const fresh = await loadProjects();
+    const usedIds = new Set(tasks.map((t) => t.projectId).filter(Boolean) as number[]);
+    let id = newProjectId(fresh);
+    while (usedIds.has(id)) id++;
     const p: Project = {
-      id: nextId(projects),
+      id,
       title,
       category: newCat,
       mode: newMode,
       createdAt: Date.now(),
     };
-    persist([...projects, p]);
+    persist([...fresh, p]);
     setNewTitle("");
     setCreating(false);
     setOpenId(p.id);

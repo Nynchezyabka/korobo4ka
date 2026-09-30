@@ -1,6 +1,6 @@
 import { Task, TaskTemplate, CategoryId, Project, RecurrenceType } from "@/types";
 import { getNextId } from "@/lib/taskStore";
-import { loadProjects, saveProjects, nextId as nextProjectId } from "@/lib/projects";
+import { loadProjects, saveProjects, newProjectId } from "@/lib/projects";
 
 export type DraftKind = "task" | "event" | "project" | "recurring" | "not_task";
 
@@ -87,7 +87,7 @@ export async function applyDraft(items: DraftItem[], ctx: ApplyCtx): Promise<App
   const createdProjects: { item: DraftItem; project: Project }[] = [];
   if (projectItems.length) {
     const existing = await loadProjects();
-    let pid = nextProjectId(existing);
+    let pid = newProjectId(existing);
     const list = [...existing];
     for (const it of projectItems) {
       const project: Project = {

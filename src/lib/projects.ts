@@ -47,3 +47,8 @@ export async function addBlockerEntry(entry: Omit<BlockerEntry, "id">) {
 export function nextId(items: { id: number }[]): number {
   return items.reduce((m, i) => Math.max(m, i.id), 0) + 1;
 }
+
+/** Unique, never-reused project id (timestamp-based) so deleted/stale ids can't collide. */
+export function newProjectId(items: { id: number }[]): number {
+  return Math.max(Date.now(), nextId(items));
+}
