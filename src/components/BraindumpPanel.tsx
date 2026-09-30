@@ -10,7 +10,8 @@ import { CATEGORIES, CategoryId, RECURRENCE_LABELS, WEEKDAYS, RecurrenceType } f
 import { DraftItem, DraftKind, normalizeItems, applyDraft } from "@/lib/braindump";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Wand2, Mic, Loader2, Trash2, Check, StickyNote, ChevronDown } from "lucide-react";
+import { Wand2, Mic, Loader2, Trash2, Check, StickyNote, ChevronDown, Paperclip, Link2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useNotes, markNotesProcessed, removeNote, restoreNote, addNote, Note } from "@/lib/notes";
 import { showUndoToast } from "@/lib/undoDelete";
 import { burnInPlace } from "@/lib/paperFx";
@@ -43,6 +44,64 @@ export function BraindumpPanel() {
   const [aiStore, setAiStore] = useState<AiStore>(() => loadAiStore());
   const [aiSource, setAiSource] = useState<AiSource>(() => loadAiSource());
   const [aiOwner, setAiOwner] = useState(false);
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkLoading, setLinkLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const MAX_TEXT_LEN = 12_000;
+  /** Добавить текст в поле, не превышая лимит запроса к модели. */
+  const appendText = (addition: string) => {
+    const chunk = addition.trim();
+    if (!chunk) return;
+    setText((prev) => {
+      const joined = [prev.trim(), chunk].filter(Boolean).join("\n\n");
+      if (joined.length > MAX_TEXT_LEN) {
+        toast.info(`Текст очень длинный — взяла первые ${MAX_TEXT_LEN.toLocaleString("ru-RU")} символов`);
+        return joined.slice(0, MAX_TEXT_LEN);
+      }
+      return joined;
+    });
+  };
+
+  const handleFilePick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const okType = /\.(txt|md)$/i.test(file.name) || /text\/(plain|markdown)/.test(file.type);
+    if (!okType) {
+      toast.error("Пока умею читать только текстовые файлы (.txt, .md)");
+      return;
+    }
+    if (file.size > 300_000) {
+      toast.error("Файл слишком большой — до 300 КБ");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => appendText(String(reader.result ?? ""));
+    reader.onerror = () => toast.error("Не удалось прочитать файл");
+    reader.readAsText(file);
+  };
+
+  const handleLinkFetch = async () => {
+    const url = linkUrl.trim();
+    if (!url) return;
+    setLinkLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("fetch-url", { body: { url } });
+      if (error) throw new Error((data as any)?.error || "Не удалось прочитать страницу");
+      const text = String((data as any)?.text ?? "");
+      if (!text) throw new Error("Не удалось извлечь текст со страницы");
+      appendText(text);
+      if ((data as any)?.truncated) toast.info("Страница очень длинная — взяла начало");
+      setLinkOpen(false);
+      setLinkUrl("");
+    } catch (err: any) {
+      toast.error(err?.message || "Не удалось прочитать страницу");
+    } finally {
+      setLinkLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (currentAiLabel() !== "Демо-режим") { setDemoLeft(null); return; }
@@ -221,6 +280,7 @@ export function BraindumpPanel() {
         <h2 className="font-display text-2xl sm:text-3xl text-foreground">Разбор</h2>
         <p className="text-xs sm:text-sm text-muted-foreground mt-1">
           Напишите всё как есть — помощник разложит это на задачи, проекты и повторяющиеся дела.
+          Можно надиктовать, прикрепить текстовый файл (.txt, .md) или вставить ссылку на страницу.
           Ничего не сохранится, пока вы не подтвердите.
         </p>
       </div>
@@ -243,6 +303,57 @@ export function BraindumpPanel() {
           >
             {listening ? <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" /> : <Mic size={18} />}
           </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".txt,.md,text/plain,text/markdown"
+            className="hidden"
+            onChange={handleFilePick}
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center justify-center w-10 h-10 rounded-lg border border-border text-muted-foreground hover:bg-muted shrink-0"
+            title="Прикрепить текстовый файл (.txt, .md)"
+          >
+            <Paperclip size={18} />
+          </button>
+          <div className="relative shrink-0">
+            <button
+              onClick={() => setLinkOpen((o) => !o)}
+              className={cn(
+                "flex items-center justify-center w-10 h-10 rounded-lg border shrink-0",
+                linkOpen ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:bg-muted"
+              )}
+              title="Вставить ссылку на страницу"
+            >
+              <Link2 size={18} />
+            </button>
+            {linkOpen && (
+              <>
+                <div className="fixed inset-0 z-[10150]" onClick={() => setLinkOpen(false)} />
+                <div className="absolute z-[10200] bottom-full left-0 mb-1 w-72 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-background shadow-lg p-2 space-y-1.5 animate-scale-in">
+                  <p className="text-[11px] text-muted-foreground px-0.5">Ссылка на страницу — текст добавится в поле</p>
+                  <input
+                    type="url"
+                    value={linkUrl}
+                    onChange={(e) => setLinkUrl(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") handleLinkFetch(); }}
+                    placeholder="https://…"
+                    autoFocus
+                    className="w-full text-sm px-2 py-1.5 rounded-md border border-border bg-background outline-none focus:border-primary"
+                  />
+                  <button
+                    onClick={handleLinkFetch}
+                    disabled={linkLoading || !linkUrl.trim()}
+                    className="w-full flex items-center justify-center gap-1.5 h-8 rounded-md bg-primary text-primary-foreground text-xs font-medium disabled:opacity-40"
+                  >
+                    {linkLoading ? <Loader2 size={14} className="animate-spin" /> : <Link2 size={14} />}
+                    {linkLoading ? "Читаю страницу…" : "Добавить текст"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
           <button
             onClick={analyze}
             disabled={loading || text.trim().length < 5}
