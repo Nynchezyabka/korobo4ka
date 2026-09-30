@@ -96,6 +96,7 @@ export function ProjectsPanel() {
   const [creating, setCreating] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDetails, setNewDetails] = useState("");
+  const [newSteps, setNewSteps] = useState("");
   const [newCat, setNewCat] = useState<CategoryId>(1);
   const [newSub, setNewSub] = useState("");
   const [newMode, setNewMode] = useState<"sequential" | "parallel">("sequential");
@@ -133,8 +134,34 @@ export function ProjectsPanel() {
       createdAt: Date.now(),
     };
     persist([...fresh, p]);
+
+    // Шаги, набранные сразу в форме: каждая строка — отдельный шаг.
+    const manualSteps = newSteps
+      .split("\n")
+      .map((s) => s.replace(/^\s*[-•*\d.)]+\s*/, "").trim())
+      .filter(Boolean);
+    if (manualSteps.length > 0) {
+      setTasks((prev) => {
+        let stepId = getNextId(prev);
+        let order = 0;
+        const created: Task[] = manualSteps.map((text) => ({
+          id: stepId++,
+          text,
+          category: p.category,
+          subcategory: p.subcategory,
+          completed: false,
+          active: true,
+          statusChangedAt: Date.now(),
+          projectId: p.id,
+          stepOrder: ++order,
+        }));
+        return [...prev, ...created];
+      });
+    }
+
     setNewTitle("");
     setNewDetails("");
+    setNewSteps("");
     setNewSub("");
     setCreating(false);
     setSuggestOnOpenId(suggestSteps ? p.id : null);
@@ -232,6 +259,27 @@ export function ProjectsPanel() {
           <p className="text-xs text-muted-foreground">
             Чем подробнее описание, тем точнее нейросеть предложит шаги — она видит и название, и эти детали.
           </p>
+
+          <div className="pt-1">
+            <label className="text-xs font-semibold opacity-70 block mb-1">
+              Шаги — по одному на строку (необязательно)
+            </label>
+            <div className="flex gap-2 items-start">
+              <textarea
+                value={newSteps}
+                onChange={(e) => setNewSteps(e.target.value)}
+                rows={3}
+                placeholder={"Если шаги уже есть в голове — впишите их здесь\nкаждый с новой строки\nили вставьте готовый список"}
+                className="flex-1 text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none resize-y min-h-[68px]"
+              />
+              <VoiceButton
+                title="Наговорить шаги"
+                onText={(t) => setNewSteps((prev) => (prev ? prev + "\n" : "") + t)}
+              />
+            </div>
+          </div>
+
+
 
           <div className="flex flex-wrap gap-1.5">
             {([1, 2, 5, 3, 4, 0] as CategoryId[]).map((c) => (
@@ -391,6 +439,17 @@ function ProjectDetail({
       }));
       return [...prev, ...created];
     });
+  };
+
+  /** Ввод шагов: каждая строка — отдельный шаг, маркеры списка убираются. */
+  const submitSteps = () => {
+    const lines = stepText
+      .split("\n")
+      .map((s) => s.replace(/^\s*[-•*\d.)]+\s*/, "").trim())
+      .filter(Boolean);
+    if (lines.length === 0) { setStepText(""); return; }
+    addSteps(lines);
+    setStepText("");
   };
 
   const removeStep = (id: number) => deleteWithUndo(setTasks, id);
@@ -601,7 +660,9 @@ function ProjectDetail({
       {/* Steps */}
       <div className="space-y-1.5 mb-4">
         {steps.length === 0 && (
-          <p className="text-sm text-muted-foreground">Шагов пока нет. Добавьте вручную или воспользуйтесь подсказками ниже.</p>
+          <p className="text-sm text-muted-foreground">
+            Шагов пока нет. Впишите их в поле ниже — по одному на строку, — или воспользуйтесь подсказками.
+          </p>
         )}
         {steps.map((s, i) => {
           const blocked = project.mode === "sequential" && !s.completed && i > firstUndoneIdx && firstUndoneIdx !== -1;
@@ -641,15 +702,19 @@ function ProjectDetail({
 
       {/* Add step */}
       <div className="flex gap-2 mb-3">
-        <input
+        <textarea
           value={stepText}
           onChange={(e) => setStepText(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") { addSteps([stepText]); setStepText(""); } }}
-          placeholder="Новый шаг..."
-          className="flex-1 text-sm px-2.5 py-2 rounded-md border border-border bg-muted/70 outline-none"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submitSteps(); }
+          }}
+          rows={stepText.includes("\n") ? 3 : 1}
+          autoFocus={steps.length === 0}
+          placeholder="Новый шаг... (можно вставить список — строка = шаг)"
+          className="flex-1 text-sm px-2.5 py-2 rounded-md border border-border bg-muted/70 outline-none resize-y"
         />
         <button
-          onClick={() => { addSteps([stepText]); setStepText(""); }}
+          onClick={submitSteps}
           className="px-3 rounded-md bg-primary text-primary-foreground"
         >
           <Plus size={16} />
