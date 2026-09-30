@@ -1,5 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { runAI, currentAiLabel, fetchDemoStatus } from "@/lib/aiClient";
+import {
+  loadAiStore, setActiveConnection, updateConnection, saveAiSource, loadAiSource,
+  hasOwnerCode, AiSource, AiStore,
+} from "@/lib/aiProviders";
 import { BRAINDUMP_INSTRUCTIONS, BRAINDUMP_SCHEMA } from "@/lib/aiPrompts";
 import { useApp } from "@/App";
 import { CATEGORIES, CategoryId, RECURRENCE_LABELS, WEEKDAYS, RecurrenceType } from "@/types";
