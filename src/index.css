@@ -350,28 +350,6 @@ html.skin-strict {
   will-change: transform, opacity;
 }
 
-.paper-ember {
-  position: fixed;
-  width: 4px;
-  height: 4px;
-  border-radius: 9999px;
-  background: hsl(28 90% 58%);
-  box-shadow: 0 0 6px hsl(28 95% 60% / 0.8);
-  pointer-events: none;
-  will-change: transform, opacity;
-}
-
-.paper-smoke {
-  position: fixed;
-  width: 10px;
-  height: 10px;
-  border-radius: 9999px;
-  background: hsl(var(--foreground) / 0.18);
-  filter: blur(3px);
-  pointer-events: none;
-  will-change: transform, opacity;
-}
-
 .paper-dust {
   position: fixed;
   width: 3px;
