@@ -7,7 +7,7 @@ import { CATEGORIES, CategoryId, RECURRENCE_LABELS, WEEKDAYS, RecurrenceType } f
 import { DraftItem, DraftKind, normalizeItems, applyDraft } from "@/lib/braindump";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Wand2, Mic, Loader2, Trash2, Check, StickyNote, ChevronDown, Paperclip, Link2 } from "lucide-react";
+import { Wand2, Mic, Loader2, Trash2, Check, StickyNote, ChevronDown, Paperclip, Link2, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNotes, markNotesProcessed, removeNote, restoreNote, addNote, Note } from "@/lib/notes";
 import { showUndoToast } from "@/lib/undoDelete";
@@ -23,6 +23,13 @@ const GROUPS: { kind: DraftKind; title: string; hint: string }[] = [
 
 const PLACEHOLDER =
   "Опишите ситуацию своими словами: что происходит, что нужно сделать, что беспокоит. Можно длинно и без порядка.";
+
+/** Живой пример потока мыслей — чтобы новичок сразу увидел, как работает разбор. */
+const EXAMPLE_TEXT =
+  "Иду по улице и всё крутится в голове. Надо записаться к врачу и не забыть спросить про анализы. " +
+  "Зайти за жёлтой акриловой краской — я так и не расписала керамический горшок. " +
+  "Грустно от того, что муж опять ворчал утром. Цветы не политы уже неделю. " +
+  "Коту закончился корм, надо заказать. И привязалось от ребёнка «блинчики-оладушки, были мы у бабушки», никак не выгнать.";
 
 export function BraindumpPanel() {
   const app = useApp() as any;
@@ -254,6 +261,14 @@ export function BraindumpPanel() {
           Можно надиктовать, прикрепить текстовый файл (.txt, .md) или вставить ссылку на страницу.
           Ничего не сохранится, пока вы не подтвердите.
         </p>
+        {!text.trim() && !items && (
+          <button
+            onClick={() => setText(EXAMPLE_TEXT)}
+            className="mt-2 inline-flex items-center gap-1.5 text-xs sm:text-sm px-2.5 py-1.5 rounded-full border border-primary/40 text-primary hover:bg-primary/10 active:scale-95 transition-all"
+          >
+            <Sparkles size={14} /> Попробовать пример
+          </button>
+        )}
       </div>
 
       <div className="rounded-xl border border-border bg-background p-2.5">
