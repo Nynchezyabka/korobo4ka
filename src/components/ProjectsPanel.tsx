@@ -134,8 +134,34 @@ export function ProjectsPanel() {
       createdAt: Date.now(),
     };
     persist([...fresh, p]);
+
+    // Шаги, набранные сразу в форме: каждая строка — отдельный шаг.
+    const manualSteps = newSteps
+      .split("\n")
+      .map((s) => s.replace(/^\s*[-•*\d.)]+\s*/, "").trim())
+      .filter(Boolean);
+    if (manualSteps.length > 0) {
+      setTasks((prev) => {
+        let stepId = getNextId(prev);
+        let order = 0;
+        const created: Task[] = manualSteps.map((text) => ({
+          id: stepId++,
+          text,
+          category: p.category,
+          subcategory: p.subcategory,
+          completed: false,
+          active: true,
+          statusChangedAt: Date.now(),
+          projectId: p.id,
+          stepOrder: ++order,
+        }));
+        return [...prev, ...created];
+      });
+    }
+
     setNewTitle("");
     setNewDetails("");
+    setNewSteps("");
     setNewSub("");
     setCreating(false);
     setSuggestOnOpenId(suggestSteps ? p.id : null);
