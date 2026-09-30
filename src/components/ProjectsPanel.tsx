@@ -1,19 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CategoryId, ChecklistTemplate, Project, Task } from "@/types";
 import { useApp } from "@/App";
 import { getCategoryDisplayName } from "@/lib/taskStore";
 import { getNextId } from "@/lib/taskStore";
 import { loadProjects, saveProjects, loadChecklists, saveChecklists, nextId, newProjectId } from "@/lib/projects";
-import { suggestStepsOffline, BUILTIN_TEMPLATES } from "@/lib/stepHints";
+import { BUILTIN_TEMPLATES } from "@/lib/stepHints";
 import { runAI } from "@/lib/aiClient";
 import { STEPS_INSTRUCTIONS, STEPS_SCHEMA } from "@/lib/aiPrompts";
 import { CategoryIcon } from "@/components/CategoryIcon";
+import { AiModelPicker } from "@/components/AiModelPicker";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { deleteWithUndo, showUndoToast } from "@/lib/undoDelete";
 import { foldToBox, burnInPlace } from "@/lib/paperFx";
 import {
-  Plus, ChevronLeft, Play, Check, Trash2, Sparkles, Lightbulb,
+  Plus, ChevronLeft, Play, Check, Trash2, Sparkles,
   BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat,
 } from "lucide-react";
 
@@ -26,6 +27,7 @@ export function ProjectsPanel() {
   const [newTitle, setNewTitle] = useState("");
   const [newCat, setNewCat] = useState<CategoryId>(1);
   const [newMode, setNewMode] = useState<"sequential" | "parallel">("sequential");
+  const [suggestOnOpenId, setSuggestOnOpenId] = useState<number | null>(null);
 
   useEffect(() => {
     loadProjects().then(setProjects);
@@ -41,7 +43,7 @@ export function ProjectsPanel() {
     saveChecklists(list);
   };
 
-  const createProject = async () => {
+  const createProject = async (suggestSteps = false) => {
     const title = newTitle.trim();
     if (!title) return;
     // Reload fresh list: "Разбор" may have added projects meanwhile.
@@ -59,6 +61,7 @@ export function ProjectsPanel() {
     persist([...fresh, p]);
     setNewTitle("");
     setCreating(false);
+    setSuggestOnOpenId(suggestSteps ? p.id : null);
     setOpenId(p.id);
   };
 
@@ -100,6 +103,8 @@ export function ProjectsPanel() {
         onBack={() => setOpenId(null)}
         onDelete={() => deleteProject(open.id)}
         onUpdate={(patch) => persist(projects.map((p) => (p.id === open.id ? { ...p, ...patch } : p)))}
+        suggestOnOpen={suggestOnOpenId === open.id}
+        onSuggestionStarted={() => setSuggestOnOpenId(null)}
       />
     );
   }
@@ -130,7 +135,7 @@ export function ProjectsPanel() {
           <input
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") createProject(); }}
+            onKeyDown={(e) => { if (e.key === "Enter") createProject(false); }}
             placeholder="Например: Забор на даче"
             className="w-full text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none"
             autoFocus
@@ -163,14 +168,18 @@ export function ProjectsPanel() {
               </button>
             ))}
           </div>
-          <div className="flex gap-2 pt-1">
-            <button onClick={createProject} className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-sm">
+          <div className="flex flex-wrap gap-2 pt-1">
+            <button onClick={() => createProject(false)} className="px-3 py-1.5 rounded-md bg-muted/60 text-sm border border-border/50">
               Создать
+            </button>
+            <button onClick={() => createProject(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-sm">
+              <Sparkles size={14} /> Создать и предложить шаги
             </button>
             <button onClick={() => setCreating(false)} className="px-3 py-1.5 rounded-md bg-muted/60 text-sm border border-border/50">
               Отмена
             </button>
           </div>
+          <AiModelPicker contextLabel="Кто предложит шаги" />
         </div>
       )}
 
@@ -226,16 +235,19 @@ interface DetailProps {
   onBack: () => void;
   onDelete: () => void;
   onUpdate: (patch: Partial<Project>) => void;
+  suggestOnOpen: boolean;
+  onSuggestionStarted: () => void;
 }
 
 function ProjectDetail({
   project, tasks, setTasks, openTimer, completeTask,
-  checklists, onSaveChecklists, onBack, onDelete, onUpdate,
+  checklists, onSaveChecklists, onBack, onDelete, onUpdate, suggestOnOpen, onSuggestionStarted,
 }: DetailProps) {
   const [stepText, setStepText] = useState("");
   const [hints, setHints] = useState<string[] | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [showLibrary, setShowLibrary] = useState(false);
+  const suggestionStartedRef = useRef(false);
 
   const steps = useMemo(
     () => tasks.filter((t) => t.projectId === project.id).sort((a, b) => (a.stepOrder ?? 0) - (b.stepOrder ?? 0)),
@@ -273,12 +285,6 @@ function ProjectDetail({
     }
   };
 
-  const offline = () => {
-    const res = suggestStepsOffline(project.title);
-    setHints(res.steps);
-    toast.info(`Подсказки: ${res.title}`);
-  };
-
   const askAi = async () => {
     setAiLoading(true);
     try {
@@ -300,6 +306,13 @@ function ProjectDetail({
       setAiLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!suggestOnOpen || suggestionStartedRef.current) return;
+    suggestionStartedRef.current = true;
+    onSuggestionStarted();
+    void askAi();
+  }, [suggestOnOpen]);
 
   const saveAsTemplate = () => {
     if (steps.length === 0) return;
@@ -349,7 +362,7 @@ function ProjectDetail({
       {/* Steps */}
       <div className="space-y-1.5 mb-4">
         {steps.length === 0 && (
-          <p className="text-sm text-muted-foreground">Шагов пока нет. Добавьте вручную или возьмите подсказки ниже.</p>
+          <p className="text-sm text-muted-foreground">Шагов пока нет. Добавьте вручную или воспользуйтесь подсказками ниже.</p>
         )}
         {steps.map((s, i) => {
           const blocked = project.mode === "sequential" && !s.completed && i > firstUndoneIdx && firstUndoneIdx !== -1;
@@ -406,15 +419,12 @@ function ProjectDetail({
 
       {/* Hint actions */}
       <div className="flex flex-wrap gap-2 mb-3">
-        <button onClick={offline} className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-muted/60 border border-border/50">
-          <Lightbulb size={13} /> Подсказать шаги
-        </button>
         <button
           onClick={askAi}
           disabled={aiLoading}
           className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-primary/15 text-primary border border-primary/25 disabled:opacity-50"
         >
-          {aiLoading ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />} Спросить AI
+          {aiLoading ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />} Предложить шаги с AI
         </button>
         <button onClick={() => setShowLibrary(!showLibrary)} className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-muted/60 border border-border/50">
           <Library size={13} /> Библиотека чек-листов
@@ -425,6 +435,7 @@ function ProjectDetail({
           </button>
         )}
       </div>
+      <AiModelPicker className="mb-3" contextLabel="Кто предложит шаги" />
 
       {hints && (
         <div className="mb-3 p-2.5 rounded-lg bg-muted/50 border border-border/50">
