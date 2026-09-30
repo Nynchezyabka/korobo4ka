@@ -660,7 +660,9 @@ function ProjectDetail({
       {/* Steps */}
       <div className="space-y-1.5 mb-4">
         {steps.length === 0 && (
-          <p className="text-sm text-muted-foreground">Шагов пока нет. Добавьте вручную или воспользуйтесь подсказками ниже.</p>
+          <p className="text-sm text-muted-foreground">
+            Шагов пока нет. Впишите их в поле ниже — по одному на строку, — или воспользуйтесь подсказками.
+          </p>
         )}
         {steps.map((s, i) => {
           const blocked = project.mode === "sequential" && !s.completed && i > firstUndoneIdx && firstUndoneIdx !== -1;
