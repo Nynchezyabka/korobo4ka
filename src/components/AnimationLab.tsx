@@ -117,7 +117,6 @@ export function AnimationLab({ onClose }: { onClose: () => void }) {
           </p>
         )}
       </div>
-    </div>
     </div>,
     document.body
   );
