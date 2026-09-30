@@ -689,15 +689,19 @@ function ProjectDetail({
 
       {/* Add step */}
       <div className="flex gap-2 mb-3">
-        <input
+        <textarea
           value={stepText}
           onChange={(e) => setStepText(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") { addSteps([stepText]); setStepText(""); } }}
-          placeholder="Новый шаг..."
-          className="flex-1 text-sm px-2.5 py-2 rounded-md border border-border bg-muted/70 outline-none"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submitSteps(); }
+          }}
+          rows={stepText.includes("\n") ? 3 : 1}
+          autoFocus={steps.length === 0}
+          placeholder="Новый шаг... (можно вставить список — строка = шаг)"
+          className="flex-1 text-sm px-2.5 py-2 rounded-md border border-border bg-muted/70 outline-none resize-y"
         />
         <button
-          onClick={() => { addSteps([stepText]); setStepText(""); }}
+          onClick={submitSteps}
           className="px-3 rounded-md bg-primary text-primary-foreground"
         >
           <Plus size={16} />
