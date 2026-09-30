@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import {
   X, Bell, BellOff, BellRing, Type, RefreshCw, Download, Upload,
-  Archive, Info, Palette, Sparkles, KeyRound, Loader2, Trash2,
+  Archive, Info, Palette, Sparkles, KeyRound, Loader2, Trash2, Flame,
 } from "lucide-react";
+import { AnimationLab } from "@/components/AnimationLab";
+
 import {
   detectProvider, loadAiStore, addAiConnection, removeAiConnection,
   setActiveConnection, updateConnection, pickDefaultModel, AiConnection,
@@ -100,8 +102,12 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
     applySkin(skin);
   }, [skin]);
 
+  // Тестовый экран анимаций
+  const [labOpen, setLabOpen] = useState(false);
+
   // Updates
   const [needRefresh, setNeedRefresh] = useState(false);
+
 
   const [checking, setChecking] = useState(false);
   useEffect(() => {
@@ -310,12 +316,21 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
             >
               <Sparkles size={16} /> Что нового
             </button>
+            <button
+              onClick={() => setLabOpen(true)}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-muted/60 text-left"
+            >
+              <Flame size={16} /> Тест анимаций
+            </button>
             <div className="px-3 pt-1 text-[11px] text-muted-foreground">Версия {APP_VERSION}</div>
+
           </div>
         </Section>
       </div>
+      {labOpen && <AnimationLab onClose={() => setLabOpen(false)} />}
     </div>
   );
+
 }
 
 function AssistantSection() {
