@@ -60,6 +60,7 @@ export function AppSidebar({ currentPage, onNavigate, onOpenSettings }: Props) {
           return (
             <button
               key={item.id}
+              data-paper-target={item.id === "home" ? "box" : undefined}
               onClick={() => onNavigate(item.id)}
               title={!expanded ? item.label : undefined}
               className={itemClass(active)}
