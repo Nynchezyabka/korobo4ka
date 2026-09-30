@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { Task, CATEGORIES, CategoryId } from "@/types";
 import { useApp } from "@/App";
 import { deleteWithUndo } from "@/lib/undoDelete";
+import { burnInPlace } from "@/lib/paperFx";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { ChevronLeft, ChevronRight, Plus, Clock, Undo2, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -353,11 +354,11 @@ export function HistoryModal() {
           ) : (
             <div className="flex flex-col gap-2 mb-3">
               {(scheduledByDate.get(selectedDate) ?? []).map((task) => (
-                <div key={task.id} className={cn("rounded-lg p-2.5 border-l-4 group flex items-center gap-2", CAT_COLORS[task.category].bg, CAT_COLORS[task.category].border)}>
+                <div key={task.id} data-fx-row className={cn("rounded-lg p-2.5 border-l-4 group flex items-center gap-2", CAT_COLORS[task.category].bg, CAT_COLORS[task.category].border)}>
                   <CategoryIcon category={task.category} size={14} />
                   <span className="text-xs font-mono text-muted-foreground">{formatHHMM(new Date(task.scheduledFor!))}</span>
                   <span className="text-sm font-medium flex-1 truncate">{task.text}</span>
-                  <button onClick={() => deleteFromHistory(task.id)} className="p-1 rounded opacity-0 group-hover:opacity-60 hover:!opacity-100 text-red-500" title="Удалить"><Trash2 size={12} /></button>
+                  <button onClick={(e) => { burnInPlace(e.currentTarget, { text: task.text, category: task.category }); deleteFromHistory(task.id); }} className="p-1 rounded opacity-0 group-hover:opacity-60 hover:!opacity-100 text-red-500" title="Удалить"><Trash2 size={12} /></button>
                 </div>
               ))}
             </div>
