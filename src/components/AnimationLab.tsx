@@ -26,7 +26,7 @@ export function AnimationLab({ onClose }: { onClose: () => void }) {
   const row = (key: string) => document.querySelector(`[data-lab-row="${key}"]`);
 
   return createPortal(
-    <div className="fixed inset-0 z-[70] bg-background/95 backdrop-blur-sm overflow-y-auto">
+    <div className="fixed inset-0 z-[10400] bg-background/95 backdrop-blur-sm overflow-y-auto">
 
       <div className="max-w-xl mx-auto p-4 pb-16">
         <div className="flex items-center justify-between mb-1">
