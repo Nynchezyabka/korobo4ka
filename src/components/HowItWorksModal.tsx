@@ -104,7 +104,7 @@ export function HowItWorksModal({ onClose }: Props) {
           </div>
         </div>
 
-        <p className="mt-4 text-center font-display text-sm text-foreground/80">
+        <p className="mt-5 mb-1 text-center font-display text-lg sm:text-xl text-foreground/90">
           Дела — по коробочкам. В голове — тишина.
         </p>
       </div>

@@ -1,5 +1,9 @@
 # Roadmap
 
+## Мелкое
+- [x] Увеличить финальную надпись «Дела — по коробочкам. В голове — тишина.» в окне «Как устроена Коробочка».
+
+
 - [x] Add a persistent light/dark/3D appearance selector.
 - [x] Port the reference desk, boxes, paper model, lighting, labels, counters, and animations.
 - [x] Connect the 3D home to existing tasks, timer, category lists, and task creation.
