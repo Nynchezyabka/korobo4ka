@@ -280,6 +280,7 @@ export function BraindumpPanel() {
         <h2 className="font-display text-2xl sm:text-3xl text-foreground">Разбор</h2>
         <p className="text-xs sm:text-sm text-muted-foreground mt-1">
           Напишите всё как есть — помощник разложит это на задачи, проекты и повторяющиеся дела.
+          Можно надиктовать, прикрепить текстовый файл (.txt, .md) или вставить ссылку на страницу.
           Ничего не сохранится, пока вы не подтвердите.
         </p>
       </div>
@@ -302,6 +303,57 @@ export function BraindumpPanel() {
           >
             {listening ? <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" /> : <Mic size={18} />}
           </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".txt,.md,text/plain,text/markdown"
+            className="hidden"
+            onChange={handleFilePick}
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center justify-center w-10 h-10 rounded-lg border border-border text-muted-foreground hover:bg-muted shrink-0"
+            title="Прикрепить текстовый файл (.txt, .md)"
+          >
+            <Paperclip size={18} />
+          </button>
+          <div className="relative shrink-0">
+            <button
+              onClick={() => setLinkOpen((o) => !o)}
+              className={cn(
+                "flex items-center justify-center w-10 h-10 rounded-lg border shrink-0",
+                linkOpen ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:bg-muted"
+              )}
+              title="Вставить ссылку на страницу"
+            >
+              <Link2 size={18} />
+            </button>
+            {linkOpen && (
+              <>
+                <div className="fixed inset-0 z-[10150]" onClick={() => setLinkOpen(false)} />
+                <div className="absolute z-[10200] bottom-full left-0 mb-1 w-72 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-background shadow-lg p-2 space-y-1.5 animate-scale-in">
+                  <p className="text-[11px] text-muted-foreground px-0.5">Ссылка на страницу — текст добавится в поле</p>
+                  <input
+                    type="url"
+                    value={linkUrl}
+                    onChange={(e) => setLinkUrl(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") handleLinkFetch(); }}
+                    placeholder="https://…"
+                    autoFocus
+                    className="w-full text-sm px-2 py-1.5 rounded-md border border-border bg-background outline-none focus:border-primary"
+                  />
+                  <button
+                    onClick={handleLinkFetch}
+                    disabled={linkLoading || !linkUrl.trim()}
+                    className="w-full flex items-center justify-center gap-1.5 h-8 rounded-md bg-primary text-primary-foreground text-xs font-medium disabled:opacity-40"
+                  >
+                    {linkLoading ? <Loader2 size={14} className="animate-spin" /> : <Link2 size={14} />}
+                    {linkLoading ? "Читаю страницу…" : "Добавить текст"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
           <button
             onClick={analyze}
             disabled={loading || text.trim().length < 5}
