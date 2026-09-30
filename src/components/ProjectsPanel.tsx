@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CategoryId, ChecklistTemplate, Project, Task } from "@/types";
+import { CategoryId, ChecklistTemplate, DEFAULT_SUBCATEGORIES, Project, Task } from "@/types";
 import { useApp } from "@/App";
-import { getCategoryDisplayName } from "@/lib/taskStore";
+import { getCategoryDisplayName, getCustomSubcategoriesSync } from "@/lib/taskStore";
 import { getNextId } from "@/lib/taskStore";
 import { loadProjects, saveProjects, loadChecklists, saveChecklists, nextId, newProjectId } from "@/lib/projects";
 import { BUILTIN_TEMPLATES } from "@/lib/stepHints";
