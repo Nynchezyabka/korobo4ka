@@ -3,7 +3,7 @@ import { CategoryId, ChecklistTemplate, Project, Task } from "@/types";
 import { useApp } from "@/App";
 import { getCategoryDisplayName } from "@/lib/taskStore";
 import { getNextId } from "@/lib/taskStore";
-import { loadProjects, saveProjects, loadChecklists, saveChecklists, nextId } from "@/lib/projects";
+import { loadProjects, saveProjects, loadChecklists, saveChecklists, nextId, newProjectId } from "@/lib/projects";
 import { suggestStepsOffline, BUILTIN_TEMPLATES } from "@/lib/stepHints";
 import { runAI } from "@/lib/aiClient";
 import { STEPS_INSTRUCTIONS, STEPS_SCHEMA } from "@/lib/aiPrompts";
