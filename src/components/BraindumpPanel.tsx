@@ -328,7 +328,7 @@ export function BraindumpPanel() {
             <div key={n.id} data-fx-row className="flex items-start gap-2 rounded-lg bg-muted/30 p-2">
               <p className="flex-1 min-w-0 text-sm whitespace-pre-wrap break-words">{n.text}</p>
               <button onClick={() => takeNotes([n.id])} className="text-xs px-2 py-1 rounded border border-border hover:bg-muted shrink-0">В разбор</button>
-              <button onClick={() => deleteNote(n)} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
+              <button onClick={(e) => { burnInPlace(e.currentTarget, { text: n.text }); deleteNote(n); }} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
             </div>
           ))}
         </div>
@@ -348,7 +348,7 @@ export function BraindumpPanel() {
               {processedNotes.map((n) => (
                 <div key={n.id} data-fx-row className="flex items-start gap-2 rounded-lg bg-muted/20 p-2 opacity-70">
                   <p className="flex-1 min-w-0 text-sm whitespace-pre-wrap break-words">{n.text}</p>
-                  <button onClick={() => deleteNote(n)} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
+                  <button onClick={(e) => { burnInPlace(e.currentTarget, { text: n.text }); deleteNote(n); }} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
                 </div>
               ))}
             </div>
@@ -377,6 +377,7 @@ export function BraindumpPanel() {
                 {group.map((it) => (
                   <div
                     key={it.uid}
+                    data-fx-row
                     className={cn(
                       "rounded-lg border p-2.5 transition-colors",
                       it.kind === "not_task"
