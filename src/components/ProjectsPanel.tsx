@@ -101,6 +101,9 @@ export function ProjectsPanel() {
   const [newSub, setNewSub] = useState("");
   const [newMode, setNewMode] = useState<"sequential" | "parallel">("sequential");
   const [suggestOnOpenId, setSuggestOnOpenId] = useState<number | null>(null);
+  const [busy, setBusy] = useState<false | "plain" | "ai">(false);
+  const [titleNudge, setTitleNudge] = useState(false);
+  const titleInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     loadProjects().then(setProjects);
