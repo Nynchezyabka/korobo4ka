@@ -327,8 +327,10 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
           </div>
         </Section>
       </div>
+      {labOpen && <AnimationLab onClose={() => setLabOpen(false)} />}
     </div>
   );
+
 }
 
 function AssistantSection() {
