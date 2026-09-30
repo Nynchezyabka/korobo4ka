@@ -8,7 +8,8 @@ import type { CategoryId } from "@/types";
 export type FoldVariant = "envelope" | "crumple" | "flight";
 export type BurnVariant = "smolder" | "flash" | "dust";
 
-const GHOST_Z = 9995;
+// Выше окна «Тест анимаций» (z 10400), иначе бумажки летят под ним и не видны
+const GHOST_Z = 10600;
 
 const CATEGORY_BG: Record<CategoryId, string> = {
   0: "bg-cat-0-bg",
