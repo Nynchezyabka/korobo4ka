@@ -118,7 +118,7 @@ export interface UserAiConfig {
 
 export type AiConnection = UserAiConfig & { id: string };
 
-interface AiStore {
+export interface AiStore {
   connections: AiConnection[];
   activeId: string | null;
 }
