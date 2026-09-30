@@ -74,7 +74,7 @@ function play(ghost: HTMLElement, keyframes: Keyframe[], options: KeyframeAnimat
   animation.finished.then(done).catch(done);
 }
 
-/** Бумажка улетает в коробочку (иконка «Главная» в боковой панели). */
+/** Бумажка складывается конвертиком и улетает в коробочку. */
 export function foldToBox(source: Element | null | undefined, options: FxOptions) {
   const ghost = createGhost(source, options);
   if (!ghost) return;
@@ -85,63 +85,72 @@ export function foldToBox(source: Element | null | undefined, options: FxOptions
   const toY = target ? target.top + target.height / 2 : from.top + 24;
   const dx = toX - (from.left + from.width / 2);
   const dy = toY - (from.top + from.height / 2);
-  const tilt = dx >= 0 ? 1 : -1;
+  ghost.style.transformOrigin = "center center";
 
   play(
     ghost,
     [
-      { transform: "translate(0px, 0px) rotate(0deg) scale(1)", opacity: 1 },
+      { transform: "translate(0px, 0px) scaleX(1) scaleY(1)", opacity: 1 },
       {
-        transform: `translate(${dx * 0.55}px, ${dy * 0.55 - 18}px) rotate(${tilt * 7}deg) scale(0.85)`,
+        transform: "translate(0px, 0px) scaleX(1) scaleY(0.5)",
+        opacity: 1,
+        offset: 0.3,
+      },
+      {
+        transform: "translate(0px, 0px) scaleX(0.6) scaleY(0.25)",
         opacity: 1,
         offset: 0.55,
       },
-      { transform: `translate(${dx}px, ${dy}px) rotate(${tilt * 16}deg) scale(0.2)`, opacity: 0.1 },
+      {
+        transform: `translate(${dx}px, ${dy}px) scaleX(0.3) scaleY(0.12)`,
+        opacity: 0.15,
+      },
     ],
-    { duration: 480, easing: "cubic-bezier(.4,.05,.35,1)", fill: "forwards" }
+    { duration: 700, easing: "cubic-bezier(.35,.02,.3,1)", fill: "forwards" }
   );
 }
 
-/** Бумажка вспыхивает и осыпается на месте. */
+/** Бумажка рассыпается в пыль на месте. */
 export function burnInPlace(source: Element | null | undefined, options: FxOptions) {
   const ghost = createGhost(source, options);
   if (!ghost) return;
 
   const rect = ghost.getBoundingClientRect();
 
-  // Тлеющие угольки поднимаются вверх.
-  for (let i = 0; i < 3; i += 1) {
-    const ember = document.createElement("span");
-    ember.className = "paper-ember";
-    ember.style.left = `${rect.left + rect.width * (0.25 + i * 0.25)}px`;
-    ember.style.top = `${rect.top + rect.height * 0.7}px`;
-    ember.style.zIndex = String(GHOST_Z);
-    document.body.appendChild(ember);
-    ember
+  for (let i = 0; i < 14; i += 1) {
+    const dust = document.createElement("span");
+    dust.className = "paper-dust";
+    dust.style.left = `${rect.left + rect.width * Math.random()}px`;
+    dust.style.top = `${rect.top + rect.height * Math.random()}px`;
+    dust.style.zIndex = String(GHOST_Z);
+    document.body.appendChild(dust);
+    dust
       .animate(
         [
           { transform: "translate(0px, 0px) scale(1)", opacity: 0.9 },
-          { transform: `translate(${(i - 1) * 6}px, -34px) scale(0.4)`, opacity: 0 },
+          {
+            transform: `translate(${(Math.random() - 0.5) * 50}px, ${-14 - Math.random() * 40}px) scale(0.3)`,
+            opacity: 0,
+          },
         ],
-        { duration: 420 + i * 60, delay: 60 + i * 40, easing: "ease-out", fill: "forwards" }
+        {
+          duration: 700 + Math.random() * 300,
+          delay: Math.random() * 180,
+          easing: "ease-out",
+          fill: "forwards",
+        }
       )
-      .finished.then(() => ember.remove())
-      .catch(() => ember.remove());
+      .finished.then(() => dust.remove())
+      .catch(() => dust.remove());
   }
 
   play(
     ghost,
     [
-      { clipPath: "inset(0 0 0 0)", filter: "brightness(1)", opacity: 1, transform: "translateY(0px)" },
-      {
-        clipPath: "inset(0 0 55% 0)",
-        filter: "brightness(1.55) saturate(1.25)",
-        opacity: 1,
-        transform: "translateY(-2px)",
-        offset: 0.4,
-      },
-      { clipPath: "inset(0 0 100% 0)", filter: "brightness(1.1)", opacity: 0.85, transform: "translateY(-5px)" },
+      { filter: "blur(0px)", transform: "scale(1)", opacity: 1 },
+      { filter: "blur(1.5px)", transform: "scale(1.02)", opacity: 0.6, offset: 0.5 },
+      { filter: "blur(5px)", transform: "scale(1.05)", opacity: 0 },
     ],
-    { duration: 400, easing: "ease-in", fill: "forwards" }
+    { duration: 760, easing: "ease-out", fill: "forwards" }
   );
 }
