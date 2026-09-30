@@ -251,9 +251,67 @@ export function BraindumpPanel() {
             {loading ? "Разбираю…" : "Разобрать"}
           </button>
         </div>
-        <div className="mt-1.5 text-[11px] text-muted-foreground text-right">
-          {currentAiLabel()}
-          {demoLeft !== null && ` · осталось бесплатных разборов: ${demoLeft}`}
+        <div className="mt-1.5 relative">
+          <button
+            onClick={openAiPicker}
+            className="block ml-auto text-[11px] text-muted-foreground text-right hover:text-foreground underline-offset-2 hover:underline transition-colors"
+            title="Сменить модель"
+          >
+            {currentAiLabel()}
+            {demoLeft !== null && ` · осталось бесплатных разборов: ${demoLeft}`}
+          </button>
+          {aiPickerOpen && (
+            <>
+              <div className="fixed inset-0 z-[10150]" onClick={() => setAiPickerOpen(false)} />
+              <div className="absolute z-[10200] top-full right-0 mt-1 w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-background shadow-lg p-2 space-y-1.5 animate-scale-in">
+                <p className="text-[11px] text-muted-foreground px-1.5">Кто разбирает записи</p>
+                <button
+                  onClick={() => chooseAiSource("demo")}
+                  className={cn("w-full text-left rounded-md border px-2 py-1.5 text-sm transition-colors",
+                    !aiStore.activeId && aiSource === "demo" ? "border-primary bg-primary/10" : "border-border hover:bg-muted/50")}
+                >
+                  Демо
+                  <span className="block text-[11px] text-muted-foreground">Без настроек</span>
+                </button>
+                {aiStore.connections.map((c) => (
+                  <div key={c.id}>
+                    <button
+                      onClick={() => chooseAiConnection(c.id)}
+                      className={cn("w-full text-left rounded-md border px-2 py-1.5 text-sm transition-colors",
+                        aiStore.activeId === c.id ? "border-primary bg-primary/10" : "border-border hover:bg-muted/50")}
+                    >
+                      Мой ключ · {c.providerName}
+                      <span className="block text-[11px] text-muted-foreground truncate">{c.model}</span>
+                    </button>
+                    {aiStore.activeId === c.id && c.models.length > 1 && (
+                      <select
+                        value={c.model}
+                        onChange={(e) => chooseAiModel(c.id, e.target.value)}
+                        className="mt-1 w-full text-sm px-2 py-1.5 rounded-md border border-border bg-background"
+                      >
+                        {c.models.map((m) => (
+                          <option key={m} value={m}>{m}</option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                ))}
+                {aiOwner && (
+                  <button
+                    onClick={() => chooseAiSource("builtin")}
+                    className={cn("w-full text-left rounded-md border px-2 py-1.5 text-sm transition-colors",
+                      !aiStore.activeId && aiSource === "builtin" ? "border-primary bg-primary/10" : "border-border hover:bg-muted/50")}
+                  >
+                    Встроенный
+                    <span className="block text-[11px] text-muted-foreground">Только для владельца приложения</span>
+                  </button>
+                )}
+                <p className="text-[10px] text-muted-foreground px-1.5 pt-0.5">
+                  Добавить ключ — в Настройках
+                </p>
+              </div>
+            </>
+          )}
         </div>
 
       </div>
