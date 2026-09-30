@@ -403,7 +403,7 @@ export function BraindumpPanel() {
                         className="flex-1 min-w-0 bg-transparent resize-none text-sm sm:text-base outline-none leading-snug"
                       />
                       <button
-                        onClick={() => removeDraftItem(it)}
+                        onClick={(e) => { burnInPlace(e.currentTarget, { text: it.text }); removeDraftItem(it); }}
                         className="p-1.5 rounded-md text-muted-foreground hover:bg-muted shrink-0"
                         title="Убрать из разбора"
                       >
@@ -475,7 +475,7 @@ export function BraindumpPanel() {
                     {it.kind === "project" && it.steps.length > 0 && (
                       <ul className="mt-2 pl-6 space-y-1">
                         {it.steps.map((s, i) => (
-                          <li key={i} className="flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80">
+                          <li key={i} data-fx-row className="flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80">
                             <span className="text-muted-foreground">{i + 1}.</span>
                             <input
                               value={s}
@@ -487,7 +487,7 @@ export function BraindumpPanel() {
                               className="flex-1 min-w-0 bg-transparent outline-none border-b border-transparent focus:border-border"
                             />
                             <button
-                              onClick={() => removeDraftStep(it, i)}
+                              onClick={(e) => { burnInPlace(e.currentTarget, { text: s }); removeDraftStep(it, i); }}
                               className="text-muted-foreground hover:text-foreground shrink-0"
                               title="Убрать шаг"
                             >
