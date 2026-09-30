@@ -322,17 +322,46 @@ export function ProjectsPanel() {
               </button>
             ))}
           </div>
-          <div className="flex flex-wrap gap-2 pt-1">
-            <button onClick={() => createProject(false)} className="px-3 py-1.5 rounded-md bg-muted/60 text-sm border border-border/50">
-              Создать
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <button
+              onClick={() => createProject(true)}
+              disabled={busy !== false}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium shadow-sm transition-all duration-150",
+                "hover:brightness-105 active:scale-95",
+                busy !== false ? "opacity-60 cursor-not-allowed" : "",
+                !newTitle.trim() ? "opacity-50" : ""
+              )}
+            >
+              {busy === "ai" ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+              {busy === "ai" ? "Создаём…" : "Создать и предложить шаги"}
             </button>
-            <button onClick={() => createProject(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-sm">
-              <Sparkles size={14} /> Создать и предложить шаги
+            <button
+              onClick={() => createProject(false)}
+              disabled={busy !== false}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-background text-sm font-medium border border-primary/40 text-primary transition-all duration-150",
+                "hover:bg-primary/10 active:scale-95",
+                busy !== false ? "opacity-60 cursor-not-allowed" : "",
+                !newTitle.trim() ? "opacity-50" : ""
+              )}
+            >
+              {busy === "plain" ? <Loader2 size={14} className="animate-spin" /> : null}
+              {busy === "plain" ? "Создаём…" : "Создать"}
             </button>
-            <button onClick={() => setCreating(false)} className="px-3 py-1.5 rounded-md bg-muted/60 text-sm border border-border/50">
+            <button
+              onClick={() => setCreating(false)}
+              className="ml-auto px-2.5 py-2 rounded-md text-sm text-muted-foreground transition-all duration-150 hover:text-foreground hover:bg-muted/60 active:scale-95"
+            >
               Отмена
             </button>
           </div>
+          {!newTitle.trim() && (
+            <p className="text-xs text-muted-foreground">
+              Сначала напишите, что хочется сделать — потом можно создавать.
+            </p>
+          )}
+
           <AiModelPicker contextLabel="Кто предложит шаги" />
         </div>
       )}
