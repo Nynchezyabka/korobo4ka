@@ -175,6 +175,7 @@ export function ProjectsPanel() {
     setNewSteps("");
     setNewSub("");
     setCreating(false);
+    setBusy(false);
     setSuggestOnOpenId(suggestSteps ? p.id : null);
     setOpenId(p.id);
   };
