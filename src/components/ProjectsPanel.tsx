@@ -3,7 +3,7 @@ import { CategoryId, ChecklistTemplate, Project, Task } from "@/types";
 import { useApp } from "@/App";
 import { getCategoryDisplayName } from "@/lib/taskStore";
 import { getNextId } from "@/lib/taskStore";
-import { loadProjects, saveProjects, loadChecklists, saveChecklists, nextId } from "@/lib/projects";
+import { loadProjects, saveProjects, loadChecklists, saveChecklists, nextId, newProjectId } from "@/lib/projects";
 import { suggestStepsOffline, BUILTIN_TEMPLATES } from "@/lib/stepHints";
 import { runAI } from "@/lib/aiClient";
 import { STEPS_INSTRUCTIONS, STEPS_SCHEMA } from "@/lib/aiPrompts";
@@ -39,17 +39,22 @@ export function ProjectsPanel() {
     saveChecklists(list);
   };
 
-  const createProject = () => {
+  const createProject = async () => {
     const title = newTitle.trim();
     if (!title) return;
+    // Reload fresh list: "Разбор" may have added projects meanwhile.
+    const fresh = await loadProjects();
+    const usedIds = new Set(tasks.map((t) => t.projectId).filter(Boolean) as number[]);
+    let id = newProjectId(fresh);
+    while (usedIds.has(id)) id++;
     const p: Project = {
-      id: nextId(projects),
+      id,
       title,
       category: newCat,
       mode: newMode,
       createdAt: Date.now(),
     };
-    persist([...projects, p]);
+    persist([...fresh, p]);
     setNewTitle("");
     setCreating(false);
     setOpenId(p.id);
