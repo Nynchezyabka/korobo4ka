@@ -516,7 +516,10 @@ function ProjectDetail({
             <SubcategoryPicker
               category={project.category}
               value={project.subcategory ?? ""}
-              onChange={(v) => onUpdate({ subcategory: v || undefined })}
+              onChange={(v) => {
+                onUpdate({ subcategory: v || undefined });
+                setTasks((prev) => prev.map((t) => (t.projectId === project.id ? { ...t, subcategory: v || undefined } : t)));
+              }}
             />
           </div>
         )}
