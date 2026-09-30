@@ -323,7 +323,7 @@ function ProjectDetail({
 
       <div data-fx-row className="flex items-start gap-2 mb-1">
         <h2 className="font-display text-xl sm:text-2xl text-primary flex-1">{project.title}</h2>
-        <button onClick={onDelete} className="p-1.5 rounded hover:bg-muted/60 text-red-600" title="Удалить проект">
+        <button onClick={(e) => { burnInPlace(e.currentTarget, { text: project.title, category: 0 }); onDelete(); }} className="p-1.5 rounded hover:bg-muted/60 text-red-600" title="Удалить проект">
           <Trash2 size={16} />
         </button>
       </div>
