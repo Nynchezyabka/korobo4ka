@@ -455,10 +455,67 @@ function ProjectDetail({
       </button>
 
       <div data-fx-row className="flex items-start gap-2 mb-1">
-        <h2 className="font-display text-xl sm:text-2xl text-primary flex-1">{project.title}</h2>
+        {editingTitle ? (
+          <input
+            value={titleDraft}
+            onChange={(e) => setTitleDraft(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") saveTitle(); }}
+            onBlur={saveTitle}
+            autoFocus
+            className="flex-1 font-display text-xl sm:text-2xl text-primary px-2 py-1 rounded-md border border-border bg-background outline-none"
+          />
+        ) : (
+          <>
+            <h2 className="font-display text-xl sm:text-2xl text-primary flex-1">{project.title}</h2>
+            <button
+              onClick={() => { setTitleDraft(project.title); setEditingTitle(true); }}
+              className="p-1.5 rounded hover:bg-muted/60 text-muted-foreground"
+              title="Переименовать проект"
+            >
+              <Pencil size={16} />
+            </button>
+          </>
+        )}
         <button onClick={(e) => { burnInPlace(e.currentTarget, { text: project.title, category: 0 }); onDelete(); }} className="p-1.5 rounded hover:bg-muted/60 text-red-600" title="Удалить проект">
           <Trash2 size={16} />
         </button>
+      </div>
+
+      {/* Категория и подкатегория */}
+      <div className="mb-3">
+        <button
+          onClick={() => setEditingCat((v) => !v)}
+          className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-full bg-muted/60 border border-border/50 text-muted-foreground"
+          title="Сменить категорию или подкатегорию"
+        >
+          <CategoryIcon category={project.category} size={13} />
+          <span className="text-foreground">{getCategoryDisplayName(project.category)}</span>
+          {project.subcategory && <span>· {project.subcategory}</span>}
+          <Pencil size={12} />
+        </button>
+        {editingCat && (
+          <div className="mt-2 p-2.5 rounded-lg bg-muted/50 border border-border/60 space-y-2">
+            <div className="flex flex-wrap gap-1.5">
+              {([1, 2, 5, 3, 4, 0] as CategoryId[]).map((c) => (
+                <button
+                  key={c}
+                  onClick={() => changeCategory(c)}
+                  className={cn(
+                    "text-xs px-2 py-1 rounded-full border flex items-center gap-1",
+                    project.category === c ? "border-primary bg-primary/10 font-semibold" : "border-border/60 bg-muted/50"
+                  )}
+                >
+                  <CategoryIcon category={c} size={12} /> {getCategoryDisplayName(c)}
+                </button>
+              ))}
+            </div>
+            <SubcategoryPicker
+              category={project.category}
+              value={project.subcategory ?? ""}
+              onChange={(v) => onUpdate({ subcategory: v || undefined })}
+            />
+          </div>
+        )}
       </div>
 
       {/* Описание / контекст проекта */}
