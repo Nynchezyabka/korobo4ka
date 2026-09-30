@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { ChevronRight, Box, Clock, Repeat, BarChart3, Sparkles } from "lucide-react";
+import { ChevronRight, Boxes, Wand2, MousePointerClick, Puzzle } from "lucide-react";
 
 interface Props {
   onComplete: () => void;
@@ -8,29 +8,24 @@ interface Props {
 
 const STEPS = [
   {
-    icon: <Box size={48} className="text-primary" />,
-    title: "Добро пожаловать в КОРОБОЧКУ!",
-    text: "Ваш умный планировщик задач с таймером, шаблонами и статистикой. Задачи разделены на 5 категорий жизни.",
+    icon: <Boxes size={48} className="text-primary" />,
+    title: "Дела не бывают одинаковыми",
+    text: "В Коробочке пять отделений по типу ресурса: обязательные дела, безопасность, простые радости, эго-радости и доступность радостей. Не «срочно/важно» — а что даёт силы и что их забирает.",
   },
   {
-    icon: <Sparkles size={48} className="text-primary" />,
-    title: "Случайная задача",
-    text: "Нажмите на секцию на главном экране — и приложение выберет случайную задачу с таймером. Это весело и продуктивно!",
+    icon: <Wand2 size={48} className="text-primary" />,
+    title: "Сваливай всё в кучу",
+    text: "Голосом или текстом в «Разбор» — можно просто поговорить. Решать, куда что положить, не нужно: это самое сложное, и это делает Коробочка.",
   },
   {
-    icon: <Repeat size={48} className="text-primary" />,
-    title: "Шаблоны",
-    text: "Создавайте повторяющиеся задачи — ежедневные, еженедельные или ежемесячные. Они будут создаваться автоматически.",
+    icon: <MousePointerClick size={48} className="text-primary" />,
+    title: "Жми на коробочку",
+    text: "Одна случайная задача за раз, с таймером. Не нужно решать всё сразу — просто вытяни одно дело.",
   },
   {
-    icon: <Clock size={48} className="text-primary" />,
-    title: "Таймер и статистика",
-    text: "Каждая задача имеет таймер. Время работы сохраняется — отслеживайте сколько времени уходит на каждую категорию.",
-  },
-  {
-    icon: <BarChart3 size={48} className="text-primary" />,
-    title: "Всё готово!",
-    text: "Импортируйте задачи из файла или создайте первую вручную. Включите уведомления для напоминаний. Удачи! 🎁",
+    icon: <Puzzle size={48} className="text-primary" />,
+    title: "Большие цели — не страшно",
+    text: "Опиши проект своими словами, и ИИ разложит его на спокойные понятные шаги.",
   },
 ];
 
@@ -66,6 +61,11 @@ export function OnboardingScreen({ onComplete }: Props) {
           <p className="text-muted-foreground text-sm leading-relaxed animate-fade-in">
             {current.text}
           </p>
+          {isLast && (
+            <p className="mt-6 font-display text-lg text-foreground animate-fade-in">
+              Дела — по коробочкам. В голове — тишина.
+            </p>
+          )}
         </div>
 
         {/* Buttons */}
