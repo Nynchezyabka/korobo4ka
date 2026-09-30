@@ -25,6 +25,8 @@ export interface Project {
   /** Свободное описание/контекст проекта: детали, ограничения, пожелания */
   description?: string;
   category: CategoryId;
+  /** Необязательная подкатегория проекта */
+  subcategory?: string;
   /** sequential — шаги идут по порядку; parallel — в любом порядке */
   mode: "sequential" | "parallel";
   createdAt: number;

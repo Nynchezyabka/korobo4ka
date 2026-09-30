@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CategoryId, ChecklistTemplate, Project, Task } from "@/types";
+import { CategoryId, ChecklistTemplate, DEFAULT_SUBCATEGORIES, Project, Task } from "@/types";
 import { useApp } from "@/App";
-import { getCategoryDisplayName } from "@/lib/taskStore";
+import { getCategoryDisplayName, getCustomSubcategoriesSync } from "@/lib/taskStore";
 import { getNextId } from "@/lib/taskStore";
 import { loadProjects, saveProjects, loadChecklists, saveChecklists, nextId, newProjectId } from "@/lib/projects";
 import { BUILTIN_TEMPLATES } from "@/lib/stepHints";
@@ -58,6 +58,36 @@ function VoiceButton({ onText, title }: { onText: (text: string) => void; title:
   );
 }
 
+/** Чипсы подкатегорий для выбранной категории. Выбор необязательный. */
+function SubcategoryPicker({
+  category, value, onChange,
+}: { category: CategoryId; value: string; onChange: (v: string) => void }) {
+  const customSubs = useMemo(() => getCustomSubcategoriesSync(), []);
+  const list = useMemo(() => {
+    const defaults = DEFAULT_SUBCATEGORIES[category] || [];
+    const custom = (customSubs[String(category)] || []).filter((c) => !defaults.includes(c));
+    return [...defaults, ...custom];
+  }, [category, customSubs]);
+  if (list.length === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {list.map((s) => (
+        <button
+          key={s}
+          type="button"
+          onClick={() => onChange(value === s ? "" : s)}
+          className={cn(
+            "text-xs px-2 py-1 rounded-full border",
+            value === s ? "border-primary bg-primary/10 font-semibold" : "border-border/60 bg-muted/50"
+          )}
+        >
+          {s}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function ProjectsPanel() {
   const { tasks, setTasks, openTimer, completeTaskWithRecurrence, navigate } = useApp();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -67,6 +97,7 @@ export function ProjectsPanel() {
   const [newTitle, setNewTitle] = useState("");
   const [newDetails, setNewDetails] = useState("");
   const [newCat, setNewCat] = useState<CategoryId>(1);
+  const [newSub, setNewSub] = useState("");
   const [newMode, setNewMode] = useState<"sequential" | "parallel">("sequential");
   const [suggestOnOpenId, setSuggestOnOpenId] = useState<number | null>(null);
 
@@ -97,12 +128,14 @@ export function ProjectsPanel() {
       title,
       description: newDetails.trim() || undefined,
       category: newCat,
+      subcategory: newSub || undefined,
       mode: newMode,
       createdAt: Date.now(),
     };
     persist([...fresh, p]);
     setNewTitle("");
     setNewDetails("");
+    setNewSub("");
     setCreating(false);
     setSuggestOnOpenId(suggestSteps ? p.id : null);
     setOpenId(p.id);
@@ -179,7 +212,7 @@ export function ProjectsPanel() {
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") createProject(false); }}
-            placeholder="Например: Забор на даче"
+            placeholder="Что хочется сделать?"
             className="w-full text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none"
             autoFocus
           />
@@ -188,7 +221,7 @@ export function ProjectsPanel() {
               value={newDetails}
               onChange={(e) => setNewDetails(e.target.value)}
               rows={3}
-              placeholder="Контекст, детали или пожелания (необязательно). Например: второй триместр, нельзя сырые сыры, нужны простые блюда без долгой готовки."
+              placeholder="Любые мысли, важные условия или ограничения — AI учтёт их при составлении шагов"
               className="flex-1 text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none resize-y min-h-[68px]"
             />
             <VoiceButton
@@ -204,7 +237,7 @@ export function ProjectsPanel() {
             {([1, 2, 5, 3, 4, 0] as CategoryId[]).map((c) => (
               <button
                 key={c}
-                onClick={() => setNewCat(c)}
+                onClick={() => { setNewCat(c); setNewSub(""); }}
                 className={cn(
                   "text-xs px-2 py-1 rounded-full border flex items-center gap-1",
                   newCat === c ? "border-primary bg-primary/10 font-semibold" : "border-border/60 bg-muted/50"
@@ -214,6 +247,7 @@ export function ProjectsPanel() {
               </button>
             ))}
           </div>
+          <SubcategoryPicker category={newCat} value={newSub} onChange={setNewSub} />
           <div className="flex gap-1.5">
             {(["sequential", "parallel"] as const).map((m) => (
               <button
@@ -259,7 +293,10 @@ export function ProjectsPanel() {
               <button onClick={() => setOpenId(p.id)} className="w-full text-left">
                 <div className="flex items-center gap-2">
                   <CategoryIcon category={p.category} size={16} />
-                  <span className="font-semibold text-sm sm:text-base flex-1">{p.title}</span>
+                  <span className="font-semibold text-sm sm:text-base flex-1">
+                    {p.title}
+                    {p.subcategory && <span className="ml-1.5 font-normal text-xs text-muted-foreground">· {p.subcategory}</span>}
+                  </span>
                   <span className="text-xs opacity-60">{done}/{steps.length}</span>
                 </div>
                 {next && (
@@ -309,6 +346,22 @@ function ProjectDetail({
   const [showLibrary, setShowLibrary] = useState(false);
   const [editingDesc, setEditingDesc] = useState(false);
   const [descDraft, setDescDraft] = useState(project.description ?? "");
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState(project.title);
+  const [editingCat, setEditingCat] = useState(false);
+
+  const saveTitle = () => {
+    const t = titleDraft.trim();
+    if (!t) { setTitleDraft(project.title); setEditingTitle(false); return; }
+    onUpdate({ title: t });
+    setEditingTitle(false);
+  };
+
+  /** Смена категории проекта: шаги переезжают вместе с ним. */
+  const changeCategory = (c: CategoryId) => {
+    onUpdate({ category: c, subcategory: undefined });
+    setTasks((prev) => prev.map((t) => (t.projectId === project.id ? { ...t, category: c, subcategory: undefined } : t)));
+  };
   const suggestionStartedRef = useRef(false);
   const descRef = useRef(project.description ?? "");
   descRef.current = project.description ?? "";
@@ -329,6 +382,7 @@ function ProjectDetail({
         id: id++,
         text,
         category: project.category,
+        subcategory: project.subcategory,
         completed: false,
         active: true,
         statusChangedAt: Date.now(),
@@ -405,10 +459,70 @@ function ProjectDetail({
       </button>
 
       <div data-fx-row className="flex items-start gap-2 mb-1">
-        <h2 className="font-display text-xl sm:text-2xl text-primary flex-1">{project.title}</h2>
+        {editingTitle ? (
+          <input
+            value={titleDraft}
+            onChange={(e) => setTitleDraft(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") saveTitle(); }}
+            onBlur={saveTitle}
+            autoFocus
+            className="flex-1 font-display text-xl sm:text-2xl text-primary px-2 py-1 rounded-md border border-border bg-background outline-none"
+          />
+        ) : (
+          <>
+            <h2 className="font-display text-xl sm:text-2xl text-primary flex-1">{project.title}</h2>
+            <button
+              onClick={() => { setTitleDraft(project.title); setEditingTitle(true); }}
+              className="p-1.5 rounded hover:bg-muted/60 text-muted-foreground"
+              title="Переименовать проект"
+            >
+              <Pencil size={16} />
+            </button>
+          </>
+        )}
         <button onClick={(e) => { burnInPlace(e.currentTarget, { text: project.title, category: 0 }); onDelete(); }} className="p-1.5 rounded hover:bg-muted/60 text-red-600" title="Удалить проект">
           <Trash2 size={16} />
         </button>
+      </div>
+
+      {/* Категория и подкатегория */}
+      <div className="mb-3">
+        <button
+          onClick={() => setEditingCat((v) => !v)}
+          className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-full bg-muted/60 border border-border/50 text-muted-foreground"
+          title="Сменить категорию или подкатегорию"
+        >
+          <CategoryIcon category={project.category} size={13} />
+          <span className="text-foreground">{getCategoryDisplayName(project.category)}</span>
+          {project.subcategory && <span>· {project.subcategory}</span>}
+          <Pencil size={12} />
+        </button>
+        {editingCat && (
+          <div className="mt-2 p-2.5 rounded-lg bg-muted/50 border border-border/60 space-y-2">
+            <div className="flex flex-wrap gap-1.5">
+              {([1, 2, 5, 3, 4, 0] as CategoryId[]).map((c) => (
+                <button
+                  key={c}
+                  onClick={() => changeCategory(c)}
+                  className={cn(
+                    "text-xs px-2 py-1 rounded-full border flex items-center gap-1",
+                    project.category === c ? "border-primary bg-primary/10 font-semibold" : "border-border/60 bg-muted/50"
+                  )}
+                >
+                  <CategoryIcon category={c} size={12} /> {getCategoryDisplayName(c)}
+                </button>
+              ))}
+            </div>
+            <SubcategoryPicker
+              category={project.category}
+              value={project.subcategory ?? ""}
+              onChange={(v) => {
+                onUpdate({ subcategory: v || undefined });
+                setTasks((prev) => prev.map((t) => (t.projectId === project.id ? { ...t, subcategory: v || undefined } : t)));
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Описание / контекст проекта */}
