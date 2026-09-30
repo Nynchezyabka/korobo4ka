@@ -307,7 +307,11 @@ function ProjectDetail({
   const [hints, setHints] = useState<string[] | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [showLibrary, setShowLibrary] = useState(false);
+  const [editingDesc, setEditingDesc] = useState(false);
+  const [descDraft, setDescDraft] = useState(project.description ?? "");
   const suggestionStartedRef = useRef(false);
+  const descRef = useRef(project.description ?? "");
+  descRef.current = project.description ?? "";
 
   const steps = useMemo(
     () => tasks.filter((t) => t.projectId === project.id).sort((a, b) => (a.stepOrder ?? 0) - (b.stepOrder ?? 0)),
