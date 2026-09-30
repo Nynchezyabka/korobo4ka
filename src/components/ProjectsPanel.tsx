@@ -293,7 +293,10 @@ export function ProjectsPanel() {
               <button onClick={() => setOpenId(p.id)} className="w-full text-left">
                 <div className="flex items-center gap-2">
                   <CategoryIcon category={p.category} size={16} />
-                  <span className="font-semibold text-sm sm:text-base flex-1">{p.title}</span>
+                  <span className="font-semibold text-sm sm:text-base flex-1">
+                    {p.title}
+                    {p.subcategory && <span className="ml-1.5 font-normal text-xs text-muted-foreground">· {p.subcategory}</span>}
+                  </span>
                   <span className="text-xs opacity-60">{done}/{steps.length}</span>
                 </div>
                 {next && (
