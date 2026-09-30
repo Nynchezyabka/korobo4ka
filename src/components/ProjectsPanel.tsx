@@ -360,7 +360,7 @@ function ProjectDetail({
   /** Смена категории проекта: шаги переезжают вместе с ним. */
   const changeCategory = (c: CategoryId) => {
     onUpdate({ category: c, subcategory: undefined });
-    setTasks((prev) => prev.map((t) => (t.projectId === project.id ? { ...t, category: c } : t)));
+    setTasks((prev) => prev.map((t) => (t.projectId === project.id ? { ...t, category: c, subcategory: undefined } : t)));
   };
   const suggestionStartedRef = useRef(false);
   const descRef = useRef(project.description ?? "");
