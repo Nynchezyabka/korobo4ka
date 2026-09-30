@@ -101,6 +101,9 @@ export function ProjectsPanel() {
   const [newSub, setNewSub] = useState("");
   const [newMode, setNewMode] = useState<"sequential" | "parallel">("sequential");
   const [suggestOnOpenId, setSuggestOnOpenId] = useState<number | null>(null);
+  const [busy, setBusy] = useState<false | "plain" | "ai">(false);
+  const [titleNudge, setTitleNudge] = useState(false);
+  const titleInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     loadProjects().then(setProjects);
@@ -118,7 +121,15 @@ export function ProjectsPanel() {
 
   const createProject = async (suggestSteps = false) => {
     const title = newTitle.trim();
-    if (!title) return;
+    if (!title) {
+      // Тихий клик в пустоту сбивает с толку: подсвечиваем поле названия.
+      setTitleNudge(true);
+      titleInputRef.current?.focus();
+      setTimeout(() => setTitleNudge(false), 500);
+      return;
+    }
+    if (busy) return;
+    setBusy(suggestSteps ? "ai" : "plain");
     // Reload fresh list: "Разбор" may have added projects meanwhile.
     const fresh = await loadProjects();
     const usedIds = new Set(tasks.map((t) => t.projectId).filter(Boolean) as number[]);
@@ -164,6 +175,7 @@ export function ProjectsPanel() {
     setNewSteps("");
     setNewSub("");
     setCreating(false);
+    setBusy(false);
     setSuggestOnOpenId(suggestSteps ? p.id : null);
     setOpenId(p.id);
   };
@@ -236,13 +248,18 @@ export function ProjectsPanel() {
       ) : (
         <div className="mb-4 p-3 rounded-lg bg-muted/50 border border-border/60 space-y-2">
           <input
+            ref={titleInputRef}
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") createProject(false); }}
             placeholder="Что хочется сделать?"
-            className="w-full text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none"
+            className={cn(
+              "w-full text-sm px-2.5 py-2 rounded-md border bg-background outline-none transition-colors",
+              titleNudge ? "border-primary ring-2 ring-primary/40 animate-nudge" : "border-border focus:border-primary"
+            )}
             autoFocus
           />
+
           <div className="flex gap-2 items-start">
             <textarea
               value={newDetails}
@@ -310,17 +327,46 @@ export function ProjectsPanel() {
               </button>
             ))}
           </div>
-          <div className="flex flex-wrap gap-2 pt-1">
-            <button onClick={() => createProject(false)} className="px-3 py-1.5 rounded-md bg-muted/60 text-sm border border-border/50">
-              Создать
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <button
+              onClick={() => createProject(true)}
+              disabled={busy !== false}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium shadow-sm transition-all duration-150",
+                "hover:brightness-105 active:scale-95",
+                busy !== false ? "opacity-60 cursor-not-allowed" : "",
+                !newTitle.trim() ? "opacity-50" : ""
+              )}
+            >
+              {busy === "ai" ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+              {busy === "ai" ? "Создаём…" : "Создать и предложить шаги"}
             </button>
-            <button onClick={() => createProject(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-sm">
-              <Sparkles size={14} /> Создать и предложить шаги
+            <button
+              onClick={() => createProject(false)}
+              disabled={busy !== false}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-background text-sm font-medium border border-primary/40 text-primary transition-all duration-150",
+                "hover:bg-primary/10 active:scale-95",
+                busy !== false ? "opacity-60 cursor-not-allowed" : "",
+                !newTitle.trim() ? "opacity-50" : ""
+              )}
+            >
+              {busy === "plain" ? <Loader2 size={14} className="animate-spin" /> : null}
+              {busy === "plain" ? "Создаём…" : "Создать"}
             </button>
-            <button onClick={() => setCreating(false)} className="px-3 py-1.5 rounded-md bg-muted/60 text-sm border border-border/50">
+            <button
+              onClick={() => setCreating(false)}
+              className="ml-auto px-2.5 py-2 rounded-md text-sm text-muted-foreground transition-all duration-150 hover:text-foreground hover:bg-muted/60 active:scale-95"
+            >
               Отмена
             </button>
           </div>
+          {!newTitle.trim() && (
+            <p className="text-xs text-muted-foreground">
+              Сначала напишите, что хочется сделать — потом можно создавать.
+            </p>
+          )}
+
           <AiModelPicker contextLabel="Кто предложит шаги" />
         </div>
       )}
