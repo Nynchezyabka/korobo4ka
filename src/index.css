@@ -350,6 +350,7 @@ html.skin-strict {
   will-change: transform, opacity;
 }
 
+.paper-dust {
   position: fixed;
   width: 3px;
   height: 3px;
