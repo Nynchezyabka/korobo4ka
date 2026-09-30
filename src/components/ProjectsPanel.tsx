@@ -15,8 +15,48 @@ import { deleteWithUndo, showUndoToast } from "@/lib/undoDelete";
 import { foldToBox, burnInPlace } from "@/lib/paperFx";
 import {
   Plus, ChevronLeft, Play, Check, Trash2, Sparkles,
-  BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat,
+  BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat, Mic, MicOff, Pencil,
 } from "lucide-react";
+
+/** Кнопка голосового ввода: дописывает распознанный текст в поле описания. */
+function VoiceButton({ onText, title }: { onText: (text: string) => void; title: string }) {
+  const [listening, setListening] = useState(false);
+  const recogRef = useRef<any>(null);
+
+  const toggle = () => {
+    const SR: any = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    if (!SR) { toast.error("Голосовой ввод не поддерживается в этом браузере"); return; }
+    if (listening) { recogRef.current?.stop(); return; }
+    const r = new SR();
+    r.lang = "ru-RU";
+    r.continuous = true;
+    r.interimResults = false;
+    r.onresult = (e: any) => {
+      let add = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) add += e.results[i][0].transcript + " ";
+      onText(add.trim());
+    };
+    r.onerror = () => { setListening(false); toast.error("Не удалось распознать"); };
+    r.onend = () => setListening(false);
+    recogRef.current = r;
+    setListening(true);
+    r.start();
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      title={title}
+      className={cn(
+        "shrink-0 p-2 rounded-md border",
+        listening ? "bg-red-600/15 border-red-600/40 text-red-600 animate-pulse" : "bg-muted/60 border-border/50 text-muted-foreground"
+      )}
+    >
+      {listening ? <MicOff size={14} /> : <Mic size={14} />}
+    </button>
+  );
+}
 
 export function ProjectsPanel() {
   const { tasks, setTasks, openTimer, completeTaskWithRecurrence, navigate } = useApp();
