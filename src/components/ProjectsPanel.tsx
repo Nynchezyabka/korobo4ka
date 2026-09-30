@@ -248,13 +248,18 @@ export function ProjectsPanel() {
       ) : (
         <div className="mb-4 p-3 rounded-lg bg-muted/50 border border-border/60 space-y-2">
           <input
+            ref={titleInputRef}
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") createProject(false); }}
             placeholder="Что хочется сделать?"
-            className="w-full text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none"
+            className={cn(
+              "w-full text-sm px-2.5 py-2 rounded-md border bg-background outline-none transition-colors",
+              titleNudge ? "border-destructive ring-2 ring-destructive/30 animate-nudge" : "border-border focus:border-primary"
+            )}
             autoFocus
           />
+
           <div className="flex gap-2 items-start">
             <textarea
               value={newDetails}
