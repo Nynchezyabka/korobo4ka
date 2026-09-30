@@ -65,6 +65,7 @@ export function ProjectsPanel() {
   const [openId, setOpenId] = useState<number | null>(null);
   const [creating, setCreating] = useState(false);
   const [newTitle, setNewTitle] = useState("");
+  const [newDetails, setNewDetails] = useState("");
   const [newCat, setNewCat] = useState<CategoryId>(1);
   const [newMode, setNewMode] = useState<"sequential" | "parallel">("sequential");
   const [suggestOnOpenId, setSuggestOnOpenId] = useState<number | null>(null);
@@ -94,12 +95,14 @@ export function ProjectsPanel() {
     const p: Project = {
       id,
       title,
+      description: newDetails.trim() || undefined,
       category: newCat,
       mode: newMode,
       createdAt: Date.now(),
     };
     persist([...fresh, p]);
     setNewTitle("");
+    setNewDetails("");
     setCreating(false);
     setSuggestOnOpenId(suggestSteps ? p.id : null);
     setOpenId(p.id);
