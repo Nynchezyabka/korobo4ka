@@ -10,7 +10,8 @@ import { CATEGORIES, CategoryId, RECURRENCE_LABELS, WEEKDAYS, RecurrenceType } f
 import { DraftItem, DraftKind, normalizeItems, applyDraft } from "@/lib/braindump";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Wand2, Mic, Loader2, Trash2, Check, StickyNote, ChevronDown } from "lucide-react";
+import { Wand2, Mic, Loader2, Trash2, Check, StickyNote, ChevronDown, Paperclip, Link2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useNotes, markNotesProcessed, removeNote, restoreNote, addNote, Note } from "@/lib/notes";
 import { showUndoToast } from "@/lib/undoDelete";
 import { burnInPlace } from "@/lib/paperFx";
@@ -43,6 +44,64 @@ export function BraindumpPanel() {
   const [aiStore, setAiStore] = useState<AiStore>(() => loadAiStore());
   const [aiSource, setAiSource] = useState<AiSource>(() => loadAiSource());
   const [aiOwner, setAiOwner] = useState(false);
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkLoading, setLinkLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const MAX_TEXT_LEN = 12_000;
+  /** Добавить текст в поле, не превышая лимит запроса к модели. */
+  const appendText = (addition: string) => {
+    const chunk = addition.trim();
+    if (!chunk) return;
+    setText((prev) => {
+      const joined = [prev.trim(), chunk].filter(Boolean).join("\n\n");
+      if (joined.length > MAX_TEXT_LEN) {
+        toast.info(`Текст очень длинный — взяла первые ${MAX_TEXT_LEN.toLocaleString("ru-RU")} символов`);
+        return joined.slice(0, MAX_TEXT_LEN);
+      }
+      return joined;
+    });
+  };
+
+  const handleFilePick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const okType = /\.(txt|md)$/i.test(file.name) || /text\/(plain|markdown)/.test(file.type);
+    if (!okType) {
+      toast.error("Пока умею читать только текстовые файлы (.txt, .md)");
+      return;
+    }
+    if (file.size > 300_000) {
+      toast.error("Файл слишком большой — до 300 КБ");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => appendText(String(reader.result ?? ""));
+    reader.onerror = () => toast.error("Не удалось прочитать файл");
+    reader.readAsText(file);
+  };
+
+  const handleLinkFetch = async () => {
+    const url = linkUrl.trim();
+    if (!url) return;
+    setLinkLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("fetch-url", { body: { url } });
+      if (error) throw new Error((data as any)?.error || "Не удалось прочитать страницу");
+      const text = String((data as any)?.text ?? "");
+      if (!text) throw new Error("Не удалось извлечь текст со страницы");
+      appendText(text);
+      if ((data as any)?.truncated) toast.info("Страница очень длинная — взяла начало");
+      setLinkOpen(false);
+      setLinkUrl("");
+    } catch (err: any) {
+      toast.error(err?.message || "Не удалось прочитать страницу");
+    } finally {
+      setLinkLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (currentAiLabel() !== "Демо-режим") { setDemoLeft(null); return; }
