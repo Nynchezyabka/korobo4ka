@@ -343,6 +343,22 @@ function ProjectDetail({
   const [showLibrary, setShowLibrary] = useState(false);
   const [editingDesc, setEditingDesc] = useState(false);
   const [descDraft, setDescDraft] = useState(project.description ?? "");
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState(project.title);
+  const [editingCat, setEditingCat] = useState(false);
+
+  const saveTitle = () => {
+    const t = titleDraft.trim();
+    if (!t) { setTitleDraft(project.title); setEditingTitle(false); return; }
+    onUpdate({ title: t });
+    setEditingTitle(false);
+  };
+
+  /** Смена категории проекта: шаги переезжают вместе с ним. */
+  const changeCategory = (c: CategoryId) => {
+    onUpdate({ category: c, subcategory: undefined });
+    setTasks((prev) => prev.map((t) => (t.projectId === project.id ? { ...t, category: c } : t)));
+  };
   const suggestionStartedRef = useRef(false);
   const descRef = useRef(project.description ?? "");
   descRef.current = project.description ?? "";
