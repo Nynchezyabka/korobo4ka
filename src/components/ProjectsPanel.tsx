@@ -406,6 +406,61 @@ function ProjectDetail({
         </button>
       </div>
 
+      {/* Описание / контекст проекта */}
+      <div className="mb-3">
+        {editingDesc ? (
+          <div className="p-2.5 rounded-lg bg-muted/50 border border-border/60 space-y-2">
+            <div className="flex gap-2 items-start">
+              <textarea
+                value={descDraft}
+                onChange={(e) => setDescDraft(e.target.value)}
+                rows={3}
+                autoFocus
+                placeholder="Контекст, детали, ограничения и пожелания — их учтёт нейросеть, когда предложит шаги."
+                className="flex-1 text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none resize-y min-h-[68px]"
+              />
+              <VoiceButton
+                title="Наговорить описание"
+                onText={(t) => setDescDraft((prev) => (prev ? prev + " " : "") + t)}
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => { onUpdate({ description: descDraft.trim() || undefined }); setEditingDesc(false); }}
+                className="text-xs px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground"
+              >
+                Сохранить
+              </button>
+              <button
+                onClick={() => { setDescDraft(project.description ?? ""); setEditingDesc(false); }}
+                className="text-xs px-2.5 py-1.5 rounded-md bg-muted/60 border border-border/50"
+              >
+                Отмена
+              </button>
+            </div>
+          </div>
+        ) : project.description ? (
+          <div className="p-2.5 rounded-lg bg-muted/40 border border-border/50 flex items-start gap-2">
+            <p className="flex-1 text-xs sm:text-sm text-muted-foreground whitespace-pre-wrap">{project.description}</p>
+            <button
+              onClick={() => { setDescDraft(project.description ?? ""); setEditingDesc(true); }}
+              className="p-1.5 rounded hover:bg-muted/60 text-muted-foreground"
+              title="Изменить описание"
+            >
+              <Pencil size={13} />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => { setDescDraft(""); setEditingDesc(true); }}
+            className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-muted/60 border border-border/50 text-muted-foreground"
+          >
+            <Pencil size={13} /> Добавить контекст и детали
+          </button>
+        )}
+      </div>
+
+
       <div className="flex flex-wrap items-center gap-1.5 mb-3">
         {(["sequential", "parallel"] as const).map((m) => (
           <button
