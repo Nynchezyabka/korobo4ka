@@ -7,6 +7,7 @@ type SetTasks = (fn: (prev: Task[]) => Task[]) => void;
 export function showUndoToast(message: string, onUndo: () => void, onFinal?: () => void) {
   let undone = false;
   let finalized = false;
+  let toastId: string | number;
   const finalize = () => {
     if (undone || finalized) return;
     finalized = true;
@@ -21,6 +22,7 @@ export function showUndoToast(message: string, onUndo: () => void, onFinal?: () 
         if (undone) return;
         undone = true;
         onUndo();
+        toast.dismiss(toastId);
       },
     },
     onAutoClose: finalize,
