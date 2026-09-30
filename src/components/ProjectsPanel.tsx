@@ -382,6 +382,7 @@ function ProjectDetail({
         id: id++,
         text,
         category: project.category,
+        subcategory: project.subcategory,
         completed: false,
         active: true,
         statusChangedAt: Date.now(),
