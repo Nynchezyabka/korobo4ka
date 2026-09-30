@@ -361,3 +361,25 @@ html.skin-strict {
   will-change: transform, opacity;
 }
 
+.paper-smoke {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: hsl(var(--foreground) / 0.18);
+  filter: blur(3px);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.paper-dust {
+  position: fixed;
+  width: 3px;
+  height: 3px;
+  border-radius: 9999px;
+  background: hsl(var(--foreground) / 0.45);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+
