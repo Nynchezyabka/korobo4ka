@@ -280,7 +280,7 @@ export function HistoryModal() {
                       "absolute -left-3.5 top-2 w-3.5 h-3.5 rounded-full border-2 border-background",
                       DOT_COLORS[task.category]
                     )} />
-                    <div className={cn(
+                    <div data-fx-row className={cn(
                       "rounded-lg p-3 border-l-4",
                       CAT_COLORS[task.category].bg,
                       CAT_COLORS[task.category].border
@@ -303,7 +303,7 @@ export function HistoryModal() {
                             <Undo2 size={12} />
                           </button>
                           <button
-                            onClick={() => deleteFromHistory(task.id)}
+                            onClick={(e) => { burnInPlace(e.currentTarget, { text: task.text, category: task.category }); deleteFromHistory(task.id); }}
                             className="p-1 rounded opacity-0 group-hover:opacity-60 hover:!opacity-100 active:bg-black/10 transition-all text-red-500"
                             title="Удалить задачу"
                           >

@@ -7,6 +7,7 @@ import { Plus, Trash2, ToggleLeft, ToggleRight, Repeat } from "lucide-react";
 import { getCustomSubcategoriesSync } from "@/lib/taskStore";
 import { ClockPicker, pad2 } from "@/components/DateTimePicker";
 import { showUndoToast } from "@/lib/undoDelete";
+import { burnInPlace } from "@/lib/paperFx";
 
 interface Props {
   templates: TaskTemplate[];
@@ -66,6 +67,7 @@ export function TemplatesPanel({ templates, onSave }: Props) {
         {templates.map((tpl) => (
           <div
             key={tpl.id}
+            data-fx-row
             className={cn(
               "p-3 rounded-md border border-border transition-all",
               tpl.active ? "bg-muted/30" : "bg-muted/10 opacity-60"
@@ -87,7 +89,7 @@ export function TemplatesPanel({ templates, onSave }: Props) {
                 <button onClick={() => { setEditing(tpl); setShowForm(true); }} className="p-1.5 rounded hover:bg-muted transition-colors text-xs">
                   ✏️
                 </button>
-                <button onClick={() => deleteTemplate(tpl.id)} className="p-1.5 rounded hover:bg-destructive/10 transition-colors" title="Удалить повтор">
+                <button onClick={(e) => { burnInPlace(e.currentTarget, { text: tpl.text, category: tpl.category }); deleteTemplate(tpl.id); }} className="p-1.5 rounded hover:bg-destructive/10 transition-colors" title="Удалить повтор">
                   <Trash2 size={14} />
                 </button>
               </div>
