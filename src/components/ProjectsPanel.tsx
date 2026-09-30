@@ -96,6 +96,7 @@ export function ProjectsPanel() {
   const [creating, setCreating] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDetails, setNewDetails] = useState("");
+  const [newSteps, setNewSteps] = useState("");
   const [newCat, setNewCat] = useState<CategoryId>(1);
   const [newSub, setNewSub] = useState("");
   const [newMode, setNewMode] = useState<"sequential" | "parallel">("sequential");
