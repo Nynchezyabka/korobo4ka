@@ -58,6 +58,36 @@ function VoiceButton({ onText, title }: { onText: (text: string) => void; title:
   );
 }
 
+/** Чипсы подкатегорий для выбранной категории. Выбор необязательный. */
+function SubcategoryPicker({
+  category, value, onChange,
+}: { category: CategoryId; value: string; onChange: (v: string) => void }) {
+  const customSubs = useMemo(() => getCustomSubcategoriesSync(), []);
+  const list = useMemo(() => {
+    const defaults = DEFAULT_SUBCATEGORIES[category] || [];
+    const custom = (customSubs[String(category)] || []).filter((c) => !defaults.includes(c));
+    return [...defaults, ...custom];
+  }, [category, customSubs]);
+  if (list.length === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {list.map((s) => (
+        <button
+          key={s}
+          type="button"
+          onClick={() => onChange(value === s ? "" : s)}
+          className={cn(
+            "text-xs px-2 py-1 rounded-full border",
+            value === s ? "border-primary bg-primary/10 font-semibold" : "border-border/60 bg-muted/50"
+          )}
+        >
+          {s}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function ProjectsPanel() {
   const { tasks, setTasks, openTimer, completeTaskWithRecurrence, navigate } = useApp();
   const [projects, setProjects] = useState<Project[]>([]);
