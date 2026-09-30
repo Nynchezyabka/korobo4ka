@@ -190,6 +190,28 @@ export function BraindumpPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const openAiPicker = () => {
+    setAiStore(loadAiStore());
+    setAiSource(loadAiSource());
+    setAiOwner(hasOwnerCode());
+    setAiPickerOpen((o) => !o);
+  };
+  const chooseAiConnection = (id: string) => {
+    setActiveConnection(id);
+    setAiStore(loadAiStore());
+  };
+  const chooseAiSource = (s: AiSource) => {
+    setActiveConnection(null);
+    saveAiSource(s);
+    setAiSource(s);
+    setAiStore(loadAiStore());
+    if (s === "demo") fetchDemoStatus().then((st) => st && setDemoLeft(st.left));
+  };
+  const chooseAiModel = (id: string, model: string) => {
+    updateConnection(id, { model });
+    setAiStore(loadAiStore());
+  };
+
   const selectedCount = items?.filter((i) => i.selected && i.kind !== "not_task").length ?? 0;
 
   return (
