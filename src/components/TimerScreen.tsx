@@ -3,6 +3,7 @@ import { Task, CATEGORIES } from "@/types";
 import { useApp } from "@/App";
 import { getRandomBackgroundForCategory } from "@/lib/assets";
 import { NextMinuteSheet } from "@/components/NextMinuteSheet";
+import { foldToBox } from "@/lib/paperFx";
 import { X, Play, Pause, RotateCcw, Check, Undo2, Volume2, VolumeX, Shuffle, Lightbulb } from "lucide-react";
 
 
@@ -112,8 +113,9 @@ export function TimerScreen({ task, onClose }: Props) {
     setRunning(true);
   };
 
-  const completeTask = () => {
+  const completeTask = (source?: Element | null) => {
     saveTimeSpent();
+    foldToBox(source, { text: task.text, category: task.category });
     completeTaskWithRecurrence(task.id);
     onClose();
   };
@@ -306,7 +308,7 @@ export function TimerScreen({ task, onClose }: Props) {
 
 
             <button
-              onClick={completeTask}
+              onClick={(e) => completeTask(e.currentTarget)}
               className="flex items-center gap-1.5 px-4 py-2 rounded-md bg-emerald-700/15 text-emerald-900 text-sm font-medium active:scale-95 transition-all border border-emerald-700/30"
             >
               <Check size={14} /> Отметить готово
@@ -318,7 +320,7 @@ export function TimerScreen({ task, onClose }: Props) {
           <div className="flex flex-col gap-3">
             <p className="text-center text-lg font-semibold mb-2 timer-label-glow">Время вышло!</p>
             <button
-              onClick={completeTask}
+              onClick={(e) => completeTask(e.currentTarget)}
               className="flex items-center gap-2 px-6 py-3 rounded-lg bg-emerald-600/80 text-white font-medium active:scale-95 transition-all shadow-md"
             >
               <Check size={18} /> Завершить задачу

@@ -11,6 +11,7 @@ import { CategoryIcon } from "@/components/CategoryIcon";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { deleteWithUndo, showUndoToast } from "@/lib/undoDelete";
+import { foldToBox, burnInPlace } from "@/lib/paperFx";
 import {
   Plus, ChevronLeft, Play, Check, Trash2, Sparkles, Lightbulb,
   BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat,
@@ -320,9 +321,9 @@ function ProjectDetail({
         <ChevronLeft size={16} /> К проектам
       </button>
 
-      <div className="flex items-start gap-2 mb-1">
+      <div data-fx-row className="flex items-start gap-2 mb-1">
         <h2 className="font-display text-xl sm:text-2xl text-primary flex-1">{project.title}</h2>
-        <button onClick={onDelete} className="p-1.5 rounded hover:bg-muted/60 text-red-600" title="Удалить проект">
+        <button onClick={(e) => { burnInPlace(e.currentTarget, { text: project.title, category: 0 }); onDelete(); }} className="p-1.5 rounded hover:bg-muted/60 text-red-600" title="Удалить проект">
           <Trash2 size={16} />
         </button>
       </div>
@@ -355,6 +356,7 @@ function ProjectDetail({
           return (
             <div
               key={s.id}
+              data-fx-row
               className={cn(
                 "flex items-center gap-2 p-2 rounded-md border border-border/50 bg-muted/50",
                 s.completed && "opacity-60",
@@ -362,7 +364,7 @@ function ProjectDetail({
               )}
             >
               <button
-                onClick={() => toggleStep(s)}
+                onClick={(e) => { if (!s.completed) foldToBox(e.currentTarget, { text: s.text, category: s.category }); toggleStep(s); }}
                 className={cn(
                   "w-5 h-5 shrink-0 rounded border flex items-center justify-center",
                   s.completed ? "bg-emerald-600/80 border-emerald-700 text-white" : "border-border bg-muted/70"
@@ -377,7 +379,7 @@ function ProjectDetail({
                   <Play size={14} />
                 </button>
               )}
-              <button onClick={() => removeStep(s.id)} className="p-1.5 rounded hover:bg-muted/60 opacity-50" title="Убрать шаг">
+              <button onClick={(e) => { burnInPlace(e.currentTarget, { text: s.text, category: s.category }); removeStep(s.id); }} className="p-1.5 rounded hover:bg-muted/60 opacity-50" title="Убрать шаг">
                 <Trash2 size={13} />
               </button>
             </div>
@@ -453,7 +455,7 @@ function ProjectDetail({
         <div className="mb-3 p-2.5 rounded-lg bg-muted/50 border border-border/50 space-y-1.5">
           <span className="text-xs font-semibold opacity-70 flex items-center gap-1"><ListChecks size={12} /> Готовые чек-листы</span>
           {library.map((tpl) => (
-            <div key={tpl.id} className="flex items-center gap-2">
+            <div key={tpl.id} data-fx-row className="flex items-center gap-2">
               <span className="text-sm flex-1">{tpl.title} <span className="text-xs opacity-50">({tpl.steps.length})</span></span>
               <button
                 onClick={() => { addSteps(tpl.steps); setShowLibrary(false); }}
@@ -463,7 +465,8 @@ function ProjectDetail({
               </button>
               {!tpl.builtin && (
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    burnInPlace(e.currentTarget, { text: tpl.title, category: 0 });
                     const index = checklists.findIndex((c) => c.id === tpl.id);
                     const removed = checklists[index];
                     if (!removed) return;

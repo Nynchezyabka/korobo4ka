@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Wand2, Mic, Loader2, Trash2, Check, StickyNote, ChevronDown } from "lucide-react";
 import { useNotes, markNotesProcessed, removeNote, restoreNote, addNote, Note } from "@/lib/notes";
 import { showUndoToast } from "@/lib/undoDelete";
+import { burnInPlace } from "@/lib/paperFx";
 
 const GROUPS: { kind: DraftKind; title: string; hint: string }[] = [
   { kind: "event", title: "Со сроком", hint: "Привязано к дате и времени" },
@@ -324,10 +325,10 @@ export function BraindumpPanel() {
           </div>
           <p className="text-[11px] text-muted-foreground">Заметка уходит в поле выше — после «Разобрать» её можно подтвердить как задачу, проект или повтор. Можно и оставить как есть.</p>
           {pendingNotes.map((n) => (
-            <div key={n.id} className="flex items-start gap-2 rounded-lg bg-muted/30 p-2">
+            <div key={n.id} data-fx-row className="flex items-start gap-2 rounded-lg bg-muted/30 p-2">
               <p className="flex-1 min-w-0 text-sm whitespace-pre-wrap break-words">{n.text}</p>
               <button onClick={() => takeNotes([n.id])} className="text-xs px-2 py-1 rounded border border-border hover:bg-muted shrink-0">В разбор</button>
-              <button onClick={() => deleteNote(n)} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
+              <button onClick={(e) => { burnInPlace(e.currentTarget, { text: n.text }); deleteNote(n); }} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
             </div>
           ))}
         </div>
@@ -345,9 +346,9 @@ export function BraindumpPanel() {
           {showProcessed && (
             <div className="mt-2 space-y-1.5">
               {processedNotes.map((n) => (
-                <div key={n.id} className="flex items-start gap-2 rounded-lg bg-muted/20 p-2 opacity-70">
+                <div key={n.id} data-fx-row className="flex items-start gap-2 rounded-lg bg-muted/20 p-2 opacity-70">
                   <p className="flex-1 min-w-0 text-sm whitespace-pre-wrap break-words">{n.text}</p>
-                  <button onClick={() => deleteNote(n)} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
+                  <button onClick={(e) => { burnInPlace(e.currentTarget, { text: n.text }); deleteNote(n); }} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
                 </div>
               ))}
             </div>
@@ -376,6 +377,7 @@ export function BraindumpPanel() {
                 {group.map((it) => (
                   <div
                     key={it.uid}
+                    data-fx-row
                     className={cn(
                       "rounded-lg border p-2.5 transition-colors",
                       it.kind === "not_task"
@@ -401,7 +403,7 @@ export function BraindumpPanel() {
                         className="flex-1 min-w-0 bg-transparent resize-none text-sm sm:text-base outline-none leading-snug"
                       />
                       <button
-                        onClick={() => removeDraftItem(it)}
+                        onClick={(e) => { burnInPlace(e.currentTarget, { text: it.text }); removeDraftItem(it); }}
                         className="p-1.5 rounded-md text-muted-foreground hover:bg-muted shrink-0"
                         title="Убрать из разбора"
                       >
@@ -473,7 +475,7 @@ export function BraindumpPanel() {
                     {it.kind === "project" && it.steps.length > 0 && (
                       <ul className="mt-2 pl-6 space-y-1">
                         {it.steps.map((s, i) => (
-                          <li key={i} className="flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80">
+                          <li key={i} data-fx-row className="flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80">
                             <span className="text-muted-foreground">{i + 1}.</span>
                             <input
                               value={s}
@@ -485,7 +487,7 @@ export function BraindumpPanel() {
                               className="flex-1 min-w-0 bg-transparent outline-none border-b border-transparent focus:border-border"
                             />
                             <button
-                              onClick={() => removeDraftStep(it, i)}
+                              onClick={(e) => { burnInPlace(e.currentTarget, { text: s }); removeDraftStep(it, i); }}
                               className="text-muted-foreground hover:text-foreground shrink-0"
                               title="Убрать шаг"
                             >
