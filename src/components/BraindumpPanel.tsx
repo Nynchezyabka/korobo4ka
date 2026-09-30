@@ -7,7 +7,8 @@ import { DraftItem, DraftKind, normalizeItems, applyDraft } from "@/lib/braindum
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Wand2, Mic, Loader2, Trash2, Check, StickyNote, ChevronDown } from "lucide-react";
-import { useNotes, markNotesProcessed, removeNote, addNote } from "@/lib/notes";
+import { useNotes, markNotesProcessed, removeNote, restoreNote, addNote, Note } from "@/lib/notes";
+import { showUndoToast } from "@/lib/undoDelete";
 
 const GROUPS: { kind: DraftKind; title: string; hint: string }[] = [
   { kind: "event", title: "Со сроком", hint: "Привязано к дате и времени" },
@@ -49,6 +50,40 @@ export function BraindumpPanel() {
     if (!picked.length) return;
     setText((prev) => [prev.trim(), ...picked].filter(Boolean).join("\n"));
     markNotesProcessed(ids);
+  };
+
+  const deleteNote = (note: Note) => {
+    const index = notes.findIndex((n) => n.id === note.id);
+    removeNote(note.id);
+    showUndoToast("Заметка удалена", () => restoreNote(note, index));
+  };
+
+  const removeDraftItem = (item: DraftItem) => {
+    const current = items ?? [];
+    const index = current.findIndex((candidate) => candidate.uid === item.uid);
+    setItems(current.filter((candidate) => candidate.uid !== item.uid));
+    showUndoToast("Карточка удалена", () => {
+      setItems((latest) => {
+        if (!latest || latest.some((candidate) => candidate.uid === item.uid)) return latest;
+        const restored = [...latest];
+        restored.splice(Math.min(Math.max(index, 0), restored.length), 0, item);
+        return restored;
+      });
+    });
+  };
+
+  const removeDraftStep = (item: DraftItem, stepIndex: number) => {
+    const step = item.steps[stepIndex];
+    if (step === undefined) return;
+    update(item.uid, { steps: item.steps.filter((_, index) => index !== stepIndex) });
+    showUndoToast("Шаг удалён", () => {
+      setItems((latest) => latest?.map((candidate) => {
+        if (candidate.uid !== item.uid) return candidate;
+        const steps = [...candidate.steps];
+        steps.splice(Math.min(Math.max(stepIndex, 0), steps.length), 0, step);
+        return { ...candidate, steps };
+      }) ?? latest);
+    });
   };
 
   const update = (uid: string, patch: Partial<DraftItem>) =>
@@ -204,7 +239,7 @@ export function BraindumpPanel() {
             <div key={n.id} className="flex items-start gap-2 rounded-lg bg-muted/30 p-2">
               <p className="flex-1 min-w-0 text-sm whitespace-pre-wrap break-words">{n.text}</p>
               <button onClick={() => takeNotes([n.id])} className="text-xs px-2 py-1 rounded border border-border hover:bg-muted shrink-0">В разбор</button>
-              <button onClick={() => removeNote(n.id)} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
+              <button onClick={() => deleteNote(n)} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
             </div>
           ))}
         </div>
@@ -224,7 +259,7 @@ export function BraindumpPanel() {
               {processedNotes.map((n) => (
                 <div key={n.id} className="flex items-start gap-2 rounded-lg bg-muted/20 p-2 opacity-70">
                   <p className="flex-1 min-w-0 text-sm whitespace-pre-wrap break-words">{n.text}</p>
-                  <button onClick={() => removeNote(n.id)} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
+                  <button onClick={() => deleteNote(n)} className="p-1.5 text-muted-foreground hover:text-destructive shrink-0" title="Удалить заметку"><Trash2 size={14} /></button>
                 </div>
               ))}
             </div>
@@ -278,7 +313,7 @@ export function BraindumpPanel() {
                         className="flex-1 min-w-0 bg-transparent resize-none text-sm sm:text-base outline-none leading-snug"
                       />
                       <button
-                        onClick={() => setItems((prev) => prev?.filter((x) => x.uid !== it.uid) ?? prev)}
+                        onClick={() => removeDraftItem(it)}
                         className="p-1.5 rounded-md text-muted-foreground hover:bg-muted shrink-0"
                         title="Убрать из разбора"
                       >
@@ -362,7 +397,7 @@ export function BraindumpPanel() {
                               className="flex-1 min-w-0 bg-transparent outline-none border-b border-transparent focus:border-border"
                             />
                             <button
-                              onClick={() => update(it.uid, { steps: it.steps.filter((_, j) => j !== i) })}
+                              onClick={() => removeDraftStep(it, i)}
                               className="text-muted-foreground hover:text-foreground shrink-0"
                               title="Убрать шаг"
                             >

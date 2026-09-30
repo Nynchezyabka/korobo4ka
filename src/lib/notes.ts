@@ -52,6 +52,15 @@ export function removeNote(id: string) {
   emit();
 }
 
+export function restoreNote(note: Note, index: number) {
+  if (notes.some((n) => n.id === note.id)) return;
+  const next = [...notes];
+  next.splice(Math.min(Math.max(index, 0), next.length), 0, note);
+  notes = next;
+  persist();
+  emit();
+}
+
 export function useNotes(): Note[] {
   const [state, setState] = useState<Note[]>(notes);
   useEffect(() => {

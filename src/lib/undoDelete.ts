@@ -3,6 +3,33 @@ import type { Task } from "@/types";
 
 type SetTasks = (fn: (prev: Task[]) => Task[]) => void;
 
+/** Единое уведомление об удалении с безопасным однократным завершением. */
+export function showUndoToast(message: string, onUndo: () => void, onFinal?: () => void) {
+  let undone = false;
+  let finalized = false;
+  let toastId: string | number | undefined;
+  const finalize = () => {
+    if (undone || finalized) return;
+    finalized = true;
+    onFinal?.();
+  };
+
+  toastId = toast(message, {
+    duration: 5000,
+    action: {
+      label: "Отменить",
+      onClick: () => {
+        if (undone) return;
+        undone = true;
+        onUndo();
+        if (toastId !== undefined) toast.dismiss(toastId);
+      },
+    },
+    onAutoClose: finalize,
+    onDismiss: finalize,
+  });
+}
+
 /** Удаляет задачу сразу и показывает «Отменить» на несколько секунд. */
 export function deleteWithUndo(setTasks: SetTasks, id: number, onFinal?: () => void) {
   let removed: Task | undefined;
@@ -12,24 +39,14 @@ export function deleteWithUndo(setTasks: SetTasks, id: number, onFinal?: () => v
     removed = prev[index];
     return prev.filter((t) => t.id !== id);
   });
-  let undone = false;
-  toast("Задача удалена", {
-    duration: 5000,
-    action: {
-      label: "Отменить",
-      onClick: () => {
-        undone = true;
-        if (!removed) return;
-        const t = removed;
-        setTasks((prev) => {
-          if (prev.some((x) => x.id === t.id)) return prev;
-          const next = [...prev];
-          next.splice(Math.min(Math.max(index, 0), next.length), 0, t);
-          return next;
-        });
-      },
-    },
-    onAutoClose: () => { if (!undone) onFinal?.(); },
-    onDismiss: () => { if (!undone) onFinal?.(); },
-  });
+  showUndoToast("Задача удалена", () => {
+    if (!removed) return;
+    const t = removed;
+    setTasks((prev) => {
+      if (prev.some((x) => x.id === t.id)) return prev;
+      const next = [...prev];
+      next.splice(Math.min(Math.max(index, 0), next.length), 0, t);
+      return next;
+    });
+  }, onFinal);
 }
