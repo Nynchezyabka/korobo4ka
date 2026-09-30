@@ -441,6 +441,17 @@ function ProjectDetail({
     });
   };
 
+  /** Ввод шагов: каждая строка — отдельный шаг, маркеры списка убираются. */
+  const submitSteps = () => {
+    const lines = stepText
+      .split("\n")
+      .map((s) => s.replace(/^\s*[-•*\d.)]+\s*/, "").trim())
+      .filter(Boolean);
+    if (lines.length === 0) { setStepText(""); return; }
+    addSteps(lines);
+    setStepText("");
+  };
+
   const removeStep = (id: number) => deleteWithUndo(setTasks, id);
 
   const toggleStep = (t: Task) => {
