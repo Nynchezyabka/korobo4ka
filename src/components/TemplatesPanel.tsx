@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Plus, Trash2, ToggleLeft, ToggleRight, Repeat } from "lucide-react";
 import { getCustomSubcategoriesSync } from "@/lib/taskStore";
 import { ClockPicker, pad2 } from "@/components/DateTimePicker";
+import { showUndoToast } from "@/lib/undoDelete";
 
 interface Props {
   templates: TaskTemplate[];
@@ -17,7 +18,15 @@ export function TemplatesPanel({ templates, onSave }: Props) {
   const [showForm, setShowForm] = useState(false);
 
   const deleteTemplate = (id: number) => {
+    const index = templates.findIndex((t) => t.id === id);
+    const removed = templates[index];
+    if (!removed) return;
     onSave(templates.filter((t) => t.id !== id));
+    showUndoToast("Повтор удалён", () => {
+      const restored = [...templates.filter((t) => t.id !== removed.id)];
+      restored.splice(Math.min(Math.max(index, 0), restored.length), 0, removed);
+      onSave(restored);
+    });
   };
 
   const toggleTemplate = (id: number) => {
@@ -78,7 +87,7 @@ export function TemplatesPanel({ templates, onSave }: Props) {
                 <button onClick={() => { setEditing(tpl); setShowForm(true); }} className="p-1.5 rounded hover:bg-muted transition-colors text-xs">
                   ✏️
                 </button>
-                <button onClick={() => deleteTemplate(tpl.id)} className="p-1.5 rounded hover:bg-destructive/10 transition-colors">
+                <button onClick={() => deleteTemplate(tpl.id)} className="p-1.5 rounded hover:bg-destructive/10 transition-colors" title="Удалить повтор">
                   <Trash2 size={14} />
                 </button>
               </div>

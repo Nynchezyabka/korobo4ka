@@ -10,6 +10,7 @@ import { STEPS_INSTRUCTIONS, STEPS_SCHEMA } from "@/lib/aiPrompts";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { deleteWithUndo, showUndoToast } from "@/lib/undoDelete";
 import {
   Plus, ChevronLeft, Play, Check, Trash2, Sparkles, Lightbulb,
   BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat,
@@ -61,9 +62,26 @@ export function ProjectsPanel() {
   };
 
   const deleteProject = (id: number) => {
+    const projectIndex = projects.findIndex((p) => p.id === id);
+    const removedProject = projects[projectIndex];
+    const removedSteps = tasks.filter((t) => t.projectId === id);
+    if (!removedProject) return;
     persist(projects.filter((p) => p.id !== id));
     setTasks((prev) => prev.filter((t) => t.projectId !== id));
     if (openId === id) setOpenId(null);
+    showUndoToast("Проект удалён", () => {
+      setProjects((current) => {
+        if (current.some((p) => p.id === removedProject.id)) return current;
+        const restored = [...current];
+        restored.splice(Math.min(Math.max(projectIndex, 0), restored.length), 0, removedProject);
+        saveProjects(restored);
+        return restored;
+      });
+      setTasks((current) => {
+        const existing = new Set(current.map((t) => t.id));
+        return [...current, ...removedSteps.filter((t) => !existing.has(t.id))];
+      });
+    });
   };
 
   const open = projects.find((p) => p.id === openId) || null;
@@ -244,7 +262,7 @@ function ProjectDetail({
     });
   };
 
-  const removeStep = (id: number) => setTasks((prev) => prev.filter((t) => t.id !== id));
+  const removeStep = (id: number) => deleteWithUndo(setTasks, id);
 
   const toggleStep = (t: Task) => {
     if (t.completed) {
@@ -445,8 +463,19 @@ function ProjectDetail({
               </button>
               {!tpl.builtin && (
                 <button
-                  onClick={() => onSaveChecklists(checklists.filter((c) => c.id !== tpl.id))}
+                  onClick={() => {
+                    const index = checklists.findIndex((c) => c.id === tpl.id);
+                    const removed = checklists[index];
+                    if (!removed) return;
+                    onSaveChecklists(checklists.filter((c) => c.id !== tpl.id));
+                    showUndoToast("Чек-лист удалён", () => {
+                      const restored = [...checklists.filter((c) => c.id !== removed.id)];
+                      restored.splice(Math.min(Math.max(index, 0), restored.length), 0, removed);
+                      onSaveChecklists(restored);
+                    });
+                  }}
                   className="p-1 rounded hover:bg-muted/60 text-red-600"
+                  title="Удалить чек-лист"
                 >
                   <Trash2 size={12} />
                 </button>
