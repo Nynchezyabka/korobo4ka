@@ -255,7 +255,7 @@ export function ProjectsPanel() {
             placeholder="Что хочется сделать?"
             className={cn(
               "w-full text-sm px-2.5 py-2 rounded-md border bg-background outline-none transition-colors",
-              titleNudge ? "border-destructive ring-2 ring-destructive/30 animate-nudge" : "border-border focus:border-primary"
+              titleNudge ? "border-primary ring-2 ring-primary/40 animate-nudge" : "border-border focus:border-primary"
             )}
             autoFocus
           />
