@@ -38,6 +38,10 @@ export function BraindumpPanel() {
   draftRef.current = items;
   const doneRef = useRef(false);
   const [demoLeft, setDemoLeft] = useState<number | null>(null);
+  const [aiPickerOpen, setAiPickerOpen] = useState(false);
+  const [aiStore, setAiStore] = useState<AiStore>(() => loadAiStore());
+  const [aiSource, setAiSource] = useState<AiSource>(() => loadAiSource());
+  const [aiOwner, setAiOwner] = useState(false);
 
   useEffect(() => {
     if (currentAiLabel() !== "Демо-режим") { setDemoLeft(null); return; }
