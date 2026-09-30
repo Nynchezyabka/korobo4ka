@@ -183,6 +183,23 @@ export function ProjectsPanel() {
             className="w-full text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none"
             autoFocus
           />
+          <div className="flex gap-2 items-start">
+            <textarea
+              value={newDetails}
+              onChange={(e) => setNewDetails(e.target.value)}
+              rows={3}
+              placeholder="Контекст, детали или пожелания (необязательно). Например: второй триместр, нельзя сырые сыры, нужны простые блюда без долгой готовки."
+              className="flex-1 text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none resize-y min-h-[68px]"
+            />
+            <VoiceButton
+              title="Наговорить описание"
+              onText={(t) => setNewDetails((prev) => (prev ? prev + " " : "") + t)}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Чем подробнее описание, тем точнее нейросеть предложит шаги — она видит и название, и эти детали.
+          </p>
+
           <div className="flex flex-wrap gap-1.5">
             {([1, 2, 5, 3, 4, 0] as CategoryId[]).map((c) => (
               <button
