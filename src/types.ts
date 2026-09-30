@@ -22,6 +22,8 @@ export interface Task {
 export interface Project {
   id: number;
   title: string;
+  /** Свободное описание/контекст проекта: детали, ограничения, пожелания */
+  description?: string;
   category: CategoryId;
   /** sequential — шаги идут по порядку; parallel — в любом порядке */
   mode: "sequential" | "parallel";

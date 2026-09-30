@@ -15,8 +15,48 @@ import { deleteWithUndo, showUndoToast } from "@/lib/undoDelete";
 import { foldToBox, burnInPlace } from "@/lib/paperFx";
 import {
   Plus, ChevronLeft, Play, Check, Trash2, Sparkles,
-  BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat,
+  BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat, Mic, MicOff, Pencil,
 } from "lucide-react";
+
+/** Кнопка голосового ввода: дописывает распознанный текст в поле описания. */
+function VoiceButton({ onText, title }: { onText: (text: string) => void; title: string }) {
+  const [listening, setListening] = useState(false);
+  const recogRef = useRef<any>(null);
+
+  const toggle = () => {
+    const SR: any = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    if (!SR) { toast.error("Голосовой ввод не поддерживается в этом браузере"); return; }
+    if (listening) { recogRef.current?.stop(); return; }
+    const r = new SR();
+    r.lang = "ru-RU";
+    r.continuous = true;
+    r.interimResults = false;
+    r.onresult = (e: any) => {
+      let add = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) add += e.results[i][0].transcript + " ";
+      onText(add.trim());
+    };
+    r.onerror = () => { setListening(false); toast.error("Не удалось распознать"); };
+    r.onend = () => setListening(false);
+    recogRef.current = r;
+    setListening(true);
+    r.start();
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      title={title}
+      className={cn(
+        "shrink-0 p-2 rounded-md border",
+        listening ? "bg-red-600/15 border-red-600/40 text-red-600 animate-pulse" : "bg-muted/60 border-border/50 text-muted-foreground"
+      )}
+    >
+      {listening ? <MicOff size={14} /> : <Mic size={14} />}
+    </button>
+  );
+}
 
 export function ProjectsPanel() {
   const { tasks, setTasks, openTimer, completeTaskWithRecurrence, navigate } = useApp();
@@ -25,6 +65,7 @@ export function ProjectsPanel() {
   const [openId, setOpenId] = useState<number | null>(null);
   const [creating, setCreating] = useState(false);
   const [newTitle, setNewTitle] = useState("");
+  const [newDetails, setNewDetails] = useState("");
   const [newCat, setNewCat] = useState<CategoryId>(1);
   const [newMode, setNewMode] = useState<"sequential" | "parallel">("sequential");
   const [suggestOnOpenId, setSuggestOnOpenId] = useState<number | null>(null);
@@ -54,12 +95,14 @@ export function ProjectsPanel() {
     const p: Project = {
       id,
       title,
+      description: newDetails.trim() || undefined,
       category: newCat,
       mode: newMode,
       createdAt: Date.now(),
     };
     persist([...fresh, p]);
     setNewTitle("");
+    setNewDetails("");
     setCreating(false);
     setSuggestOnOpenId(suggestSteps ? p.id : null);
     setOpenId(p.id);
@@ -140,6 +183,23 @@ export function ProjectsPanel() {
             className="w-full text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none"
             autoFocus
           />
+          <div className="flex gap-2 items-start">
+            <textarea
+              value={newDetails}
+              onChange={(e) => setNewDetails(e.target.value)}
+              rows={3}
+              placeholder="Контекст, детали или пожелания (необязательно). Например: второй триместр, нельзя сырые сыры, нужны простые блюда без долгой готовки."
+              className="flex-1 text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none resize-y min-h-[68px]"
+            />
+            <VoiceButton
+              title="Наговорить описание"
+              onText={(t) => setNewDetails((prev) => (prev ? prev + " " : "") + t)}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Чем подробнее описание, тем точнее нейросеть предложит шаги — она видит и название, и эти детали.
+          </p>
+
           <div className="flex flex-wrap gap-1.5">
             {([1, 2, 5, 3, 4, 0] as CategoryId[]).map((c) => (
               <button
@@ -247,7 +307,11 @@ function ProjectDetail({
   const [hints, setHints] = useState<string[] | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [showLibrary, setShowLibrary] = useState(false);
+  const [editingDesc, setEditingDesc] = useState(false);
+  const [descDraft, setDescDraft] = useState(project.description ?? "");
   const suggestionStartedRef = useRef(false);
+  const descRef = useRef(project.description ?? "");
+  descRef.current = project.description ?? "";
 
   const steps = useMemo(
     () => tasks.filter((t) => t.projectId === project.id).sort((a, b) => (a.stepOrder ?? 0) - (b.stepOrder ?? 0)),
@@ -288,12 +352,18 @@ function ProjectDetail({
   const askAi = async () => {
     setAiLoading(true);
     try {
+      const details = descRef.current.trim().slice(0, 4000);
       const data = await runAI({
         instructions: STEPS_INSTRUCTIONS,
-        input: `Дело: ${project.title}`,
+        input:
+          (details ? `Дело: ${project.title}\n\nОписание и контекст:\n${details}` : `Дело: ${project.title}`) +
+          "\n\nТребования к ответу: 5-8 проектных этапов, ведущих к результату всего дела. " +
+          "Каждый этап — осмысленная часть плана (разобраться, выбрать, подготовить, договориться, сделать, проверить). " +
+          "Не начинай с бытовых движений вроде «открыть холодильник», «взять помидор», «налить воды» — такие шаги недопустимы. " +
+          "Учти ограничения и пожелания из описания в конкретных шагах.",
         schemaName: "steps",
         schema: STEPS_SCHEMA,
-        fallback: { fn: "suggest-steps", body: { title: project.title } },
+        fallback: { fn: "suggest-steps", body: { title: project.title, details } },
       });
       const list: string[] = Array.isArray(data?.steps)
         ? data.steps.filter((x: unknown) => typeof x === "string" && x.trim()).slice(0, 10)
@@ -340,6 +410,61 @@ function ProjectDetail({
           <Trash2 size={16} />
         </button>
       </div>
+
+      {/* Описание / контекст проекта */}
+      <div className="mb-3">
+        {editingDesc ? (
+          <div className="p-2.5 rounded-lg bg-muted/50 border border-border/60 space-y-2">
+            <div className="flex gap-2 items-start">
+              <textarea
+                value={descDraft}
+                onChange={(e) => setDescDraft(e.target.value)}
+                rows={3}
+                autoFocus
+                placeholder="Контекст, детали, ограничения и пожелания — их учтёт нейросеть, когда предложит шаги."
+                className="flex-1 text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none resize-y min-h-[68px]"
+              />
+              <VoiceButton
+                title="Наговорить описание"
+                onText={(t) => setDescDraft((prev) => (prev ? prev + " " : "") + t)}
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => { onUpdate({ description: descDraft.trim() || undefined }); setEditingDesc(false); }}
+                className="text-xs px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground"
+              >
+                Сохранить
+              </button>
+              <button
+                onClick={() => { setDescDraft(project.description ?? ""); setEditingDesc(false); }}
+                className="text-xs px-2.5 py-1.5 rounded-md bg-muted/60 border border-border/50"
+              >
+                Отмена
+              </button>
+            </div>
+          </div>
+        ) : project.description ? (
+          <div className="p-2.5 rounded-lg bg-muted/40 border border-border/50 flex items-start gap-2">
+            <p className="flex-1 text-xs sm:text-sm text-muted-foreground whitespace-pre-wrap">{project.description}</p>
+            <button
+              onClick={() => { setDescDraft(project.description ?? ""); setEditingDesc(true); }}
+              className="p-1.5 rounded hover:bg-muted/60 text-muted-foreground"
+              title="Изменить описание"
+            >
+              <Pencil size={13} />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => { setDescDraft(""); setEditingDesc(true); }}
+            className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-muted/60 border border-border/50 text-muted-foreground"
+          >
+            <Pencil size={13} /> Добавить контекст и детали
+          </button>
+        )}
+      </div>
+
 
       <div className="flex flex-wrap items-center gap-1.5 mb-3">
         {(["sequential", "parallel"] as const).map((m) => (
