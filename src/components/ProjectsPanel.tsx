@@ -260,6 +260,27 @@ export function ProjectsPanel() {
             Чем подробнее описание, тем точнее нейросеть предложит шаги — она видит и название, и эти детали.
           </p>
 
+          <div className="pt-1">
+            <label className="text-xs font-semibold opacity-70 block mb-1">
+              Шаги — по одному на строку (необязательно)
+            </label>
+            <div className="flex gap-2 items-start">
+              <textarea
+                value={newSteps}
+                onChange={(e) => setNewSteps(e.target.value)}
+                rows={3}
+                placeholder={"Если шаги уже есть в голове — впишите их здесь\nкаждый с новой строки\nили вставьте готовый список"}
+                className="flex-1 text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none resize-y min-h-[68px]"
+              />
+              <VoiceButton
+                title="Наговорить шаги"
+                onText={(t) => setNewSteps((prev) => (prev ? prev + "\n" : "") + t)}
+              />
+            </div>
+          </div>
+
+
+
           <div className="flex flex-wrap gap-1.5">
             {([1, 2, 5, 3, 4, 0] as CategoryId[]).map((c) => (
               <button
