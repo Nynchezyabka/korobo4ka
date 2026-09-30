@@ -628,7 +628,7 @@ function TaskCard({
               <button onClick={onReturn} className="p-1.5 rounded active:bg-black/10 hover:bg-black/5 transition-colors" title="Вернуть">
                 <Undo2 size={14} />
               </button>
-              <button onClick={onDelete} className="p-1.5 rounded active:bg-black/10 hover:bg-muted transition-colors" title="Удалить">
+              <button onClick={(e) => { burnInPlace(e.currentTarget, { text: task.text, category: task.category }); onDelete(); }} className="p-1.5 rounded active:bg-black/10 hover:bg-muted transition-colors" title="Удалить">
                 <Trash2 size={14} />
               </button>
             </>
