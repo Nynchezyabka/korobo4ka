@@ -212,7 +212,7 @@ export function ProjectsPanel() {
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") createProject(false); }}
-            placeholder="Например: Забор на даче"
+            placeholder="Что хочется сделать?"
             className="w-full text-sm px-2.5 py-2 rounded-md border border-border bg-background outline-none"
             autoFocus
           />
