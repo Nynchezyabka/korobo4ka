@@ -8,6 +8,7 @@ import { NextMinuteSheet } from "@/components/NextMinuteSheet";
 import { setTaskReminder, clearTaskReminder, hasActiveReminder } from "@/lib/notifications";
 import { DateTimePicker } from "@/components/DateTimePicker";
 import { deleteWithUndo } from "@/lib/undoDelete";
+import { foldToBox, burnInPlace } from "@/lib/paperFx";
 import {
   Play, Eye, EyeOff, Trash2, Check, Undo2, FolderOpen, Plus, Pencil, GripVertical, MoreVertical,
   Bell, BellRing, BellOff, Lightbulb, X, CalendarClock,
@@ -492,6 +493,7 @@ function TaskCard({
 
   return (
     <div
+      data-fx-row
       draggable={!showArchive && !editing}
       onDragStart={(e) => { e.dataTransfer.effectAllowed = "move"; onDragStart(); }}
       onDragOver={(e) => { e.preventDefault(); onDragOver(); }}
@@ -594,7 +596,7 @@ function TaskCard({
               {showActions && (
                 <div className="absolute z-[10200] top-full right-0 mt-1 bg-background rounded-md shadow-lg p-1 min-w-[150px] border border-border animate-scale-in">
                   <button
-                    onClick={() => { onComplete(); setShowActions(false); }}
+                    onClick={(e) => { foldToBox(e.currentTarget, { text: task.text, category: task.category }); onComplete(); setShowActions(false); }}
                     className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
                   >
                     <Check size={12} /> Выполнено
@@ -612,7 +614,7 @@ function TaskCard({
                     {hasReminder ? <><BellRing size={12} /> Изменить напоминание</> : <><Bell size={12} /> Напомнить</>}
                   </button>
                   <button
-                    onClick={() => { onDelete(); setShowActions(false); }}
+                    onClick={(e) => { burnInPlace(e.currentTarget, { text: task.text, category: task.category }); onDelete(); setShowActions(false); }}
                     className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted text-red-600 transition-colors flex items-center gap-1.5"
                   >
                     <Trash2 size={12} /> Удалить
