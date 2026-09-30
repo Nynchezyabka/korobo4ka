@@ -352,12 +352,13 @@ function ProjectDetail({
   const askAi = async () => {
     setAiLoading(true);
     try {
+      const details = descRef.current.trim().slice(0, 4000);
       const data = await runAI({
         instructions: STEPS_INSTRUCTIONS,
-        input: `Дело: ${project.title}`,
+        input: details ? `Дело: ${project.title}\n\nОписание и контекст:\n${details}` : `Дело: ${project.title}`,
         schemaName: "steps",
         schema: STEPS_SCHEMA,
-        fallback: { fn: "suggest-steps", body: { title: project.title } },
+        fallback: { fn: "suggest-steps", body: { title: project.title, details } },
       });
       const list: string[] = Array.isArray(data?.steps)
         ? data.steps.filter((x: unknown) => typeof x === "string" && x.trim()).slice(0, 10)
