@@ -128,12 +128,14 @@ export function ProjectsPanel() {
       title,
       description: newDetails.trim() || undefined,
       category: newCat,
+      subcategory: newSub || undefined,
       mode: newMode,
       createdAt: Date.now(),
     };
     persist([...fresh, p]);
     setNewTitle("");
     setNewDetails("");
+    setNewSub("");
     setCreating(false);
     setSuggestOnOpenId(suggestSteps ? p.id : null);
     setOpenId(p.id);
