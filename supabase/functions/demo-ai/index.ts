@@ -148,7 +148,12 @@ Deno.serve(async (req) => {
       if (!title) return json({ error: 'Укажите название дела' }, 400);
       const details = typeof body?.details === 'string' ? body.details.trim().slice(0, 4000) : '';
       instructions = STEPS_INSTRUCTIONS;
-      userText = details ? `Дело: ${title}\n\nОписание и контекст:\n${details}` : `Дело: ${title}`;
+      userText =
+        (details ? `Дело: ${title}\n\nОписание и контекст:\n${details}` : `Дело: ${title}`) +
+        '\n\nТребования к ответу: 5-8 проектных этапов, ведущих к результату всего дела. ' +
+        'Каждый этап — осмысленная часть плана (разобраться, выбрать, подготовить, договориться, сделать, проверить). ' +
+        'Не начинай с бытовых движений вроде «открыть холодильник», «взять помидор», «налить воды» — такие шаги недопустимы. ' +
+        'Учти ограничения и пожелания из описания в конкретных шагах.';
     } else {
       const text = typeof body?.text === 'string' ? body.text.trim().slice(0, 6000) : '';
       if (text.length < 5) return json({ error: 'Напишите чуть подробнее' }, 400);
