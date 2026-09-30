@@ -14,7 +14,7 @@ export function showUndoToast(message: string, onUndo: () => void, onFinal?: () 
     onFinal?.();
   };
 
-  toast(message, {
+  toastId = toast(message, {
     duration: 5000,
     action: {
       label: "Отменить",
