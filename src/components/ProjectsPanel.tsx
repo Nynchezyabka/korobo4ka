@@ -355,7 +355,12 @@ function ProjectDetail({
       const details = descRef.current.trim().slice(0, 4000);
       const data = await runAI({
         instructions: STEPS_INSTRUCTIONS,
-        input: details ? `Дело: ${project.title}\n\nОписание и контекст:\n${details}` : `Дело: ${project.title}`,
+        input:
+          (details ? `Дело: ${project.title}\n\nОписание и контекст:\n${details}` : `Дело: ${project.title}`) +
+          "\n\nТребования к ответу: 5-8 проектных этапов, ведущих к результату всего дела. " +
+          "Каждый этап — осмысленная часть плана (разобраться, выбрать, подготовить, договориться, сделать, проверить). " +
+          "Не начинай с бытовых движений вроде «открыть холодильник», «взять помидор», «налить воды» — такие шаги недопустимы. " +
+          "Учти ограничения и пожелания из описания в конкретных шагах.",
         schemaName: "steps",
         schema: STEPS_SCHEMA,
         fallback: { fn: "suggest-steps", body: { title: project.title, details } },
