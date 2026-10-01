@@ -1,5 +1,5 @@
 import { createPortal } from "react-dom";
-import { X, Boxes, Wand2, MousePointerClick, Puzzle, Play, Lightbulb } from "lucide-react";
+import { X, Boxes, Wand2, MousePointerClick, Puzzle, Play } from "lucide-react";
 import { CATEGORIES, CategoryId } from "@/types";
 import { CategoryIcon } from "@/components/CategoryIcon";
 
@@ -22,7 +22,7 @@ const CARDS = [
   {
     icon: <Boxes size={22} className="text-primary" />,
     title: "Дела не бывают одинаковыми",
-    text: "Пять отделений — по источникам мотивации, а не по «срочно/важно».",
+    text: "Пять отделений по типу ресурса — не «срочно/важно», а что даёт силы и что их забирает.",
   },
   {
     icon: <Wand2 size={22} className="text-primary" />,
@@ -38,11 +38,6 @@ const CARDS = [
     icon: <Puzzle size={22} className="text-primary" />,
     title: "Большие цели — не страшно",
     text: "Опиши проект своими словами — ИИ разложит его на спокойные шаги.",
-  },
-  {
-    icon: <Lightbulb size={22} className="text-primary" />,
-    title: "Застряла — не страшно",
-    text: "Кнопка «С чего начать?» подскажет самый маленький шаг на минуту, когда зависла над делом.",
   },
 ];
 
@@ -65,7 +60,7 @@ export function HowItWorksModal({ onClose }: Props) {
 
         <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
           В основе — система мотивационной гигиены Виолетты Макеевой: дела делятся не по «срочно/важно»,
-          а по источникам мотивации. Сортировать самой не нужно — Коробочка раскладывает сама.
+          а по типу ресурса. Сортировать самой не нужно — Коробочка раскладывает сама.
         </p>
 
         {/* Пять отделений */}
@@ -104,7 +99,7 @@ export function HowItWorksModal({ onClose }: Props) {
           </div>
         </div>
 
-        <p className="mt-5 mb-1 text-center font-display text-lg sm:text-xl text-foreground/90">
+        <p className="mt-4 text-center font-display text-sm text-foreground/80">
           Дела — по коробочкам. В голове — тишина.
         </p>
       </div>
