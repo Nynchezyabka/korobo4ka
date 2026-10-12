@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { TaskLocation, CategoryId, CATEGORIES, DEFAULT_SUBCATEGORIES, RecurrenceType, RECURRENCE_LABELS, WEEKDAYS } from "@/types";
+import { TaskLocation, CategoryId, CATEGORIES, DEFAULT_SUBCATEGORIES } from "@/types";
 import { getCustomSubcategoriesSync, saveCustomSubcategories } from "@/lib/taskStore";
 import { cn } from "@/lib/utils";
 import { LOCATIONS } from "@/lib/location";
@@ -7,7 +7,8 @@ import { X, Plus, ListRestart, CalendarClock, Target } from "lucide-react";
 import { useApp } from "@/App";
 import { loadProjects, saveProjects, newProjectId } from "@/lib/projects";
 import { showUndoToast } from "@/lib/undoDelete";
-import { DateTimePicker, ClockPicker, pad2 } from "@/components/DateTimePicker";
+import { DateTimePicker } from "@/components/DateTimePicker";
+import { RecurrenceFields, RecurrencePatch } from "@/components/RecurrenceFields";
 
 interface Props {
   defaultCategory: CategoryId;
@@ -16,14 +17,15 @@ interface Props {
     text: string,
     category: CategoryId,
     subcategory?: string,
-    recurrence?: { type: "daily"|"weekly"|"monthly"; hour: number; minute?: number; day?: number },
+    recurrence?: RecurrencePatch,
     scheduledFor?: number | null,
     location?: TaskLocation
   ) => void;
   onClose: () => void;
+  initialScheduledFor?: number | null;
 }
 
-export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClose }: Props) {
+export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClose, initialScheduledFor }: Props) {
   const [text, setText] = useState("");
   const [category, setCategory] = useState<CategoryId>(defaultCategory);
   const [subcategory, setSubcategory] = useState<string>("");
@@ -33,13 +35,9 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
   const [recurEnabled, setRecurEnabled] = useState(false);
   const [asProject, setAsProject] = useState(false);
   const { navigate } = useApp();
-  const [recurType, setRecurType] = useState<Exclude<RecurrenceType, "yearly">>("daily");
-  const [recurHour, setRecurHour] = useState(9);
-  const [recurMinute, setRecurMinute] = useState(0);
-  const [recurDay, setRecurDay] = useState(1);
-  const [showClock, setShowClock] = useState(false);
-  const [whenEnabled, setWhenEnabled] = useState(false);
-  const [scheduledFor, setScheduledFor] = useState<number | null>(null);
+  const [sched, setSched] = useState<RecurrencePatch | null>(null);
+  const [whenEnabled, setWhenEnabled] = useState(!!initialScheduledFor);
+  const [scheduledFor, setScheduledFor] = useState<number | null>(initialScheduledFor ?? null);
   const [location, setLocation] = useState<TaskLocation>("any");
   const textRef = useRef<HTMLTextAreaElement>(null);
 
@@ -108,9 +106,7 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
       navigate("projects");
       return;
     }
-    const recurrence = recurEnabled
-      ? { type: recurType, hour: recurHour, minute: recurMinute, day: recurType === "daily" ? undefined : recurDay }
-      : undefined;
+    const recurrence = recurEnabled && sched ? sched : undefined;
     onAdd(text, category, subcategory || undefined, recurrence, whenEnabled ? scheduledFor : null, location);
     setText("");
     textRef.current?.focus();
@@ -282,42 +278,9 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
             <ListRestart size={14} /> Делать регулярно
           </label>
           {recurEnabled && (
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              <select
-                value={recurType}
-                onChange={(e) => setRecurType(e.target.value as Exclude<RecurrenceType, "yearly">)}
-                className="text-xs px-2 py-1 rounded border border-border bg-white/70"
-              >
-                {(["daily","weekly","monthly"] as RecurrenceType[]).map((r) => (
-                  <option key={r} value={r}>{RECURRENCE_LABELS[r]}</option>
-                ))}
-              </select>
-              {recurType === "weekly" && (
-                <select value={recurDay} onChange={(e) => setRecurDay(parseInt(e.target.value))} className="text-xs px-2 py-1 rounded border border-border bg-white/70">
-                  {WEEKDAYS.map((w, i) => <option key={i} value={i}>{w}</option>)}
-                </select>
-              )}
-              {recurType === "monthly" && (
-                <input type="number" min={1} max={31} value={recurDay} onChange={(e) => setRecurDay(Math.max(1, Math.min(31, parseInt(e.target.value) || 1)))} className="w-14 text-xs px-2 py-1 rounded border border-border bg-white/70 text-center" />
-              )}
-              <span className="text-xs">в</span>
-              <button
-                onClick={() => setShowClock((v) => !v)}
-                className="text-xs px-2.5 py-1 rounded-full border border-border bg-white/70 tabular-nums font-medium"
-              >
-                {pad2(recurHour)}:{pad2(recurMinute)}
-              </button>
-              {showClock && (
-                <div className="basis-full flex justify-center py-2">
-                  <ClockPicker
-                    hour={recurHour}
-                    minute={recurMinute}
-                    onChange={(h, m) => { setRecurHour(h); setRecurMinute(m); }}
-                    compact
-                  />
-                </div>
-              )}
-              <span className="text-xs text-foreground/60 basis-full">Шаблон автоматически появится в разделе «Регулярные дела».</span>
+            <div className="mt-2 p-2 rounded-lg bg-white/50">
+              <RecurrenceFields initial={{}} onChange={setSched} />
+              <span className="text-xs text-foreground/60">Появится в разделе «Регулярные дела».</span>
             </div>
           )}
         </div>}

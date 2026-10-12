@@ -48,7 +48,7 @@ const DOT_COLORS: Record<CategoryId, string> = {
 };
 
 export function HistoryModal() {
-  const { tasks, setTasks } = useApp();
+  const { tasks, setTasks, openAddModal } = useApp();
   const today = new Date();
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [viewYear, setViewYear] = useState(today.getFullYear());
@@ -379,7 +379,20 @@ export function HistoryModal() {
         </div>
       )}
 
-      {/* Manual / scheduled task entry */}
+      {/* Будущее — то же окно добавления, что и везде; прошлое — запись сделанного */}
+      {isFutureSelected ? (
+        <div className="border-t border-border pt-3">
+          <button
+            onClick={() => {
+              const [y, m, d] = selectedDate.split("-").map(Number);
+              openAddModal(undefined, undefined, new Date(y, m - 1, d, 9, 0).getTime());
+            }}
+            className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium active:scale-[0.98] transition-all"
+          >
+            <Plus size={14} /> Добавить задачу на этот день
+          </button>
+        </div>
+      ) : (
       <div className="border-t border-border pt-3">
         <h4 className="text-xs sm:text-sm font-semibold text-muted-foreground mb-2">
           {isFutureSelected ? "Добавить задачу" : "Добавить задачу вручную"}
@@ -432,6 +445,7 @@ export function HistoryModal() {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 }

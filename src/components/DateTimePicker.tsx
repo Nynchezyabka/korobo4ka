@@ -25,38 +25,38 @@ interface ClockProps {
   compact?: boolean;
 }
 
-/** Аналоговый выбор времени: сначала час, потом минуты (шаг 5). */
+/** Аналоговый 24-часовой выбор: внешний круг 1–12, внутренний 13–00; затем минуты (шаг 5). */
 export function ClockPicker({ hour, minute, onChange, compact }: ClockProps) {
   const [step, setStep] = useState<"hour" | "minute">("hour");
-  const pm = hour >= 12;
-  const size = compact ? 196 : 224;
-  const radius = size / 2 - (compact ? 22 : 24);
+  const size = compact ? 212 : 236;
+  const outerR = size / 2 - (compact ? 20 : 22);
+  const innerR = outerR - (compact ? 34 : 38);
   const center = size / 2;
 
-  const items = step === "hour"
-    ? Array.from({ length: 12 }, (_, i) => ({ label: String(i === 0 ? 12 : i), value: i }))
-    : Array.from({ length: 12 }, (_, i) => ({ label: pad2(i * 5), value: i * 5 }));
+  type Item = { label: string; value: number; i: number; r: number; small?: boolean };
+  const items: Item[] = step === "hour"
+    ? [
+        ...Array.from({ length: 12 }, (_, i) => ({ label: String(i === 0 ? 12 : i), value: i === 0 ? 12 : i, i, r: outerR })),
+        ...Array.from({ length: 12 }, (_, i) => ({ label: i === 0 ? "00" : String(i + 12), value: i === 0 ? 0 : i + 12, i, r: innerR, small: true })),
+      ]
+    : Array.from({ length: 12 }, (_, i) => ({ label: pad2(i * 5), value: i * 5, i, r: outerR }));
 
-  const selectedIndex = step === "hour" ? hour % 12 : Math.round(minute / 5) % 12;
+  const selected = step === "hour"
+    ? items.find((it) => it.value === hour)
+    : items.find((it) => it.value === Math.round(minute / 5) * 5 % 60);
 
   const pick = (value: number) => {
     if (step === "hour") {
-      const h = pm ? (value % 12) + 12 : value % 12;
-      onChange(h, minute);
+      onChange(value, minute);
       setStep("minute");
     } else {
       onChange(hour, value);
     }
   };
 
-  const togglePm = () => {
-    const h = pm ? hour - 12 : hour + 12;
-    onChange((h + 24) % 24, minute);
-  };
-
   return (
     <div className="flex flex-col items-center gap-2">
-      <div className="flex items-center gap-1 text-2xl font-display">
+      <div className="flex items-center gap-1 text-3xl font-display">
         <button
           onClick={() => setStep("hour")}
           className={cn("px-2 py-0.5 rounded-md tabular-nums", step === "hour" ? "bg-primary/15 text-primary" : "text-foreground/70")}
@@ -70,38 +70,32 @@ export function ClockPicker({ hour, minute, onChange, compact }: ClockProps) {
         >
           {pad2(minute)}
         </button>
-        <button
-          onClick={togglePm}
-          className="ml-2 text-xs px-2 py-1 rounded-full border border-border text-muted-foreground hover:bg-muted"
-          title="Утро / вечер"
-        >
-          {pm ? "после 12" : "до 12"}
-        </button>
       </div>
 
       <div className="relative rounded-full bg-muted/40 border border-border" style={{ width: size, height: size }}>
-        {/* стрелка */}
-        <div
-          className="absolute left-1/2 top-1/2 origin-left h-0.5 bg-primary/70 rounded-full"
-          style={{
-            width: radius - 16,
-            transform: `translateY(-50%) rotate(${selectedIndex * 30 - 90}deg)`,
-          }}
-        />
+        {selected && (
+          <div
+            className="absolute left-1/2 top-1/2 origin-left h-0.5 bg-primary/70 rounded-full"
+            style={{
+              width: selected.r - 14,
+              transform: `translateY(-50%) rotate(${selected.i * 30 - 90}deg)`,
+            }}
+          />
+        )}
         <div className="absolute left-1/2 top-1/2 w-2 h-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary" />
-        {items.map((item, i) => {
-          const angle = (i * 30 - 90) * (Math.PI / 180);
-          const x = center + radius * Math.cos(angle);
-          const y = center + radius * Math.sin(angle);
-          const active = i === selectedIndex;
+        {items.map((item) => {
+          const angle = (item.i * 30 - 90) * (Math.PI / 180);
+          const x = center + item.r * Math.cos(angle);
+          const y = center + item.r * Math.sin(angle);
+          const active = selected === item;
           return (
             <button
-              key={item.value}
+              key={`${item.r}-${item.value}`}
               onClick={() => pick(item.value)}
               className={cn(
-                "absolute -translate-x-1/2 -translate-y-1/2 rounded-full text-sm font-medium transition-all tabular-nums",
-                compact ? "w-8 h-8" : "w-9 h-9",
-                active ? "bg-primary text-primary-foreground shadow" : "hover:bg-primary/10 text-foreground/80"
+                "absolute -translate-x-1/2 -translate-y-1/2 rounded-full font-medium transition-all tabular-nums",
+                item.small ? "w-7 h-7 text-xs" : compact ? "w-8 h-8 text-sm" : "w-9 h-9 text-sm",
+                active ? "bg-primary text-primary-foreground shadow" : item.small ? "text-muted-foreground hover:bg-primary/10" : "hover:bg-primary/10 text-foreground/80"
               )}
               style={{ left: x, top: y }}
             >
