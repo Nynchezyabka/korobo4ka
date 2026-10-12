@@ -3,7 +3,7 @@ import { describeRecurrence } from "@/lib/recurring";
 import { TaskTemplate, CategoryId, CATEGORIES, RecurrenceType, RECURRENCE_LABELS, WEEKDAYS, DEFAULT_SUBCATEGORIES } from "@/types";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { cn } from "@/lib/utils";
-import { Plus, Trash2, ToggleLeft, ToggleRight, Infinity as InfinityIcon } from "lucide-react";
+import { Plus, Trash2, ToggleLeft, ToggleRight, ListRestart } from "lucide-react";
 import { getCustomSubcategoriesSync } from "@/lib/taskStore";
 import { ClockPicker, pad2 } from "@/components/DateTimePicker";
 import { showUndoToast } from "@/lib/undoDelete";
@@ -50,7 +50,7 @@ export function TemplatesPanel({ templates, onSave }: Props) {
   return (
     <div className="animate-fade-in">
       <h2 className="font-display text-2xl text-primary flex items-center gap-2 mb-1">
-        <InfinityIcon size={22} /> Регулярные дела
+        <ListRestart size={22} /> Регулярные дела
       </h2>
       <div className="mb-3 p-2.5 rounded-lg bg-muted/40 border border-border/60 text-xs sm:text-sm text-muted-foreground">
         Одна задача, которая сама появляется по расписанию: зарядка каждое утро, оплата счетов 5-го числа.
