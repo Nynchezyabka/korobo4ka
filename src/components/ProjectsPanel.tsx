@@ -15,7 +15,7 @@ import { deleteWithUndo, showUndoToast } from "@/lib/undoDelete";
 import { foldToBox, burnInPlace } from "@/lib/paperFx";
 import {
   Plus, ChevronLeft, Play, Check, Trash2, Sparkles,
-  BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat, Mic, MicOff, Pencil,
+  BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat, Infinity as InfinityIcon, Mic, MicOff, Pencil,
 } from "lucide-react";
 
 /** Кнопка голосового ввода: дописывает распознанный текст в поле описания. */
