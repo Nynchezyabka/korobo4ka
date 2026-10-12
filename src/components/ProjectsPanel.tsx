@@ -16,6 +16,7 @@ import { foldToBox, burnInPlace } from "@/lib/paperFx";
 import {
   Plus, ChevronLeft, Play, Check, Trash2, Sparkles,
   BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat, ListRestart, Mic, MicOff, Pencil,
+  Target,
 } from "lucide-react";
 
 /** Кнопка голосового ввода: дописывает распознанный текст в поле описания. */

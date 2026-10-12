@@ -13,7 +13,7 @@ import { foldToBox, burnInPlace } from "@/lib/paperFx";
 import { addNote, removeNote } from "@/lib/notes";
 import { loadProjects, saveProjects, newProjectId } from "@/lib/projects";
 import { toast } from "sonner";
-import { ListRestart, Target as TargetIcon, Wand2 } from "lucide-react";
+import { ListRestart, Target as TargetIcon, Wand2, CheckCheck, ListTodo } from "lucide-react";
 import {
   Play, Eye, EyeOff, Trash2, Check, Undo2, FolderOpen, Plus, Pencil, GripVertical, MoreVertical,
   Bell, BellRing, BellOff, Lightbulb, X, CalendarClock, Pause,
