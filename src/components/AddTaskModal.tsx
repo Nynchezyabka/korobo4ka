@@ -3,7 +3,10 @@ import { TaskLocation, CategoryId, CATEGORIES, DEFAULT_SUBCATEGORIES, Recurrence
 import { getCustomSubcategoriesSync, saveCustomSubcategories } from "@/lib/taskStore";
 import { cn } from "@/lib/utils";
 import { LOCATIONS } from "@/lib/location";
-import { X, Plus, ListRestart, CalendarClock } from "lucide-react";
+import { X, Plus, ListRestart, CalendarClock, Target } from "lucide-react";
+import { useApp } from "@/App";
+import { loadProjects, saveProjects, newProjectId } from "@/lib/projects";
+import { showUndoToast } from "@/lib/undoDelete";
 import { DateTimePicker, ClockPicker, pad2 } from "@/components/DateTimePicker";
 
 interface Props {
@@ -28,6 +31,8 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customSubs, setCustomSubs] = useState(() => getCustomSubcategoriesSync());
   const [recurEnabled, setRecurEnabled] = useState(false);
+  const [asProject, setAsProject] = useState(false);
+  const { navigate } = useApp();
   const [recurType, setRecurType] = useState<RecurrenceType>("daily");
   const [recurHour, setRecurHour] = useState(9);
   const [recurMinute, setRecurMinute] = useState(0);
@@ -89,8 +94,20 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
     5: "border-cat-5",
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!text.trim()) return;
+    if (asProject) {
+      const list = await loadProjects();
+      const id = newProjectId(list);
+      await saveProjects([...list, { id, title: text.trim(), category, subcategory: subcategory || undefined, mode: "sequential", createdAt: Date.now() }]);
+      showUndoToast("Проект создан", async () => {
+        const cur = await loadProjects();
+        await saveProjects(cur.filter((p) => p.id !== id));
+      });
+      onClose();
+      navigate("projects");
+      return;
+    }
     const recurrence = recurEnabled
       ? { type: recurType, hour: recurHour, minute: recurMinute, day: recurType === "daily" ? undefined : recurDay }
       : undefined;
@@ -251,8 +268,15 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
           )}
         </div>
 
+        {/* Project toggle */}
+        <label className="mt-3 flex items-center gap-2 text-sm font-medium cursor-pointer rounded-lg bg-white/40 border border-white/60 p-2.5">
+          <input type="checkbox" checked={asProject} onChange={(e) => { setAsProject(e.target.checked); if (e.target.checked) setRecurEnabled(false); }} />
+          <Target size={14} /> Сделать проектом
+          <span className="text-xs text-foreground/60 font-normal">— разобью на шаги</span>
+        </label>
+
         {/* Recurrence block */}
-        <div className="mt-3 rounded-lg bg-white/40 border border-white/60 p-2.5">
+        {!asProject && <div className="mt-3 rounded-lg bg-white/40 border border-white/60 p-2.5">
           <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
             <input type="checkbox" checked={recurEnabled} onChange={(e) => setRecurEnabled(e.target.checked)} />
             <ListRestart size={14} /> Делать регулярно
@@ -293,17 +317,17 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
                   />
                 </div>
               )}
-              <span className="text-xs text-foreground/60 basis-full">Шаблон автоматически появится в разделе «Повторяющиеся задачи».</span>
+              <span className="text-xs text-foreground/60 basis-full">Шаблон автоматически появится в разделе «Регулярные дела».</span>
             </div>
           )}
-        </div>
+        </div>}
 
         <div className="flex gap-2.5 mt-4">
           <button
             onClick={handleSubmit}
             className="flex-1 py-2.5 rounded-lg bg-primary text-primary-foreground font-medium active:scale-[0.98] transition-all"
           >
-            Добавить
+            {asProject ? "Создать проект" : "Добавить"}
           </button>
           <button
             onClick={onClose}
