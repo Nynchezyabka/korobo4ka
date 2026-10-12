@@ -1,3 +1,6 @@
+import { LocationToggle } from "@/components/LocationToggle";
+import { getCurrentLocation, fitsLocation } from "@/lib/location";
+import type { TaskLocation } from "@/types";
 import { useState, useCallback, useEffect, createContext, useContext, useRef } from "react";
 import { Task, TaskTemplate, CategoryId } from "@/types";
 import { initTaskStore, loadTasks, saveTasks, getNextId, exportTasksToFile, importTasksFromFile } from "@/lib/taskStore";
@@ -235,7 +238,7 @@ export default function App() {
     setAddModalOpen(true);
   }, []);
 
-  const handleAddTask = useCallback((text: string, category: CategoryId, subcategory?: string, recurrence?: { type: "daily"|"weekly"|"monthly"; hour: number; minute?: number; day?: number }, scheduledFor?: number | null) => {
+  const handleAddTask = useCallback((text: string, category: CategoryId, subcategory?: string, recurrence?: { type: "daily"|"weekly"|"monthly"; hour: number; minute?: number; day?: number }, scheduledFor?: number | null, location?: TaskLocation) => {
     const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
     if (lines.length === 0) return;
 
@@ -280,6 +283,7 @@ export default function App() {
           statusChangedAt: Date.now(),
         };
         if (subcategory) t.subcategory = subcategory;
+        if (location && location !== "any") t.location = location;
         if (scheduledFor) t.scheduledFor = scheduledFor;
         return t;
       });
@@ -338,11 +342,17 @@ export default function App() {
       (t) => categories.includes(t.category) && t.active && !t.completed
         && (!t.scheduledFor || t.scheduledFor <= now)
     );
+    const here = getCurrentLocation();
+    const fitting = active.filter((t) => fitsLocation(t, here));
     if (active.length === 0) {
       toast.info("Нет активных задач в этой категории!");
       return;
     }
-    const task = active[Math.floor(Math.random() * active.length)];
+    if (fitting.length === 0) {
+      toast.info(here === "home" ? "Здесь только рабочие дела — дома можно отдохнуть" : "Здесь только домашние дела — они подождут");
+      return;
+    }
+    const task = fitting[Math.floor(Math.random() * fitting.length)];
     openTimer(task);
   }, [tasks, openTimer]);
 
@@ -403,8 +413,8 @@ export default function App() {
         return <InfoPage />;
       default:
         return is3dMode(visualMode)
-          ? <ThreeDashboard onRandomTask={handleRandomTask} onViewTasks={handleViewTasks} />
-          : <Dashboard onRandomTask={handleRandomTask} onViewTasks={handleViewTasks} />;
+          ? <><LocationToggle className="relative z-20 pointer-events-auto mb-1" /><ThreeDashboard onRandomTask={handleRandomTask} onViewTasks={handleViewTasks} /></>
+          : <><LocationToggle className="mb-3" /><Dashboard onRandomTask={handleRandomTask} onViewTasks={handleViewTasks} /></>;
     }
   };
 

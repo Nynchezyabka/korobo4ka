@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { SECTIONS, CategoryId } from "@/types";
 import { useApp } from "@/App";
 import { cn } from "@/lib/utils";
