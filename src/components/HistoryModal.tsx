@@ -398,7 +398,7 @@ export function HistoryModal() {
             className="rounded-md border border-border bg-muted/30 px-2.5 py-1.5 text-xs sm:text-sm tabular-nums font-medium"
             title="Выбрать время"
           >
-            🕐 {pad2(manualHour)}:{pad2(manualMinute)}
+            <Clock size={12} className="inline -mt-0.5" /> {pad2(manualHour)}:{pad2(manualMinute)}
           </button>
           <button
             onClick={handleAddManual}
