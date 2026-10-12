@@ -285,7 +285,7 @@ export default function App() {
         });
         return merged;
       });
-      toast.success(`Создан повторяющийся шаблон`);
+      toast.success(`Регулярное дело создано`);
       return;
     }
 
