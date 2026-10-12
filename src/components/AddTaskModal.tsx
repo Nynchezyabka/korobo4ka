@@ -33,7 +33,7 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
   const [recurEnabled, setRecurEnabled] = useState(false);
   const [asProject, setAsProject] = useState(false);
   const { navigate } = useApp();
-  const [recurType, setRecurType] = useState<RecurrenceType>("daily");
+  const [recurType, setRecurType] = useState<Exclude<RecurrenceType, "yearly">>("daily");
   const [recurHour, setRecurHour] = useState(9);
   const [recurMinute, setRecurMinute] = useState(0);
   const [recurDay, setRecurDay] = useState(1);
@@ -285,7 +285,7 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <select
                 value={recurType}
-                onChange={(e) => setRecurType(e.target.value as RecurrenceType)}
+                onChange={(e) => setRecurType(e.target.value as Exclude<RecurrenceType, "yearly">)}
                 className="text-xs px-2 py-1 rounded border border-border bg-white/70"
               >
                 {(["daily","weekly","monthly"] as RecurrenceType[]).map((r) => (
