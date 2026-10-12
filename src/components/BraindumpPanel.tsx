@@ -7,7 +7,7 @@ import { CATEGORIES, CategoryId, RECURRENCE_LABELS, WEEKDAYS, RecurrenceType } f
 import { DraftItem, DraftKind, normalizeItems, applyDraft } from "@/lib/braindump";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Wand2, Mic, Loader2, Trash2, Check, StickyNote, ChevronDown, Paperclip, Link2, Sparkles } from "lucide-react";
+import { Wand2, Mic, Loader2, Trash2, Check, StickyNote, ChevronDown, Paperclip, Link2, Sparkles, ListChecks } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNotes, markNotesProcessed, removeNote, restoreNote, addNote, Note } from "@/lib/notes";
 import { showUndoToast } from "@/lib/undoDelete";
@@ -23,7 +23,7 @@ const GROUPS: { kind: DraftKind; title: string; hint: string }[] = [
 ];
 
 const PLACEHOLDER =
-  "Опишите ситуацию своими словами: что происходит, что нужно сделать, что беспокоит. Можно длинно и без порядка.";
+  "Опишите ситуацию своими словами — можно длинно и без порядка, ИИ разложит на дела.\n\nИли вставьте готовый список: каждое дело с новой строки — и разложите вручную.";
 
 /** Живой пример потока мыслей — чтобы новичок сразу увидел, как работает разбор. */
 const EXAMPLE_TEXT =
@@ -280,7 +280,7 @@ export function BraindumpPanel() {
           placeholder={PLACEHOLDER}
           className="w-full min-h-[140px] sm:min-h-[180px] p-2 rounded-lg bg-transparent resize-y text-sm sm:text-base outline-none placeholder:text-muted-foreground/60"
         />
-        <div className="flex items-center gap-2 pt-1.5 border-t border-border">
+        <div className="flex flex-wrap items-center gap-2 pt-1.5 border-t border-border">
           <button
             onClick={handleVoice}
             className={cn(
@@ -342,13 +342,14 @@ export function BraindumpPanel() {
               </>
             )}
           </div>
+          <div className="flex gap-2 w-full sm:w-auto sm:flex-1">
           <button
             onClick={analyze}
             disabled={loading || text.trim().length < 5}
-            className="flex-1 flex items-center justify-center gap-2 h-10 rounded-lg bg-primary text-primary-foreground text-sm font-medium disabled:opacity-40 active:scale-[0.99] transition-all"
+            className="flex-1 flex items-center justify-center gap-2 h-11 rounded-lg bg-primary text-primary-foreground text-sm font-medium disabled:opacity-40 active:scale-[0.97] transition-all"
           >
             {loading ? <Loader2 size={18} className="animate-spin" /> : <Wand2 size={18} />}
-            {loading ? "Разбираю…" : "Разобрать"}
+            {loading ? "Разбираю…" : "Разобрать с ИИ"}
           </button>
           <button
             onClick={() => {
@@ -356,11 +357,12 @@ export function BraindumpPanel() {
               if (ls.length) { setSortLines(ls); setItems(null); }
             }}
             disabled={loading || !text.trim()}
-            title="Разложить каждую строку самой — без помощника"
-            className="h-10 px-3 rounded-lg border border-border text-sm font-medium disabled:opacity-40 active:scale-[0.98] transition-all"
+            title="Каждая строка — отдельное дело, разложите сами"
+            className="flex-1 flex items-center justify-center gap-2 h-11 px-3 rounded-lg border border-border text-sm font-medium disabled:opacity-40 active:scale-[0.97] transition-all"
           >
-            Вручную
+            <ListChecks size={18} /> По списку вручную
           </button>
+          </div>
         </div>
         <AiModelPicker
           className="mt-1.5"

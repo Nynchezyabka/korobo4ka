@@ -239,8 +239,8 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
           </div>
         )}
 
-        {/* Дата и время (опционально) */}
-        <div className="mt-3 rounded-lg bg-white/40 border border-white/60 p-2.5">
+        {/* Дата и время (опционально) — у проекта своей даты нет */}
+        {!asProject && <div className="mt-3 rounded-lg bg-white/40 border border-white/60 p-2.5">
           <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
             <input
               type="checkbox"
@@ -262,11 +262,11 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
               <DateTimePicker value={scheduledFor} onChange={setScheduledFor} title="Когда напомнить" clearable={false} />
             </div>
           )}
-        </div>
+        </div>}
 
         {/* Project toggle */}
         <label className="mt-3 flex items-center gap-2 text-sm font-medium cursor-pointer rounded-lg bg-white/40 border border-white/60 p-2.5">
-          <input type="checkbox" checked={asProject} onChange={(e) => { setAsProject(e.target.checked); if (e.target.checked) setRecurEnabled(false); }} />
+          <input type="checkbox" checked={asProject} onChange={(e) => { setAsProject(e.target.checked); if (e.target.checked) { setRecurEnabled(false); setWhenEnabled(false); } }} />
           <Target size={14} /> Сделать проектом
           <span className="text-xs text-foreground/60 font-normal">— разобью на шаги</span>
         </label>
