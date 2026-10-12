@@ -31,12 +31,14 @@ async function ensureLoaded() {
   }
 }
 
-export function addNote(text: string, processed = false) {
+export function addNote(text: string, processed = false): Note | undefined {
   const t = text.trim();
   if (!t) return;
-  notes = [...notes, { id: crypto.randomUUID(), text: t.slice(0, 2000), createdAt: Date.now(), processed: processed || undefined }];
+  const note: Note = { id: crypto.randomUUID(), text: t.slice(0, 2000), createdAt: Date.now(), processed: processed || undefined };
+  notes = [...notes, note];
   persist();
   emit();
+  return note;
 }
 
 export function markNotesProcessed(ids: string[]) {
