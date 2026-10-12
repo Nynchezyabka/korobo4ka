@@ -18,7 +18,7 @@ export function LocationToggle({ className }: { className?: string }) {
               : "border-border/60 bg-background/60 text-muted-foreground hover:text-foreground"
           )}
         >
-          {l.emoji} {l.label}
+          <l.icon size={13} className="inline -mt-0.5 mr-1" />{l.label}
         </button>
       ))}
     </div>
