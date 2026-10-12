@@ -10,6 +10,10 @@ import { setTaskReminder, clearTaskReminder, hasActiveReminder } from "@/lib/not
 import { DateTimePicker } from "@/components/DateTimePicker";
 import { deleteWithUndo } from "@/lib/undoDelete";
 import { foldToBox, burnInPlace } from "@/lib/paperFx";
+import { addNote } from "@/lib/notes";
+import { loadProjects, saveProjects, newProjectId } from "@/lib/projects";
+import { toast } from "sonner";
+import { ListRestart, Target as TargetIcon, Wand2 } from "lucide-react";
 import {
   Play, Eye, EyeOff, Trash2, Check, Undo2, FolderOpen, Plus, Pencil, GripVertical, MoreVertical,
   Bell, BellRing, BellOff, Lightbulb, X, CalendarClock,
@@ -22,7 +26,28 @@ interface Props {
 }
 
 export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }: Props) {
-  const { tasks, setTasks, openTimer, openAddModal, completeTaskWithRecurrence } = useApp();
+  const { tasks, setTasks, openTimer, openAddModal, completeTaskWithRecurrence, templates, saveTemplates, navigate } = useApp();
+
+  const convertTask = async (task: Task, kind: "project" | "braindump" | "regular") => {
+    if (kind === "braindump") {
+      addNote(task.text);
+      setTasks((prev: Task[]) => prev.filter((t) => t.id !== task.id));
+      toast.success("Перенесено в «Разбор»");
+      return;
+    }
+    if (kind === "project") {
+      const list = await loadProjects();
+      await saveProjects([...list, { id: newProjectId(list), title: task.text, category: task.category, subcategory: task.subcategory, mode: "sequential", createdAt: Date.now() }]);
+      setTasks((prev: Task[]) => prev.filter((t) => t.id !== task.id));
+      toast.success("Теперь это проект");
+      navigate("projects");
+      return;
+    }
+    const startId = (templates as any[]).reduce((m, t) => Math.max(m, t.id), 0) + 1;
+    saveTemplates([...(templates as any[]), { id: startId, text: task.text, category: task.category, subcategory: task.subcategory, recurrence: "daily", recurrenceHour: 9, recurrenceMinute: 0, active: true }]);
+    toast.success("Добавлено в «Регулярные дела» — каждый день, настройте частоту");
+    navigate("templates");
+  };
   const [dragId, setDragId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
   // #3: Categories collapsed by default
@@ -368,6 +393,7 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
                             onSetReminder={(ts) => setTaskReminderAt(task, ts)}
                             onSetLocation={(loc) => setTasks((prev) => prev.map((t) => t.id === task.id ? { ...t, location: loc } : t))}
                             onOpenNextMinute={() => setNextMinuteTask(task)}
+                            onConvert={(k) => convertTask(task, k)}
                             onDragStart={() => setDragId(task.id)}
                             onDragOver={() => setDragOverId(task.id)}
                             onDrop={() => handleDrop(task.id)}
@@ -410,6 +436,7 @@ interface TaskCardProps {
   onSetReminder: (ts: number | null) => void;
   onSetLocation: (loc: TaskLocation) => void;
   onOpenNextMinute: () => void;
+  onConvert: (kind: "project" | "braindump" | "regular") => void;
   onDragStart: () => void;
   onDragOver: () => void;
   onDrop: () => void;
@@ -420,7 +447,7 @@ function TaskCard({
   task, showArchive, isDragOver,
   onStart, onToggle, onDelete, onComplete, onReturn, onChangeCategory,
   onUpdateText, onUpdateSubcategory,
-  onSetReminder, onSetLocation, onOpenNextMinute,
+  onSetReminder, onSetLocation, onOpenNextMinute, onConvert,
   onDragStart, onDragOver, onDrop, onDragEnd,
 }: TaskCardProps) {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -654,6 +681,26 @@ function TaskCard({
                   >
                     {hasReminder ? <><BellRing size={12} /> Изменить напоминание</> : <><Bell size={12} /> Напомнить</>}
                   </button>
+<div className="my-1 border-t border-border" />
+                  <button
+                    onClick={() => { onConvert("regular"); setShowActions(false); }}
+                    className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
+                  >
+                    <ListRestart size={12} /> Делать регулярно
+                  </button>
+                  <button
+                    onClick={() => { onConvert("project"); setShowActions(false); }}
+                    className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
+                  >
+                    <TargetIcon size={12} /> Сделать проектом
+                  </button>
+                  <button
+                    onClick={() => { onConvert("braindump"); setShowActions(false); }}
+                    className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
+                  >
+                    <Wand2 size={12} /> В Разбор
+                  </button>
+<div className="my-1 border-t border-border" />
                   <button
                     onClick={(e) => { burnInPlace(e.currentTarget, { text: task.text, category: task.category }); onDelete(); setShowActions(false); }}
                     className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted text-red-600 transition-colors flex items-center gap-1.5"

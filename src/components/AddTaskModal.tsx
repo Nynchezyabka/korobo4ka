@@ -3,7 +3,7 @@ import { TaskLocation, CategoryId, CATEGORIES, DEFAULT_SUBCATEGORIES, Recurrence
 import { getCustomSubcategoriesSync, saveCustomSubcategories } from "@/lib/taskStore";
 import { cn } from "@/lib/utils";
 import { LOCATIONS } from "@/lib/location";
-import { X, Plus, Repeat, CalendarClock } from "lucide-react";
+import { X, Plus, ListRestart, CalendarClock } from "lucide-react";
 import { DateTimePicker, ClockPicker, pad2 } from "@/components/DateTimePicker";
 
 interface Props {
@@ -255,7 +255,7 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
         <div className="mt-3 rounded-lg bg-white/40 border border-white/60 p-2.5">
           <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
             <input type="checkbox" checked={recurEnabled} onChange={(e) => setRecurEnabled(e.target.checked)} />
-            <Repeat size={14} /> Повторять
+            <ListRestart size={14} /> Делать регулярно
           </label>
           {recurEnabled && (
             <div className="mt-2 flex flex-wrap items-center gap-2">

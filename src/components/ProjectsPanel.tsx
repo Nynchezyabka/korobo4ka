@@ -15,7 +15,7 @@ import { deleteWithUndo, showUndoToast } from "@/lib/undoDelete";
 import { foldToBox, burnInPlace } from "@/lib/paperFx";
 import {
   Plus, ChevronLeft, Play, Check, Trash2, Sparkles,
-  BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat, Infinity as InfinityIcon, Mic, MicOff, Pencil,
+  BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat, ListRestart, Mic, MicOff, Pencil,
 } from "lucide-react";
 
 /** Кнопка голосового ввода: дописывает распознанный текст в поле описания. */
@@ -234,7 +234,7 @@ export function ProjectsPanel() {
           onClick={() => navigate("templates")}
           className="inline-flex items-center gap-1 font-semibold text-primary underline underline-offset-2 align-baseline"
         >
-          <InfinityIcon size={14} /> Регулярные дела
+          <ListRestart size={14} /> Регулярные дела
         </button>.
       </div>
 
