@@ -13,6 +13,7 @@ import { BraindumpPanel } from "@/components/BraindumpPanel";
 
 import { TimerScreen } from "@/components/TimerScreen";
 import { AddTaskModal } from "@/components/AddTaskModal";
+import type { RecurrencePatch } from "@/components/RecurrenceFields";
 import { ThemeToggle, VisualMode, is3dMode, isDarkMode } from "@/components/ThemeToggle";
 import { ThreeDashboard } from "@/components/ThreeDashboard";
 import { InfoPage } from "@/components/InfoPage";
@@ -256,7 +257,7 @@ export default function App() {
     setAddModalOpen(true);
   }, []);
 
-  const handleAddTask = useCallback((text: string, category: CategoryId, subcategory?: string, recurrence?: { type: "daily"|"weekly"|"monthly"; hour: number; minute?: number; day?: number }, scheduledFor?: number | null, location?: TaskLocation) => {
+  const handleAddTask = useCallback((text: string, category: CategoryId, subcategory?: string, recurrence?: RecurrencePatch, scheduledFor?: number | null, location?: TaskLocation) => {
     const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
     if (lines.length === 0) return;
 
@@ -269,10 +270,7 @@ export default function App() {
           text: line,
           category,
           subcategory,
-          recurrence: recurrence.type,
-          recurrenceHour: recurrence.hour,
-          recurrenceMinute: recurrence.minute ?? 0,
-          recurrenceDay: recurrence.type === "daily" ? undefined : recurrence.day,
+          ...recurrence,
           active: true,
         }));
         const merged = [...prevT, ...newTpls];
