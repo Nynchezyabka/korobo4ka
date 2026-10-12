@@ -14,6 +14,17 @@ interface Props {
 
 const QUICK_MINUTES = [15, 30, 45];
 
+/** Микро-отдых после таймера: одна случайная подсказка, выбирать не нужно */
+const MICRO_RESTS = [
+  "🪟 Посмотрите в окно, вдаль, хотя бы минуту — пусть глаза отдохнут от экрана",
+  "💧 Сделайте несколько медленных глотков воды",
+  "🧘 Опустите плечи, разожмите челюсть и спокойно выдохните три раза",
+  "🙆 Потянитесь вверх или просто прикройте глаза на пару минут",
+  "🚶 Встаньте, пройдитесь немного и пару минут не смотрите в экраны",
+  "🍎 Прислушайтесь: может, пора перекусить или сменить позу?",
+  "🌿 Ничего не решайте пять минут — дела подождут в коробочке",
+];
+
 export function TimerScreen({ task, onClose }: Props) {
   const { tasks, setTasks, completeTaskWithRecurrence, openTimer } = useApp();
   const [minutesInput, setMinutesInput] = useState("15");
@@ -23,6 +34,7 @@ export function TimerScreen({ task, onClose }: Props) {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [showPresets, setShowPresets] = useState(false);
   const [showNextMinute, setShowNextMinute] = useState(false);
+  const [microRest, setMicroRest] = useState("");
 
   const endAtRef = useRef(0);
   const intervalRef = useRef<number | null>(null);
@@ -44,6 +56,7 @@ export function TimerScreen({ task, onClose }: Props) {
       }
       setRunning(false);
       setFinished(true);
+      setMicroRest(MICRO_RESTS[Math.floor(Math.random() * MICRO_RESTS.length)]);
       if (soundEnabled) playWindChime();
     }
   }, [soundEnabled]);
@@ -319,6 +332,12 @@ export function TimerScreen({ task, onClose }: Props) {
         {finished && (
           <div className="flex flex-col gap-3">
             <p className="text-center text-lg font-semibold mb-2 timer-label-glow">Время вышло!</p>
+            {microRest && (
+              <div className="mx-auto max-w-xs mb-2 px-4 py-3 rounded-xl bg-white/75 border border-border/30 shadow-sm text-center">
+                <div className="text-xs font-semibold opacity-60 mb-1">Перерыв 5 минут</div>
+                <p className="text-sm leading-snug">{microRest}</p>
+              </div>
+            )}
             <button
               onClick={(e) => completeTask(e.currentTarget)}
               className="flex items-center gap-2 px-6 py-3 rounded-lg bg-emerald-600/80 text-white font-medium active:scale-95 transition-all shadow-md"

@@ -22,6 +22,7 @@ const INSTRUCTIONS = `Ты помощник в приложении «Короб
 - Эмоции, жалобы, выплески, рассуждения, описания чужих действий и контекст ситуации НЕ превращай в задачи — это not_task (контекст/размышления). Задача появляется, только если в тексте есть действие самого пользователя.
 - text — короткая формулировка действия в инфинитиве, без нумерации, до 90 символов.
 - scheduledFor — локальные дата-время в формате "YYYY-MM-DDTHH:MM" или null. Год бери из сегодняшней даты.
+- location — где это делается: "home" (только дома: уборка, готовка, домашние вещи), "work" (только на работе: рабочие встречи, отчёты, коллеги) или "any" (где угодно: звонки, покупки онлайн, мысли). Сомневаешься — "any".
 - category — число 0-5 из списка:
 ${CATEGORIES}
 - summary — одна дружелюбная фраза на русском: сколько дел с датами, сколько без, с чего разумно начать. Без давления.
@@ -96,13 +97,14 @@ Deno.serve(async (req) => {
                       kind: { type: 'string', enum: ['task', 'event', 'project', 'recurring', 'not_task'] },
                       text: { type: 'string' },
                       category: { type: 'integer' },
+                      location: { type: 'string', enum: ['home', 'work', 'any'] },
                       scheduledFor: { type: ['string', 'null'] },
                       steps: { type: 'array', items: { type: 'string' } },
                       recurrence: { type: ['string', 'null'], enum: ['daily', 'weekly', 'monthly', null] },
                       recurrenceDay: { type: ['integer', 'null'] },
                       recurrenceHour: { type: ['integer', 'null'] },
                     },
-                    required: ['kind', 'text', 'category', 'scheduledFor', 'steps', 'recurrence', 'recurrenceDay', 'recurrenceHour'],
+                    required: ['kind', 'text', 'category', 'location', 'scheduledFor', 'steps', 'recurrence', 'recurrenceDay', 'recurrenceHour'],
                   },
                 },
               },

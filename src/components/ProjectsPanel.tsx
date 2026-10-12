@@ -15,7 +15,7 @@ import { deleteWithUndo, showUndoToast } from "@/lib/undoDelete";
 import { foldToBox, burnInPlace } from "@/lib/paperFx";
 import {
   Plus, ChevronLeft, Play, Check, Trash2, Sparkles,
-  BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat, Mic, MicOff, Pencil,
+  BookmarkPlus, Library, Lock, Loader2, ListChecks, Repeat, Infinity as InfinityIcon, Mic, MicOff, Pencil,
 } from "lucide-react";
 
 /** Кнопка голосового ввода: дописывает распознанный текст в поле описания. */
@@ -226,7 +226,7 @@ export function ProjectsPanel() {
 
   return (
     <div className="animate-fade-in">
-      <h2 className="font-display text-2xl text-primary mb-1">🧩 Проекты</h2>
+      <h2 className="font-display text-2xl text-primary mb-1">🎯 Проекты</h2>
       <div className="mb-3 p-2.5 rounded-lg bg-muted/40 border border-border/60 text-xs sm:text-sm text-muted-foreground">
         Список шагов к одной цели: дела, которые нельзя сделать за один раз, разложите на маленькие шаги.
         Если нужно повторение по расписанию — это{" "}
@@ -234,7 +234,7 @@ export function ProjectsPanel() {
           onClick={() => navigate("templates")}
           className="inline-flex items-center gap-1 font-semibold text-primary underline underline-offset-2 align-baseline"
         >
-          <Repeat size={14} /> Повторяющиеся задачи
+          <InfinityIcon size={14} /> Регулярные дела
         </button>.
       </div>
 

@@ -1,4 +1,4 @@
-import { Task, TaskTemplate, CategoryId, Project, RecurrenceType } from "@/types";
+import { Task, TaskTemplate, CategoryId, Project, RecurrenceType, TaskLocation } from "@/types";
 import { getNextId } from "@/lib/taskStore";
 import { loadProjects, saveProjects, newProjectId } from "@/lib/projects";
 
@@ -10,6 +10,7 @@ export interface DraftItem {
   kind: DraftKind;
   text: string;
   category: CategoryId;
+  location: TaskLocation;
   /** "YYYY-MM-DDTHH:MM" or null */
   scheduledFor: string | null;
   steps: string[];
@@ -40,6 +41,7 @@ export function normalizeItems(raw: any[]): DraftItem[] {
         kind,
         text: String(r.text).trim().slice(0, 200),
         category: toCategory(r.category),
+        location: (r.location === "home" || r.location === "work" ? r.location : "any") as TaskLocation,
         scheduledFor,
         steps: Array.isArray(r.steps)
           ? r.steps.filter((s: unknown) => typeof s === "string" && s.trim()).slice(0, 8)
@@ -137,6 +139,7 @@ export async function applyDraft(items: DraftItem[], ctx: ApplyCtx): Promise<App
           active: true,
           statusChangedAt: Date.now(),
         };
+        if (it.location !== "any") t.location = it.location;
         const ts = parseLocalDate(it.scheduledFor);
         if (ts) t.scheduledFor = ts;
         created.push(t);

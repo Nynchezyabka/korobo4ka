@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { CategoryId, CATEGORIES, DEFAULT_SUBCATEGORIES, RecurrenceType, RECURRENCE_LABELS, WEEKDAYS } from "@/types";
+import { TaskLocation, CategoryId, CATEGORIES, DEFAULT_SUBCATEGORIES, RecurrenceType, RECURRENCE_LABELS, WEEKDAYS } from "@/types";
 import { getCustomSubcategoriesSync, saveCustomSubcategories } from "@/lib/taskStore";
 import { cn } from "@/lib/utils";
+import { LOCATIONS } from "@/lib/location";
 import { X, Plus, Repeat, CalendarClock } from "lucide-react";
 import { DateTimePicker, ClockPicker, pad2 } from "@/components/DateTimePicker";
 
@@ -13,7 +14,8 @@ interface Props {
     category: CategoryId,
     subcategory?: string,
     recurrence?: { type: "daily"|"weekly"|"monthly"; hour: number; minute?: number; day?: number },
-    scheduledFor?: number | null
+    scheduledFor?: number | null,
+    location?: TaskLocation
   ) => void;
   onClose: () => void;
 }
@@ -33,6 +35,7 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
   const [showClock, setShowClock] = useState(false);
   const [whenEnabled, setWhenEnabled] = useState(false);
   const [scheduledFor, setScheduledFor] = useState<number | null>(null);
+  const [location, setLocation] = useState<TaskLocation>("any");
   const textRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -91,7 +94,7 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
     const recurrence = recurEnabled
       ? { type: recurType, hour: recurHour, minute: recurMinute, day: recurType === "daily" ? undefined : recurDay }
       : undefined;
-    onAdd(text, category, subcategory || undefined, recurrence, whenEnabled ? scheduledFor : null);
+    onAdd(text, category, subcategory || undefined, recurrence, whenEnabled ? scheduledFor : null, location);
     setText("");
     textRef.current?.focus();
   };
@@ -196,6 +199,29 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Где можно сделать (необязательно) */}
+        {!recurEnabled && (
+          <div className="mt-2.5">
+            <div className="text-xs text-foreground/60 mb-1">Где можно сделать:</div>
+            <div className="flex flex-wrap gap-1.5">
+              {LOCATIONS.map((l) => (
+                <button
+                  key={l.id}
+                  onClick={() => setLocation(l.id)}
+                  className={cn(
+                    "text-xs px-2 py-1 rounded-full border transition-all",
+                    location === l.id
+                      ? "border-foreground/30 bg-white/60 font-semibold"
+                      : "border-transparent bg-white/30 opacity-70 hover:opacity-100"
+                  )}
+                >
+                  {l.emoji} {l.label}
+                </button>
+              ))}
             </div>
           </div>
         )}
