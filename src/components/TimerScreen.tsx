@@ -135,12 +135,12 @@ export function TimerScreen({ task, onClose }: Props) {
     setRunning(false);
     setFinished(false);
     setMicroRest(MICRO_RESTS[Math.floor(Math.random() * MICRO_RESTS.length)]);
+    completeTaskWithRecurrence(task.id);
     setDone(true);
   };
 
   const finishDone = (source?: Element | null) => {
     foldToBox(source, { text: task.text, category: task.category });
-    completeTaskWithRecurrence(task.id);
     onClose();
   };
 
