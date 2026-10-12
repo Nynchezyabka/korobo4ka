@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { usePendingNotesCount } from "@/lib/notes";
 import {
-  Home, List, CalendarDays, Repeat, ChevronLeft, ChevronRight, Settings, Puzzle, Wand2,
+  Home, List, CalendarDays, Infinity as InfinityIcon, ChevronLeft, ChevronRight, Settings, Target, Wand2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,10 +17,10 @@ interface Props {
 const NAV_ITEMS: { id: PageId; label: string; icon: React.ReactNode }[] = [
   { id: "home", label: "Главная", icon: <Home size={20} /> },
   { id: "tasks", label: "Все задачи", icon: <List size={20} /> },
-  { id: "projects", label: "Проекты", icon: <Puzzle size={20} /> },
+  { id: "projects", label: "Проекты", icon: <Target size={20} /> },
+  { id: "templates", label: "Регулярные дела", icon: <InfinityIcon size={20} /> },
   { id: "braindump", label: "Разбор", icon: <Wand2 size={20} /> },
   { id: "history", label: "Календарь", icon: <CalendarDays size={20} /> },
-  { id: "templates", label: "Повторяющиеся задачи", icon: <Repeat size={20} /> },
 ];
 
 
