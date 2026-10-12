@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { ListRestart, Target as TargetIcon, Wand2 } from "lucide-react";
 import {
   Play, Eye, EyeOff, Trash2, Check, Undo2, FolderOpen, Plus, Pencil, GripVertical, MoreVertical,
-  Bell, BellRing, BellOff, Lightbulb, X, CalendarClock,
+  Bell, BellRing, BellOff, Lightbulb, X, CalendarClock, Pause,
 } from "lucide-react";
 
 interface Props {
@@ -678,7 +678,7 @@ function TaskCard({
                     onClick={() => { onToggle(); setShowActions(false); }}
                     className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
                   >
-                    {task.active ? <><EyeOff size={12} /> Скрыть</> : <><Eye size={12} /> Показать</>}
+                    {task.active ? <><Pause size={12} /> Поставить на паузу</> : <><Play size={12} /> Снять с паузы</>}
                   </button>
                   <div className="px-2.5 pt-1.5 pb-1 text-[10px] text-muted-foreground">Где делать</div>
                   <div className="flex gap-1 px-1.5 pb-1.5">
@@ -701,7 +701,7 @@ function TaskCard({
                     onClick={openReminder}
                     className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
                   >
-                    {hasReminder ? <><BellRing size={12} /> Изменить напоминание</> : <><Bell size={12} /> Напомнить</>}
+                    <CalendarClock size={12} /> {hasReminder ? "Изменить дату и время" : "Дата и время"}
                   </button>
 <div className="my-1 border-t border-border" />
                   <button
