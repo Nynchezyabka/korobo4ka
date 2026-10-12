@@ -16,7 +16,11 @@ export interface Task {
   projectId?: number;
   /** Position inside the project checklist */
   stepOrder?: number;
+  /** Где можно сделать: дома, на работе или где угодно (по умолчанию) */
+  location?: TaskLocation;
 }
+
+export type TaskLocation = "home" | "work" | "any";
 
 /** Project = ordered (or unordered) checklist of tasks */
 export interface Project {
