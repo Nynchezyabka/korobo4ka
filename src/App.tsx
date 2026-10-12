@@ -33,7 +33,7 @@ interface AppContextValue {
   tasks: Task[];
   setTasks: (fn: (prev: Task[]) => Task[]) => void;
   openTimer: (task: Task) => void;
-  openAddModal: (category?: CategoryId, restrictCategories?: CategoryId[]) => void;
+  openAddModal: (category?: CategoryId, restrictCategories?: CategoryId[], scheduledFor?: number) => void;
   templates: TaskTemplate[];
   saveTemplates: (tpls: TaskTemplate[]) => void;
   completeTaskWithRecurrence: (id: number) => void;
@@ -251,7 +251,9 @@ export default function App() {
     setTimerTask(task);
   }, []);
 
-  const openAddModal = useCallback((category?: CategoryId, restrictCategories?: CategoryId[]) => {
+  const [addModalWhen, setAddModalWhen] = useState<number | null>(null);
+  const openAddModal = useCallback((category?: CategoryId, restrictCategories?: CategoryId[], scheduledFor?: number) => {
+    setAddModalWhen(scheduledFor ?? null);
     setAddModalCategory(category ?? 0);
     setAddModalRestrict(restrictCategories ?? null);
     setAddModalOpen(true);
@@ -500,6 +502,7 @@ export default function App() {
         <AddTaskModal
           defaultCategory={addModalCategory}
           restrictCategories={addModalRestrict}
+          initialScheduledFor={addModalWhen}
           onAdd={handleAddTask}
           onClose={() => setAddModalOpen(false)}
         />

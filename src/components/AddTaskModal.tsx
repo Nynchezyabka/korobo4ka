@@ -22,9 +22,10 @@ interface Props {
     location?: TaskLocation
   ) => void;
   onClose: () => void;
+  initialScheduledFor?: number | null;
 }
 
-export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClose }: Props) {
+export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClose, initialScheduledFor }: Props) {
   const [text, setText] = useState("");
   const [category, setCategory] = useState<CategoryId>(defaultCategory);
   const [subcategory, setSubcategory] = useState<string>("");
@@ -35,8 +36,8 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
   const [asProject, setAsProject] = useState(false);
   const { navigate } = useApp();
   const [sched, setSched] = useState<RecurrencePatch | null>(null);
-  const [whenEnabled, setWhenEnabled] = useState(false);
-  const [scheduledFor, setScheduledFor] = useState<number | null>(null);
+  const [whenEnabled, setWhenEnabled] = useState(!!initialScheduledFor);
+  const [scheduledFor, setScheduledFor] = useState<number | null>(initialScheduledFor ?? null);
   const [location, setLocation] = useState<TaskLocation>("any");
   const textRef = useRef<HTMLTextAreaElement>(null);
 
