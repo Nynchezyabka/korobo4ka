@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNotes, markNotesProcessed, removeNote, restoreNote, addNote, Note } from "@/lib/notes";
 import { showUndoToast } from "@/lib/undoDelete";
 import { burnInPlace } from "@/lib/paperFx";
+import { ManualSort } from "@/components/ManualSort";
 
 const GROUPS: { kind: DraftKind; title: string; hint: string }[] = [
   { kind: "event", title: "Со сроком", hint: "Привязано к дате и времени" },
@@ -38,6 +39,7 @@ export function BraindumpPanel() {
   const [summary, setSummary] = useState("");
   const [items, setItems] = useState<DraftItem[] | null>(null);
   const [showProcessed, setShowProcessed] = useState(false);
+  const [sortLines, setSortLines] = useState<string[] | null>(null);
   const [listening, setListening] = useState(false);
   const recogRef = useRef<any>(null);
   const draftRef = useRef<DraftItem[] | null>(null);
@@ -348,6 +350,17 @@ export function BraindumpPanel() {
             {loading ? <Loader2 size={18} className="animate-spin" /> : <Wand2 size={18} />}
             {loading ? "Разбираю…" : "Разобрать"}
           </button>
+          <button
+            onClick={() => {
+              const ls = text.split("\n").map((l) => l.replace(/^[\s\-–—•*\d.)]+/, "").trim()).filter(Boolean);
+              if (ls.length) { setSortLines(ls); setItems(null); }
+            }}
+            disabled={loading || !text.trim()}
+            title="Разложить каждую строку самой — без помощника"
+            className="h-10 px-3 rounded-lg border border-border text-sm font-medium disabled:opacity-40 active:scale-[0.98] transition-all"
+          >
+            Вручную
+          </button>
         </div>
         <AiModelPicker
           className="mt-1.5"
@@ -357,6 +370,15 @@ export function BraindumpPanel() {
         />
 
       </div>
+
+      {sortLines && (
+        <ManualSort
+          key={sortLines.join("|")}
+          lines={sortLines}
+          setTasks={app.setTasks}
+          onDone={(left) => { setSortLines(null); setText(left.join("\n")); }}
+        />
+      )}
 
       {pendingNotes.length > 0 && (
         <div className="rounded-xl border border-dashed border-border p-2.5 space-y-1.5">

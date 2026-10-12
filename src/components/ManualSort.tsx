@@ -6,6 +6,14 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Undo2, SkipForward, X } from "lucide-react";
 
+const CAT_CLS: Record<CategoryId, string> = {
+  0: "bg-cat-0-bg border-l-cat-0",
+  1: "bg-cat-1-bg border-l-cat-1",
+  2: "bg-cat-2-bg border-l-cat-2",
+  3: "bg-cat-3-bg border-l-cat-3",
+  4: "bg-cat-4-bg border-l-cat-4",
+  5: "bg-cat-5-bg border-l-cat-5",
+};
 const SORT_CATS: CategoryId[] = [1, 2, 5, 3, 4, 0];
 
 /** Ручное раскладывание: по одной строке за раз, одно касание — отделение. */
@@ -79,7 +87,7 @@ export function ManualSort({ lines, setTasks, onDone }: {
             onClick={() => place(c)}
             className={cn(
               "flex items-center gap-2 text-left text-xs sm:text-sm px-2.5 py-2.5 rounded-lg border-l-4 border border-border active:scale-95 transition-all",
-              `bg-cat-${c}-bg border-l-cat-${c}`
+              CAT_CLS[c]
             )}
           >
             <CategoryIcon category={c} size={16} />
