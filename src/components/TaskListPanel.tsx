@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Task, CategoryId, CATEGORIES, DEFAULT_SUBCATEGORIES } from "@/types";
+import { Task, CategoryId, CATEGORIES, DEFAULT_SUBCATEGORIES, TaskLocation } from "@/types";
+import { LOCATIONS, fitsLocation } from "@/lib/location";
 import { useApp } from "@/App";
 import { getCustomSubcategoriesSync, saveCustomSubcategories, getCategoryDisplayName, getCustomCategoryNamesSync, saveCustomCategoryNames, renameSubcategory } from "@/lib/taskStore";
 import { cn } from "@/lib/utils";
@@ -39,15 +40,17 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
   const [query, setQuery] = useState("");
   const [onlyDated, setOnlyDated] = useState(false);
   const [onlyHidden, setOnlyHidden] = useState(false);
+  const [place, setPlace] = useState<TaskLocation>("any");
   const q = query.trim().toLowerCase();
-  const filtering = !!q || onlyDated || onlyHidden;
+  const filtering = !!q || onlyDated || onlyHidden || place !== "any";
 
   const source = tasks
     .filter((t) => (showArchive ? t.completed : !t.completed))
     .filter((t) => !restrictCategories || restrictCategories.includes(t.category))
     .filter((t) => !q || t.text.toLowerCase().includes(q) || (t.subcategory || "").toLowerCase().includes(q))
     .filter((t) => !onlyDated || !!t.scheduledFor)
-    .filter((t) => !onlyHidden || !t.active);
+    .filter((t) => !onlyHidden || !t.active)
+    .filter((t) => showArchive || fitsLocation(t, place));
 
   // Group by category
   const groups = new Map<CategoryId, Task[]>();
@@ -220,10 +223,21 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
           <>
             <button onClick={() => setOnlyDated((v) => !v)} className={cn("h-9 px-2.5 rounded-full text-xs border", onlyDated ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:bg-muted")}>С датой</button>
             <button onClick={() => setOnlyHidden((v) => !v)} className={cn("h-9 px-2.5 rounded-full text-xs border", onlyHidden ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:bg-muted")}>Скрытые</button>
+            {LOCATIONS.filter((l) => l.id !== "any").map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                title={label}
+                aria-label={label}
+                onClick={() => setPlace((p) => (p === id ? "any" : id))}
+                className={cn("h-9 w-9 rounded-full border flex items-center justify-center", place === id ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:bg-muted")}
+              >
+                <Icon size={14} />
+              </button>
+            ))}
           </>
         )}
         {filtering && (
-          <button onClick={() => { setQuery(""); setOnlyDated(false); setOnlyHidden(false); }} className="h-9 px-2 text-xs text-muted-foreground hover:text-foreground">Сбросить</button>
+          <button onClick={() => { setQuery(""); setOnlyDated(false); setOnlyHidden(false); setPlace("any"); }} className="h-9 px-2 text-xs text-muted-foreground hover:text-foreground">Сбросить</button>
         )}
       </div>
 
@@ -352,6 +366,7 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
                             onUpdateText={(text) => updateTaskText(task.id, text)}
                             onUpdateSubcategory={(sub) => updateTaskSubcategory(task.id, sub)}
                             onSetReminder={(ts) => setTaskReminderAt(task, ts)}
+                            onSetLocation={(loc) => setTasks((prev) => prev.map((t) => t.id === task.id ? { ...t, location: loc } : t))}
                             onOpenNextMinute={() => setNextMinuteTask(task)}
                             onDragStart={() => setDragId(task.id)}
                             onDragOver={() => setDragOverId(task.id)}
@@ -393,6 +408,7 @@ interface TaskCardProps {
   onUpdateText: (text: string) => void;
   onUpdateSubcategory: (sub: string | undefined) => void;
   onSetReminder: (ts: number | null) => void;
+  onSetLocation: (loc: TaskLocation) => void;
   onOpenNextMinute: () => void;
   onDragStart: () => void;
   onDragOver: () => void;
@@ -404,7 +420,7 @@ function TaskCard({
   task, showArchive, isDragOver,
   onStart, onToggle, onDelete, onComplete, onReturn, onChangeCategory,
   onUpdateText, onUpdateSubcategory,
-  onSetReminder, onOpenNextMinute,
+  onSetReminder, onSetLocation, onOpenNextMinute,
   onDragStart, onDragOver, onDrop, onDragEnd,
 }: TaskCardProps) {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -563,6 +579,14 @@ function TaskCard({
                 +подкат.
               </button>
             )}
+            {task.location && task.location !== "any" && (() => {
+              const L = LOCATIONS.find((l) => l.id === task.location)!;
+              return (
+                <span title={L.label} className="ml-1.5 inline-flex align-middle opacity-50">
+                  <L.icon size={12} />
+                </span>
+              );
+            })()}
             {task.scheduledFor && task.scheduledFor > Date.now() && (
               <span className="ml-1.5 text-[11px] sm:text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary inline-flex items-center gap-1 align-middle">
                 📅 {new Date(task.scheduledFor).toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}
@@ -607,6 +631,23 @@ function TaskCard({
                   >
                     {task.active ? <><EyeOff size={12} /> Скрыть</> : <><Eye size={12} /> Показать</>}
                   </button>
+                  <div className="px-2.5 pt-1.5 pb-1 text-[10px] text-muted-foreground">Где делать</div>
+                  <div className="flex gap-1 px-1.5 pb-1.5">
+                    {LOCATIONS.map(({ id, label, icon: Icon }) => {
+                      const on = (task.location ?? "any") === id;
+                      return (
+                        <button
+                          key={id}
+                          title={label}
+                          aria-label={label}
+                          onClick={() => { onSetLocation(id); setShowActions(false); }}
+                          className={cn("flex-1 h-7 rounded flex items-center justify-center border transition-colors", on ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted")}
+                        >
+                          <Icon size={13} />
+                        </button>
+                      );
+                    })}
+                  </div>
                   <button
                     onClick={openReminder}
                     className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
