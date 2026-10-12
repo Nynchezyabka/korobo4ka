@@ -230,7 +230,7 @@ export function TimerScreen({ task, onClose }: Props) {
           </div>
         )}
 
-        {!finished && (
+        {!finished && !done && (
           <>
             {/* Minutes input with presets */}
             <div className="relative flex items-center gap-2 mb-4 bg-white/50 px-3 py-2 rounded-lg shadow-sm">
