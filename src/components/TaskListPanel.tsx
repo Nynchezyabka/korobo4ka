@@ -8,9 +8,9 @@ import { CategoryIcon } from "@/components/CategoryIcon";
 import { NextMinuteSheet } from "@/components/NextMinuteSheet";
 import { setTaskReminder, clearTaskReminder, hasActiveReminder } from "@/lib/notifications";
 import { DateTimePicker } from "@/components/DateTimePicker";
-import { deleteWithUndo } from "@/lib/undoDelete";
+import { deleteWithUndo, showUndoToast } from "@/lib/undoDelete";
 import { foldToBox, burnInPlace } from "@/lib/paperFx";
-import { addNote } from "@/lib/notes";
+import { addNote, removeNote } from "@/lib/notes";
 import { loadProjects, saveProjects, newProjectId } from "@/lib/projects";
 import { toast } from "sonner";
 import { ListRestart, Target as TargetIcon, Wand2 } from "lucide-react";
@@ -29,23 +29,45 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
   const { tasks, setTasks, openTimer, openAddModal, completeTaskWithRecurrence, templates, saveTemplates, navigate } = useApp();
 
   const convertTask = async (task: Task, kind: "project" | "braindump" | "regular") => {
+    const index = tasks.findIndex((t) => t.id === task.id);
+    const restoreTask = () => setTasks((prev: Task[]) => {
+      if (prev.some((t) => t.id === task.id)) return prev;
+      const next = [...prev];
+      next.splice(Math.min(Math.max(index, 0), next.length), 0, task);
+      return next;
+    });
+    clearTaskReminder(task.id);
+    setTasks((prev: Task[]) => prev.filter((t) => t.id !== task.id));
     if (kind === "braindump") {
-      addNote(task.text);
-      setTasks((prev: Task[]) => prev.filter((t) => t.id !== task.id));
-      toast.success("Перенесено в «Разбор»");
+      const note = addNote(task.text) as any;
+      showUndoToast("Перенесено в «Разбор»", () => {
+        if (note?.id) removeNote(note.id);
+        restoreTask();
+      });
       return;
     }
     if (kind === "project") {
       const list = await loadProjects();
-      await saveProjects([...list, { id: newProjectId(list), title: task.text, category: task.category, subcategory: task.subcategory, mode: "sequential", createdAt: Date.now() }]);
-      setTasks((prev: Task[]) => prev.filter((t) => t.id !== task.id));
-      toast.success("Теперь это проект");
+      const id = newProjectId(list);
+      await saveProjects([...list, { id, title: task.text, category: task.category, subcategory: task.subcategory, mode: "sequential", createdAt: Date.now() }]);
+      showUndoToast("Теперь это проект", async () => {
+        const cur = await loadProjects();
+        await saveProjects(cur.filter((p) => p.id !== id));
+        restoreTask();
+        navigate("tasks");
+      });
       navigate("projects");
       return;
     }
     const startId = (templates as any[]).reduce((m, t) => Math.max(m, t.id), 0) + 1;
-    saveTemplates([...(templates as any[]), { id: startId, text: task.text, category: task.category, subcategory: task.subcategory, recurrence: "daily", recurrenceHour: 9, recurrenceMinute: 0, active: true }]);
-    toast.success("Добавлено в «Регулярные дела» — каждый день, настройте частоту");
+    const before = templates as any[];
+    saveTemplates([...before, { id: startId, text: task.text, category: task.category, subcategory: task.subcategory, recurrence: "daily", recurrenceHour: 9, recurrenceMinute: 0, active: true }]);
+    sessionStorage.setItem("editTemplateId", String(startId));
+    showUndoToast("Теперь это регулярное дело — настройте частоту", () => {
+      saveTemplates(before);
+      restoreTask();
+      navigate("tasks");
+    });
     navigate("templates");
   };
   const [dragId, setDragId] = useState<number | null>(null);
