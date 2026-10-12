@@ -26,7 +26,7 @@ interface Props {
 }
 
 export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }: Props) {
-  const { tasks, setTasks, openTimer, openAddModal, completeTaskWithRecurrence, templates, saveTemplates, navigate } = useApp() as any;
+  const { tasks, setTasks, openTimer, openAddModal, completeTaskWithRecurrence, templates, saveTemplates, navigate } = useApp();
 
   const convertTask = async (task: Task, kind: "project" | "braindump" | "regular") => {
     if (kind === "braindump") {
