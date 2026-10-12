@@ -7,7 +7,7 @@ import { CATEGORIES, CategoryId, RECURRENCE_LABELS, WEEKDAYS, RecurrenceType } f
 import { DraftItem, DraftKind, normalizeItems, applyDraft } from "@/lib/braindump";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Wand2, Mic, Loader2, Trash2, Check, StickyNote, ChevronDown, Paperclip, Link2, Sparkles } from "lucide-react";
+import { Wand2, Mic, Loader2, Trash2, Check, StickyNote, ChevronDown, Paperclip, Link2, Sparkles, ListChecks } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNotes, markNotesProcessed, removeNote, restoreNote, addNote, Note } from "@/lib/notes";
 import { showUndoToast } from "@/lib/undoDelete";
@@ -23,7 +23,7 @@ const GROUPS: { kind: DraftKind; title: string; hint: string }[] = [
 ];
 
 const PLACEHOLDER =
-  "Опишите ситуацию своими словами: что происходит, что нужно сделать, что беспокоит. Можно длинно и без порядка.";
+  "Опишите ситуацию своими словами — можно длинно и без порядка, ИИ разложит на дела.\n\nИли вставьте готовый список: каждое дело с новой строки — и разложите вручную.";
 
 /** Живой пример потока мыслей — чтобы новичок сразу увидел, как работает разбор. */
 const EXAMPLE_TEXT =

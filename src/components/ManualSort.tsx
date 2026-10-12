@@ -104,7 +104,7 @@ export function ManualSort({ lines, setTasks, onDone }: {
           <Undo2 size={13} /> Назад
         </button>
         <button onClick={skip} className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-full border border-border active:scale-95">
-          <SkipForward size={13} /> Не задача
+          <SkipForward size={13} /> Пропустить
         </button>
       </div>
     </div>
