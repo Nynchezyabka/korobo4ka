@@ -22,7 +22,7 @@ const MICRO_RESTS = [
   "🙆 Потянитесь вверх или просто прикройте глаза на пару минут",
   "🚶 Встаньте, пройдитесь немного и пару минут не смотрите в экраны",
   "🍎 Прислушайтесь: может, пора перекусить или сменить позу?",
-  "🌿 Ничего не решайте пять минут — дела подождут в коробочке",
+  "🌿 Сделайте паузу — дела спокойно подождут в коробочке",
 ];
 
 export function TimerScreen({ task, onClose }: Props) {
@@ -35,6 +35,7 @@ export function TimerScreen({ task, onClose }: Props) {
   const [showPresets, setShowPresets] = useState(false);
   const [showNextMinute, setShowNextMinute] = useState(false);
   const [microRest, setMicroRest] = useState("");
+  const [done, setDone] = useState(false);
 
   const endAtRef = useRef(0);
   const intervalRef = useRef<number | null>(null);
@@ -126,6 +127,23 @@ export function TimerScreen({ task, onClose }: Props) {
     setRunning(true);
   };
 
+  const markDone = () => {
+    clearInterval(intervalRef.current!);
+    saveTimeSpent();
+    elapsedRef.current = 0;
+    sessionStartRef.current = 0;
+    setRunning(false);
+    setFinished(false);
+    setMicroRest(MICRO_RESTS[Math.floor(Math.random() * MICRO_RESTS.length)]);
+    completeTaskWithRecurrence(task.id);
+    setDone(true);
+  };
+
+  const finishDone = (source?: Element | null) => {
+    foldToBox(source, { text: task.text, category: task.category });
+    onClose();
+  };
+
   const completeTask = (source?: Element | null) => {
     saveTimeSpent();
     foldToBox(source, { text: task.text, category: task.category });
@@ -212,7 +230,7 @@ export function TimerScreen({ task, onClose }: Props) {
           </div>
         )}
 
-        {!finished && (
+        {!finished && !done && (
           <>
             {/* Minutes input with presets */}
             <div className="relative flex items-center gap-2 mb-4 bg-white/50 px-3 py-2 rounded-lg shadow-sm">
@@ -321,10 +339,10 @@ export function TimerScreen({ task, onClose }: Props) {
 
 
             <button
-              onClick={(e) => completeTask(e.currentTarget)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-md bg-emerald-700/15 text-emerald-900 text-sm font-medium active:scale-95 transition-all border border-emerald-700/30"
+              onClick={markDone}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-emerald-700 text-white font-semibold active:scale-95 transition-all shadow-md"
             >
-              <Check size={14} /> Отметить готово
+              <Check size={16} /> Готово
             </button>
           </>
         )}
@@ -334,15 +352,15 @@ export function TimerScreen({ task, onClose }: Props) {
             <p className="text-center text-lg font-semibold mb-2 timer-label-glow">Время вышло!</p>
             {microRest && (
               <div className="mx-auto max-w-xs mb-2 px-4 py-3 rounded-xl bg-white/75 border border-border/30 shadow-sm text-center">
-                <div className="text-xs font-semibold opacity-60 mb-1">Перерыв 5 минут</div>
+                <div className="text-xs font-semibold opacity-60 mb-1">Пауза для себя</div>
                 <p className="text-sm leading-snug">{microRest}</p>
               </div>
             )}
             <button
-              onClick={(e) => completeTask(e.currentTarget)}
-              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-emerald-600/80 text-white font-medium active:scale-95 transition-all shadow-md"
+              onClick={markDone}
+              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-emerald-700 text-white font-semibold active:scale-95 transition-all shadow-md"
             >
-              <Check size={18} /> Завершить задачу
+              <Check size={18} /> Готово
             </button>
             <button
               onClick={returnTask}
@@ -361,6 +379,24 @@ export function TimerScreen({ task, onClose }: Props) {
                 </button>
               ))}
             </div>
+          </div>
+        )}
+
+        {done && (
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-center text-lg font-semibold mb-2 timer-label-glow">Дело сделано!</p>
+            {microRest && (
+              <div className="mx-auto max-w-xs mb-2 px-4 py-3 rounded-xl bg-white/85 border border-border/30 shadow-sm text-center">
+                <div className="text-xs font-semibold opacity-60 mb-1">Пауза для себя</div>
+                <p className="text-sm leading-snug">{microRest}</p>
+              </div>
+            )}
+            <button
+              onClick={(e) => finishDone(e.currentTarget)}
+              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-emerald-700 text-white font-semibold active:scale-95 transition-all shadow-md"
+            >
+              <Check size={18} /> Вернуться к делам
+            </button>
           </div>
         )}
 
