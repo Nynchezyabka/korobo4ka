@@ -637,11 +637,16 @@ function TaskCard({
               );
             })()}
             {task.scheduledFor && task.scheduledFor > Date.now() && (
-              <span className="ml-1.5 text-[11px] sm:text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary inline-flex items-center gap-1 align-middle">
-                📅 {new Date(task.scheduledFor).toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); if (!showArchive) openReminder(); }}
+                title="Изменить дату и время"
+                className="ml-1.5 text-[11px] sm:text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary inline-flex items-center gap-1 align-middle hover:bg-primary/20"
+              >
+                <CalendarClock size={11} /> {new Date(task.scheduledFor).toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}
                 {" "}
                 {new Date(task.scheduledFor).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
-              </span>
+              </button>
             )}
           </p>
         )}
