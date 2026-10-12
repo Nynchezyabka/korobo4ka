@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { describeRecurrence } from "@/lib/recurring";
-import { TaskTemplate, CategoryId, CATEGORIES, RecurrenceType, RECURRENCE_LABELS, WEEKDAYS, DEFAULT_SUBCATEGORIES } from "@/types";
+import { TaskTemplate, CategoryId, CATEGORIES, RecurrenceType, WEEKDAYS, DEFAULT_SUBCATEGORIES } from "@/types";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { cn } from "@/lib/utils";
 import { Plus, Trash2, ToggleLeft, ToggleRight, ListRestart, MoreVertical, Pencil } from "lucide-react";
@@ -138,6 +138,38 @@ export function TemplatesPanel({ templates, onSave }: Props) {
   );
 }
 
+const SCALE_LABELS: Record<RecurrenceType, string> = { daily: "День", weekly: "Неделя", monthly: "Месяц", yearly: "Год" };
+const MONTHS_GEN = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+const sameDays = (a: number[], b: number[]) => a.length === b.length && b.every((x) => a.includes(x));
+
+function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "text-[11px] px-2 py-1 rounded-full border transition-all active:scale-95",
+        active ? "border-primary bg-primary/10 font-semibold" : "border-border opacity-80"
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+function NumIn({ value, max, onChange, disabled }: { value: number; max: number; onChange: (n: number) => void; disabled?: boolean }) {
+  return (
+    <input
+      type="number"
+      min={1}
+      max={max}
+      value={value}
+      disabled={disabled}
+      onChange={(e) => onChange(Math.max(1, Math.min(max, parseInt(e.target.value) || 1)))}
+      className="w-12 text-center text-xs rounded border border-border px-1 py-1 bg-background disabled:opacity-40"
+    />
+  );
+}
+
 function TemplateForm({ initial, onSave, onCancel }: {
   initial: TaskTemplate;
   onSave: (t: TaskTemplate) => void;
@@ -160,6 +192,8 @@ function TemplateForm({ initial, onSave, onCancel }: {
   );
   const [interval, setInterval] = useState(initial.recurrenceInterval ?? 1);
   const [until, setUntil] = useState(initial.until ?? "");
+  const [untilOn, setUntilOn] = useState(!!initial.until);
+  const [recurrenceMonth, setRecurrenceMonth] = useState(initial.recurrenceMonth ?? new Date().getMonth());
 
   const toggleDay = (d: number) =>
     setRecurrenceDays((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d].sort()));
@@ -180,10 +214,11 @@ function TemplateForm({ initial, onSave, onCancel }: {
       category,
       subcategory: subcategory || undefined,
       recurrence,
-      recurrenceDay: recurrence === "monthly" ? recurrenceDay : undefined,
+      recurrenceDay: recurrence === "monthly" ? recurrenceDay : recurrence === "yearly" ? Math.max(1, recurrenceDay) : undefined,
+      recurrenceMonth: recurrence === "yearly" ? recurrenceMonth : undefined,
       recurrenceDays: recurrence === "weekly" ? (recurrenceDays.length ? recurrenceDays : [new Date().getDay()]) : undefined,
       recurrenceInterval: Math.max(1, interval),
-      until: until || undefined,
+      until: untilOn && until ? until : undefined,
       recurrenceHour,
       recurrenceMinute,
     });
@@ -237,38 +272,36 @@ function TemplateForm({ initial, onSave, onCancel }: {
         </div>
       )}
 
-      {/* Recurrence — buttons on desktop, select on mobile */}
-      <div className="mb-2">
-        <select
-          value={recurrence}
-          onChange={(e) => setRecurrence(e.target.value as RecurrenceType)}
-          className="sm:hidden w-full text-xs px-2 py-1.5 rounded border border-border bg-background"
-        >
-          {(["daily","weekly","monthly"] as RecurrenceType[]).map((r) => (
-            <option key={r} value={r}>{RECURRENCE_LABELS[r]}</option>
-          ))}
-        </select>
-        <div className="hidden sm:flex gap-1">
-          {(["daily", "weekly", "monthly"] as RecurrenceType[]).map((r) => (
-            <button
-              key={r}
-              onClick={() => setRecurrence(r)}
-              className={cn(
-                "text-xs px-2.5 py-1 rounded-full border transition-all",
-                recurrence === r ? "border-primary bg-primary/10 font-semibold" : "border-border opacity-70"
-              )}
-            >
-              {RECURRENCE_LABELS[r]}
-            </button>
-          ))}
-        </div>
+      {/* Повторение: масштаб + компактное уточнение */}
+      <div className="mb-2 flex gap-1">
+        {(["daily", "weekly", "monthly", "yearly"] as RecurrenceType[]).map((r) => (
+          <button
+            key={r}
+            onClick={() => { setRecurrence(r); setInterval(1); }}
+            className={cn(
+              "flex-1 text-xs px-2 py-1.5 rounded-full border transition-all active:scale-95",
+              recurrence === r ? "border-primary bg-primary/10 font-semibold" : "border-border opacity-70"
+            )}
+          >
+            {SCALE_LABELS[r]}
+          </button>
+        ))}
       </div>
 
-      {/* Day selector */}
+      {recurrence === "daily" && (
+        <div className="mb-2 flex flex-wrap items-center gap-1">
+          <Chip active={interval === 1} onClick={() => setInterval(1)}>Каждый день</Chip>
+          <Chip active={false} onClick={() => { setRecurrence("weekly"); setRecurrenceDays([1, 2, 3, 4, 5]); setInterval(1); }}>По будням</Chip>
+          <span className="text-xs ml-1">каждые</span>
+          <NumIn value={interval} max={30} onChange={setInterval} />
+          <span className="text-xs text-muted-foreground">дн.</span>
+        </div>
+      )}
+
       {recurrence === "weekly" && (
         <div className="mb-2 space-y-1.5">
           <div className="flex flex-wrap gap-1">
-            {WEEKDAYS.map((d, i) => (
+            {[1, 2, 3, 4, 5, 6, 0].map((i) => (
               <button
                 key={i}
                 onClick={() => toggleDay(i)}
@@ -277,71 +310,74 @@ function TemplateForm({ initial, onSave, onCancel }: {
                   recurrenceDays.includes(i) ? "border-primary bg-primary/10 font-bold" : "border-border opacity-60"
                 )}
               >
-                {d}
+                {WEEKDAYS[i]}
               </button>
             ))}
           </div>
-          <div className="flex flex-wrap gap-1">
-            <button onClick={() => setRecurrenceDays([1, 2, 3, 4, 5])} className="text-[11px] px-2 py-1 rounded-full border border-border opacity-80">Будни</button>
-            <button onClick={() => setRecurrenceDays([0, 6])} className="text-[11px] px-2 py-1 rounded-full border border-border opacity-80">Выходные</button>
-            <button onClick={() => setRecurrenceDays([0, 1, 2, 3, 4, 5, 6])} className="text-[11px] px-2 py-1 rounded-full border border-border opacity-80">Все дни</button>
+          <div className="flex flex-wrap items-center gap-1">
+            <Chip active={sameDays(recurrenceDays, [1, 2, 3, 4, 5])} onClick={() => setRecurrenceDays([1, 2, 3, 4, 5])}>Будни</Chip>
+            <Chip active={sameDays(recurrenceDays, [0, 6])} onClick={() => setRecurrenceDays([0, 6])}>Выходные</Chip>
+            <span className="text-xs ml-1">раз в</span>
+            <NumIn value={interval} max={12} onChange={setInterval} />
+            <span className="text-xs text-muted-foreground">нед.</span>
           </div>
         </div>
       )}
 
       {recurrence === "monthly" && (
-        <div className="flex items-center flex-wrap gap-2 mb-2">
-          <span className="text-xs">День месяца:</span>
-          <input
-            type="number"
-            min={1}
-            max={31}
-            value={recurrenceDay === -1 ? "" : recurrenceDay}
-            disabled={recurrenceDay === -1}
-            onChange={(e) => setRecurrenceDay(Math.max(1, Math.min(31, parseInt(e.target.value) || 1)))}
-            className="w-14 text-center text-sm rounded border border-border px-2 py-1 bg-background disabled:opacity-40"
-          />
-          <button
-            onClick={() => setRecurrenceDay(recurrenceDay === -1 ? 1 : -1)}
-            className={cn(
-              "text-[11px] px-2 py-1 rounded-full border",
-              recurrenceDay === -1 ? "border-primary bg-primary/10 font-semibold" : "border-border opacity-70"
-            )}
-          >
-            Последний день
-          </button>
+        <div className="mb-2 space-y-1.5">
+          <div className="flex flex-wrap items-center gap-1">
+            {[[1, "Каждый месяц"], [2, "Раз в 2 мес."], [3, "Квартал"], [6, "Полгода"]].map(([n, l]) => (
+              <Chip key={n} active={interval === n} onClick={() => setInterval(n as number)}>{l}</Chip>
+            ))}
+            <span className="text-xs ml-1">свой:</span>
+            <NumIn value={interval} max={24} onChange={setInterval} />
+            <span className="text-xs text-muted-foreground">мес.</span>
+          </div>
+          <div className="flex items-center flex-wrap gap-2">
+            <span className="text-xs">Число:</span>
+            <NumIn value={recurrenceDay === -1 ? 1 : recurrenceDay} max={31} disabled={recurrenceDay === -1} onChange={setRecurrenceDay} />
+            <Chip active={recurrenceDay === -1} onClick={() => setRecurrenceDay(recurrenceDay === -1 ? 1 : -1)}>Последний день</Chip>
+          </div>
         </div>
       )}
 
-      {/* Interval */}
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-xs">Повторять каждые:</span>
-        <input
-          type="number"
-          min={1}
-          max={12}
-          value={interval}
-          onChange={(e) => setInterval(Math.max(1, Math.min(12, parseInt(e.target.value) || 1)))}
-          className="w-14 text-center text-sm rounded border border-border px-2 py-1 bg-background"
-        />
-        <span className="text-xs text-muted-foreground">
-          {recurrence === "daily" ? "дн." : recurrence === "weekly" ? "нед." : "мес."}
-        </span>
-      </div>
+      {recurrence === "yearly" && (
+        <div className="mb-2 space-y-1.5">
+          <div className="flex items-center flex-wrap gap-2">
+            <NumIn value={Math.max(1, recurrenceDay)} max={31} onChange={setRecurrenceDay} />
+            <select
+              value={recurrenceMonth}
+              onChange={(e) => setRecurrenceMonth(Number(e.target.value))}
+              className="text-xs px-2 py-1.5 rounded border border-border bg-background"
+            >
+              {MONTHS_GEN.map((m, i) => <option key={i} value={i}>{m}</option>)}
+            </select>
+          </div>
+          <div className="flex flex-wrap items-center gap-1">
+            <Chip active={interval === 1} onClick={() => setInterval(1)}>Каждый год</Chip>
+            <Chip active={interval === 2} onClick={() => setInterval(2)}>Раз в 2 года</Chip>
+            <span className="text-xs ml-1">свой:</span>
+            <NumIn value={interval} max={10} onChange={setInterval} />
+            <span className="text-xs text-muted-foreground">г.</span>
+          </div>
+        </div>
+      )}
 
-      {/* Until */}
-      <div className="flex items-center gap-2 mb-2 flex-wrap">
-        <span className="text-xs">Повторять до:</span>
-        <input
-          type="date"
-          value={until}
-          onChange={(e) => setUntil(e.target.value)}
-          className="text-xs rounded border border-border px-2 py-1 bg-background"
-        />
-        {until && (
-          <button onClick={() => setUntil("")} className="text-[11px] text-muted-foreground underline">без ограничения</button>
+      {/* Срок */}
+      <div className="flex items-center gap-1 mb-2 flex-wrap">
+        <Chip active={!untilOn} onClick={() => { setUntilOn(false); setUntil(""); }}>Бессрочно</Chip>
+        <Chip active={untilOn} onClick={() => setUntilOn(true)}>До даты</Chip>
+        {untilOn && (
+          <input
+            type="date"
+            value={until}
+            onChange={(e) => setUntil(e.target.value)}
+            className="text-xs rounded border border-border px-2 py-1 bg-background"
+          />
         )}
       </div>
+      {!untilOn && <p className="text-[11px] text-muted-foreground -mt-1 mb-2">Повторяется, пока не выключите.</p>}
 
       {/* Время */}
       <div className="mb-3">

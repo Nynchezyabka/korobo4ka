@@ -128,7 +128,7 @@ export const SECTIONS: SectionDef[] = [
 ];
 
 // Recurring task templates
-export type RecurrenceType = "daily" | "weekly" | "monthly";
+export type RecurrenceType = "daily" | "weekly" | "monthly" | "yearly";
 
 export interface TaskTemplate {
   id: number;
@@ -140,6 +140,8 @@ export interface TaskTemplate {
   recurrenceDay?: number;
   /** Weekly: несколько дней недели (0-6). Приоритетнее recurrenceDay */
   recurrenceDays?: number[];
+  /** Yearly: месяц (0-11) */
+  recurrenceMonth?: number;
   /** Каждые N дней/недель/месяцев (по умолчанию 1) */
   recurrenceInterval?: number;
   /** Дата окончания повторения (YYYY-MM-DD) */
@@ -156,6 +158,7 @@ export const RECURRENCE_LABELS: Record<RecurrenceType, string> = {
   daily: "Ежедневно",
   weekly: "Еженедельно",
   monthly: "Ежемесячно",
+  yearly: "Ежегодно",
 };
 
 export const WEEKDAYS = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];

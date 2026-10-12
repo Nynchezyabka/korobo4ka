@@ -4,7 +4,7 @@ import { useApp } from "@/App";
 import { deleteWithUndo } from "@/lib/undoDelete";
 import { burnInPlace } from "@/lib/paperFx";
 import { CategoryIcon } from "@/components/CategoryIcon";
-import { ChevronLeft, ChevronRight, Plus, Clock, Undo2, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Clock, Undo2, Trash2, Pencil, CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ClockPicker, pad2 } from "@/components/DateTimePicker";
 
@@ -60,6 +60,7 @@ export function HistoryModal() {
   const [manualHour, setManualHour] = useState(12);
   const [showManualClock, setShowManualClock] = useState(false);
   const [manualMinute, setManualMinute] = useState(0);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   // #1: Show tasks that are completed OR have timeSpent > 0
   const tasksByDate = useMemo(() => {
@@ -173,7 +174,7 @@ export function HistoryModal() {
 
   return (
     <div className="animate-fade-in">
-      <h2 className="font-display text-2xl sm:text-3xl text-primary mb-4">📅 Календарь</h2>
+      <h2 className="font-display text-2xl text-primary mb-4 flex items-center gap-2"><CalendarDays size={22} /> Календарь</h2>
 
       {/* Calendar */}
       <div className="mb-4 sm:max-w-md">
@@ -347,7 +348,7 @@ export function HistoryModal() {
       {/* Future-day scheduled list */}
       {isFutureSelected && (
         <div className="border-t border-border pt-3">
-          <h3 className="font-display text-lg sm:text-xl text-primary">📅 Запланировано</h3>
+          <h3 className="font-display text-lg sm:text-xl text-primary">Запланировано</h3>
           <p className="text-xs sm:text-sm text-muted-foreground mb-3">{selDateStr}</p>
           {(scheduledByDate.get(selectedDate) ?? []).length === 0 ? (
             <p className="text-center text-muted-foreground text-sm py-3">Пока ничего не запланировано</p>
@@ -358,10 +359,22 @@ export function HistoryModal() {
                   <CategoryIcon category={task.category} size={14} />
                   <span className="text-xs font-mono text-muted-foreground">{formatHHMM(new Date(task.scheduledFor!))}</span>
                   <span className="text-sm font-medium flex-1 truncate">{task.text}</span>
+                  <button onClick={() => setEditingTask(task)} className="p-1 rounded opacity-60 hover:opacity-100" title="Изменить"><Pencil size={12} /></button>
                   <button onClick={(e) => { burnInPlace(e.currentTarget, { text: task.text, category: task.category }); deleteFromHistory(task.id); }} className="p-1 rounded opacity-0 group-hover:opacity-60 hover:!opacity-100 text-red-500" title="Удалить"><Trash2 size={12} /></button>
                 </div>
               ))}
             </div>
+          )}
+          {editingTask && (
+            <ScheduledEditor
+              key={editingTask.id}
+              task={editingTask}
+              onCancel={() => setEditingTask(null)}
+              onSave={(patch) => {
+                setTasks((prev) => prev.map((t) => (t.id === editingTask.id ? { ...t, ...patch } : t)));
+                setEditingTask(null);
+              }}
+            />
           )}
         </div>
       )}
@@ -459,6 +472,57 @@ function StyledCategoryPicker({ value, onChange }: { value: CategoryId; onChange
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function ScheduledEditor({ task, onSave, onCancel }: {
+  task: Task;
+  onSave: (patch: Partial<Task>) => void;
+  onCancel: () => void;
+}) {
+  const d = new Date(task.scheduledFor!);
+  const [text, setText] = useState(task.text);
+  const [category, setCategory] = useState<CategoryId>(task.category);
+  const [date, setDate] = useState(dateKey(d));
+  const [hour, setHour] = useState(d.getHours());
+  const [minute, setMinute] = useState(d.getMinutes());
+  const [showClock, setShowClock] = useState(false);
+  const save = () => {
+    if (!text.trim()) return;
+    const [y, m, day] = date.split("-").map(Number);
+    onSave({
+      text: text.trim(),
+      category,
+      subcategory: category === task.category ? task.subcategory : undefined,
+      scheduledFor: new Date(y, m - 1, day, hour, minute).getTime(),
+    });
+  };
+  return (
+    <div className="rounded-lg border border-border bg-muted/20 p-3 mb-3 animate-fade-in">
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        rows={2}
+        autoFocus
+        className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm mb-2 resize-none"
+      />
+      <div className="flex flex-wrap items-center gap-2 mb-2">
+        <StyledCategoryPicker value={category} onChange={setCategory} />
+        <input type="date" value={date} onChange={(e) => e.target.value && setDate(e.target.value)} className="text-xs rounded-md border border-border px-2 py-1.5 bg-background" />
+        <button onClick={() => setShowClock((v) => !v)} className="rounded-md border border-border bg-background px-2.5 py-1.5 text-xs tabular-nums font-medium">
+          <Clock size={12} className="inline -mt-0.5" /> {pad2(hour)}:{pad2(minute)}
+        </button>
+        {showClock && (
+          <div className="basis-full flex justify-center py-2">
+            <ClockPicker hour={hour} minute={minute} onChange={(h, m) => { setHour(h); setMinute(m); }} compact />
+          </div>
+        )}
+      </div>
+      <div className="flex gap-2 justify-end">
+        <button onClick={onCancel} className="px-3 py-1.5 rounded-md border border-border text-xs font-medium active:scale-95 transition-all">Отмена</button>
+        <button onClick={save} disabled={!text.trim()} className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium disabled:opacity-40 active:scale-95 transition-all">Сохранить</button>
+      </div>
     </div>
   );
 }

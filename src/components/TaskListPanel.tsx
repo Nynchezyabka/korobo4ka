@@ -13,7 +13,7 @@ import { foldToBox, burnInPlace } from "@/lib/paperFx";
 import { addNote, removeNote } from "@/lib/notes";
 import { loadProjects, saveProjects, newProjectId } from "@/lib/projects";
 import { toast } from "sonner";
-import { ListRestart, Target as TargetIcon, Wand2 } from "lucide-react";
+import { ListRestart, Target as TargetIcon, Wand2, CheckCheck, ListTodo } from "lucide-react";
 import {
   Play, Eye, EyeOff, Trash2, Check, Undo2, FolderOpen, Plus, Pencil, GripVertical, MoreVertical,
   Bell, BellRing, BellOff, Lightbulb, X, CalendarClock, Pause,
@@ -245,8 +245,8 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
 
   return (
     <div className="animate-fade-in">
-      <h2 className="font-display text-2xl text-primary mb-3">
-        {showArchive ? "✅ Выполненные" : "📋 Все задачи"}
+      <h2 className="font-display text-2xl text-primary mb-3 flex items-center gap-2">
+        {showArchive ? <><CheckCheck size={22} /> Выполненные</> : <><ListTodo size={22} /> Все задачи</>}
       </h2>
 
       {filterLabel && (

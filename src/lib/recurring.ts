@@ -20,7 +20,7 @@ export function nextOccurrence(tpl: TaskTemplate, from: Date = new Date()): numb
   const anchor = new Date(from);
   anchor.setHours(0, 0, 0, 0);
 
-  for (let i = 0; i < 800; i++) {
+  for (let i = 0; i < (tpl.recurrence === "yearly" ? 366 * Math.max(1, tpl.recurrenceInterval ?? 1) + 400 : 800); i++) {
     if (candidate.getTime() > from.getTime() && candidate.getTime() <= limit) {
       switch (tpl.recurrence) {
         case "daily": {
@@ -54,6 +54,16 @@ export function nextOccurrence(tpl: TaskTemplate, from: Date = new Date()): numb
               (candidate.getFullYear() - anchor.getFullYear()) * 12 +
               (candidate.getMonth() - anchor.getMonth());
             if (interval === 1 || monthDiff % interval === 0) return candidate.getTime();
+          }
+          break;
+        }
+        case "yearly": {
+          const month = tpl.recurrenceMonth ?? 0;
+          const lastDay = new Date(candidate.getFullYear(), month + 1, 0).getDate();
+          const target = Math.min(tpl.recurrenceDay ?? 1, lastDay);
+          if (candidate.getMonth() === month && candidate.getDate() === target) {
+            const yearDiff = candidate.getFullYear() - anchor.getFullYear();
+            if (interval === 1 || yearDiff % interval === 0) return candidate.getTime();
           }
           break;
         }
@@ -91,11 +101,15 @@ export function describeRecurrence(tpl: TaskTemplate): string {
         : [];
     const names = days.length ? days.slice().sort().map((d) => WD[d]).join(", ") : "неделям";
     base = interval === 1 ? `По ${names}` : `Каждые ${interval} нед. по ${names}`;
+  } else if (tpl.recurrence === "yearly") {
+    const MG = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+    const d = `${tpl.recurrenceDay ?? 1} ${MG[tpl.recurrenceMonth ?? 0]}`;
+    base = interval === 1 ? `Каждый год ${d}` : `Раз в ${interval} г. ${d}`;
   } else {
     const d = tpl.recurrenceDay === -1 ? "в последний день месяца" : `${tpl.recurrenceDay ?? 1} числа`;
-    base = interval === 1 ? `Ежемесячно ${d}` : `Каждые ${interval} мес. ${d}`;
+    base = interval === 1 ? `Ежемесячно ${d}` : `Раз в ${interval} мес. ${d}`;
   }
-  const until = tpl.until ? `, до ${tpl.until}` : "";
+  const until = tpl.until ? `, до ${tpl.until.split("-").reverse().join(".")}` : ", бессрочно";
   return `${base} в ${hour}${until}`;
 }
 
