@@ -2,6 +2,7 @@ import { LocationToggle } from "@/components/LocationToggle";
 import { getCurrentLocation, fitsLocation } from "@/lib/location";
 import type { TaskLocation } from "@/types";
 import { useState, useCallback, useEffect, createContext, useContext, useRef } from "react";
+import { ArrowLeft } from "lucide-react";
 import { Task, TaskTemplate, CategoryId } from "@/types";
 import { initTaskStore, loadTasks, saveTasks, getNextId, exportTasksToFile, importTasksFromFile } from "@/lib/taskStore";
 import { dbGetMeta, dbSetMeta } from "@/lib/db";
