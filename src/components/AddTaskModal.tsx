@@ -219,7 +219,7 @@ export function AddTaskModal({ defaultCategory, restrictCategories, onAdd, onClo
                       : "border-transparent bg-white/30 opacity-70 hover:opacity-100"
                   )}
                 >
-                  {l.emoji} {l.label}
+                  <l.icon size={13} className="inline -mt-0.5 mr-1" />{l.label}
                 </button>
               ))}
             </div>

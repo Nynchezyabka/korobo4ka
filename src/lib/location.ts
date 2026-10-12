@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
+import { Home, Laptop, Globe, type LucideIcon } from "lucide-react";
 import type { Task, TaskLocation } from "@/types";
 
 const KEY = "current_location";
 const EVENT = "korobochka:location";
 
-export const LOCATIONS: { id: TaskLocation; label: string; emoji: string }[] = [
-  { id: "home", label: "Дома", emoji: "🏠" },
-  { id: "work", label: "На работе", emoji: "💼" },
-  { id: "any", label: "Где угодно", emoji: "🌍" },
+export const LOCATIONS: { id: TaskLocation; label: string; icon: LucideIcon }[] = [
+  { id: "home", label: "Дома", icon: Home },
+  { id: "work", label: "Работа / Учёба", icon: Laptop },
+  { id: "any", label: "Везде", icon: Globe },
 ];
 
 export function getCurrentLocation(): TaskLocation {
