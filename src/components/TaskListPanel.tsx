@@ -8,15 +8,15 @@ import { CategoryIcon } from "@/components/CategoryIcon";
 import { NextMinuteSheet } from "@/components/NextMinuteSheet";
 import { setTaskReminder, clearTaskReminder, hasActiveReminder } from "@/lib/notifications";
 import { DateTimePicker } from "@/components/DateTimePicker";
-import { deleteWithUndo } from "@/lib/undoDelete";
+import { deleteWithUndo, showUndoToast } from "@/lib/undoDelete";
 import { foldToBox, burnInPlace } from "@/lib/paperFx";
-import { addNote } from "@/lib/notes";
+import { addNote, removeNote } from "@/lib/notes";
 import { loadProjects, saveProjects, newProjectId } from "@/lib/projects";
 import { toast } from "sonner";
 import { ListRestart, Target as TargetIcon, Wand2 } from "lucide-react";
 import {
   Play, Eye, EyeOff, Trash2, Check, Undo2, FolderOpen, Plus, Pencil, GripVertical, MoreVertical,
-  Bell, BellRing, BellOff, Lightbulb, X, CalendarClock,
+  Bell, BellRing, BellOff, Lightbulb, X, CalendarClock, Pause,
 } from "lucide-react";
 
 interface Props {
@@ -29,23 +29,45 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
   const { tasks, setTasks, openTimer, openAddModal, completeTaskWithRecurrence, templates, saveTemplates, navigate } = useApp();
 
   const convertTask = async (task: Task, kind: "project" | "braindump" | "regular") => {
+    const index = tasks.findIndex((t) => t.id === task.id);
+    const restoreTask = () => setTasks((prev: Task[]) => {
+      if (prev.some((t) => t.id === task.id)) return prev;
+      const next = [...prev];
+      next.splice(Math.min(Math.max(index, 0), next.length), 0, task);
+      return next;
+    });
+    clearTaskReminder(task.id);
+    setTasks((prev: Task[]) => prev.filter((t) => t.id !== task.id));
     if (kind === "braindump") {
-      addNote(task.text);
-      setTasks((prev: Task[]) => prev.filter((t) => t.id !== task.id));
-      toast.success("Перенесено в «Разбор»");
+      const note = addNote(task.text) as any;
+      showUndoToast("Перенесено в «Разбор»", () => {
+        if (note?.id) removeNote(note.id);
+        restoreTask();
+      });
       return;
     }
     if (kind === "project") {
       const list = await loadProjects();
-      await saveProjects([...list, { id: newProjectId(list), title: task.text, category: task.category, subcategory: task.subcategory, mode: "sequential", createdAt: Date.now() }]);
-      setTasks((prev: Task[]) => prev.filter((t) => t.id !== task.id));
-      toast.success("Теперь это проект");
+      const id = newProjectId(list);
+      await saveProjects([...list, { id, title: task.text, category: task.category, subcategory: task.subcategory, mode: "sequential", createdAt: Date.now() }]);
+      showUndoToast("Теперь это проект", async () => {
+        const cur = await loadProjects();
+        await saveProjects(cur.filter((p) => p.id !== id));
+        restoreTask();
+        navigate("tasks");
+      });
       navigate("projects");
       return;
     }
     const startId = (templates as any[]).reduce((m, t) => Math.max(m, t.id), 0) + 1;
-    saveTemplates([...(templates as any[]), { id: startId, text: task.text, category: task.category, subcategory: task.subcategory, recurrence: "daily", recurrenceHour: 9, recurrenceMinute: 0, active: true }]);
-    toast.success("Добавлено в «Регулярные дела» — каждый день, настройте частоту");
+    const before = templates as any[];
+    saveTemplates([...before, { id: startId, text: task.text, category: task.category, subcategory: task.subcategory, recurrence: "daily", recurrenceHour: 9, recurrenceMinute: 0, active: true }]);
+    sessionStorage.setItem("editTemplateId", String(startId));
+    showUndoToast("Теперь это регулярное дело — настройте частоту", () => {
+      saveTemplates(before);
+      restoreTask();
+      navigate("tasks");
+    });
     navigate("templates");
   };
   const [dragId, setDragId] = useState<number | null>(null);
@@ -615,11 +637,16 @@ function TaskCard({
               );
             })()}
             {task.scheduledFor && task.scheduledFor > Date.now() && (
-              <span className="ml-1.5 text-[11px] sm:text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary inline-flex items-center gap-1 align-middle">
-                📅 {new Date(task.scheduledFor).toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); if (!showArchive) openReminder(); }}
+                title="Изменить дату и время"
+                className="ml-1.5 text-[11px] sm:text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary inline-flex items-center gap-1 align-middle hover:bg-primary/20"
+              >
+                <CalendarClock size={11} /> {new Date(task.scheduledFor).toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}
                 {" "}
                 {new Date(task.scheduledFor).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
-              </span>
+              </button>
             )}
           </p>
         )}
@@ -656,7 +683,7 @@ function TaskCard({
                     onClick={() => { onToggle(); setShowActions(false); }}
                     className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
                   >
-                    {task.active ? <><EyeOff size={12} /> Скрыть</> : <><Eye size={12} /> Показать</>}
+                    {task.active ? <><Pause size={12} /> Поставить на паузу</> : <><Play size={12} /> Снять с паузы</>}
                   </button>
                   <div className="px-2.5 pt-1.5 pb-1 text-[10px] text-muted-foreground">Где делать</div>
                   <div className="flex gap-1 px-1.5 pb-1.5">
@@ -679,7 +706,7 @@ function TaskCard({
                     onClick={openReminder}
                     className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted transition-colors flex items-center gap-1.5"
                   >
-                    {hasReminder ? <><BellRing size={12} /> Изменить напоминание</> : <><Bell size={12} /> Напомнить</>}
+                    <CalendarClock size={12} /> {hasReminder ? "Изменить дату и время" : "Дата и время"}
                   </button>
 <div className="my-1 border-t border-border" />
                   <button

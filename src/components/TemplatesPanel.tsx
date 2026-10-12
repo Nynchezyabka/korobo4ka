@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { describeRecurrence } from "@/lib/recurring";
 import { TaskTemplate, CategoryId, CATEGORIES, RecurrenceType, RECURRENCE_LABELS, WEEKDAYS, DEFAULT_SUBCATEGORIES } from "@/types";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { cn } from "@/lib/utils";
-import { Plus, Trash2, ToggleLeft, ToggleRight, ListRestart } from "lucide-react";
+import { Plus, Trash2, ToggleLeft, ToggleRight, ListRestart, MoreVertical, Pencil } from "lucide-react";
 import { getCustomSubcategoriesSync } from "@/lib/taskStore";
 import { ClockPicker, pad2 } from "@/components/DateTimePicker";
 import { showUndoToast } from "@/lib/undoDelete";
@@ -17,13 +17,26 @@ interface Props {
 export function TemplatesPanel({ templates, onSave }: Props) {
   const [editing, setEditing] = useState<TaskTemplate | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [menuId, setMenuId] = useState<number | null>(null);
+
+  // Открыть настройки только что перенесённого дела
+  useEffect(() => {
+    const id = Number(sessionStorage.getItem("editTemplateId"));
+    if (!id) return;
+    const tpl = templates.find((t) => t.id === id);
+    if (tpl) {
+      sessionStorage.removeItem("editTemplateId");
+      setEditing(tpl);
+      setShowForm(true);
+    }
+  }, [templates]);
 
   const deleteTemplate = (id: number) => {
     const index = templates.findIndex((t) => t.id === id);
     const removed = templates[index];
     if (!removed) return;
     onSave(templates.filter((t) => t.id !== id));
-    showUndoToast("Повтор удалён", () => {
+    showUndoToast("Регулярное дело удалено", () => {
       const restored = [...templates.filter((t) => t.id !== removed.id)];
       restored.splice(Math.min(Math.max(index, 0), restored.length), 0, removed);
       onSave(restored);
@@ -86,12 +99,21 @@ export function TemplatesPanel({ templates, onSave }: Props) {
                 <button onClick={() => toggleTemplate(tpl.id)} className="p-1.5 rounded hover:bg-muted transition-colors">
                   {tpl.active ? <ToggleRight size={16} className="text-primary" /> : <ToggleLeft size={16} />}
                 </button>
-                <button onClick={() => { setEditing(tpl); setShowForm(true); }} className="p-1.5 rounded hover:bg-muted transition-colors text-xs">
-                  ✏️
-                </button>
-                <button onClick={(e) => { burnInPlace(e.currentTarget, { text: tpl.text, category: tpl.category }); deleteTemplate(tpl.id); }} className="p-1.5 rounded hover:bg-destructive/10 transition-colors" title="Удалить повтор">
-                  <Trash2 size={14} />
-                </button>
+                <div className="relative">
+                  <button onClick={() => setMenuId(menuId === tpl.id ? null : tpl.id)} className="p-1.5 rounded hover:bg-muted transition-colors" title="Действия">
+                    <MoreVertical size={14} />
+                  </button>
+                  {menuId === tpl.id && (
+                    <div className="absolute z-[10200] top-full right-0 mt-1 bg-background rounded-md shadow-lg p-1 min-w-[150px] border border-border animate-scale-in">
+                      <button onClick={() => { setEditing(tpl); setShowForm(true); setMenuId(null); }} className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted flex items-center gap-1.5">
+                        <Pencil size={12} /> Изменить
+                      </button>
+                      <button onClick={(e) => { burnInPlace(e.currentTarget, { text: tpl.text, category: tpl.category }); deleteTemplate(tpl.id); setMenuId(null); }} className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-muted text-red-600 flex items-center gap-1.5">
+                        <Trash2 size={12} /> Удалить
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

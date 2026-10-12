@@ -2,6 +2,7 @@ import { LocationToggle } from "@/components/LocationToggle";
 import { getCurrentLocation, fitsLocation } from "@/lib/location";
 import type { TaskLocation } from "@/types";
 import { useState, useCallback, useEffect, createContext, useContext, useRef } from "react";
+import { ArrowLeft } from "lucide-react";
 import { Task, TaskTemplate, CategoryId } from "@/types";
 import { initTaskStore, loadTasks, saveTasks, getNextId, exportTasksToFile, importTasksFromFile } from "@/lib/taskStore";
 import { dbGetMeta, dbSetMeta } from "@/lib/db";
@@ -71,7 +72,24 @@ export default function App() {
   const [templates, setTemplatesRaw] = useState<TaskTemplate[]>([]);
   const [ready, setReady] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [currentPage, setCurrentPage] = useState<PageId>("home");
+  const [currentPage, setPageRaw] = useState<PageId>("home");
+  const [pageHistory, setPageHistory] = useState<PageId[]>([]);
+  const currentPageRef = useRef<PageId>("home");
+  const setCurrentPage = (p: PageId) => {
+    if (p === currentPageRef.current) return;
+    setPageHistory((h) => [...h.slice(-19), currentPageRef.current]);
+    currentPageRef.current = p;
+    setPageRaw(p);
+  };
+  const goBack = () => {
+    setPageHistory((h) => {
+      const prev = h[h.length - 1] ?? "home";
+      currentPageRef.current = prev;
+      setPageRaw(prev);
+      if (prev !== "tasks") setTasksFilter(null);
+      return h.slice(0, -1);
+    });
+  };
   const [timerTask, setTimerTask] = useState<Task | null>(null);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [addModalCategory, setAddModalCategory] = useState<CategoryId>(0);
@@ -430,6 +448,15 @@ export default function App() {
         <div className={is3dMode(visualMode) && currentPage === "home" ? "relative z-10 mx-auto p-2.5" : "max-w-4xl mx-auto p-2.5 pb-32"}>
           {/* Header */}
           <header className={is3dMode(visualMode) && currentPage === "home" ? "three-header pointer-events-none relative z-20 text-center pt-1" : "text-center mb-4 pt-1 relative"}>
+            {currentPage !== "home" && (
+              <button
+                onClick={goBack}
+                className="pointer-events-auto absolute left-0 top-1 z-10 inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs sm:text-sm text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition-all"
+                title="Назад"
+              >
+                <ArrowLeft size={16} /> <span className="hidden sm:inline">Назад</span>
+              </button>
+            )}
             <div className="theme-toggle-wrap absolute right-0 top-1 flex items-center gap-1.5 z-10">
               <div className="pointer-events-auto"><ThemeToggle mode={visualMode} onChange={setVisualMode} /></div>
             </div>
