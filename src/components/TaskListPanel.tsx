@@ -245,8 +245,8 @@ export function TaskListPanel({ showArchive, restrictCategories, onClearFilter }
 
   return (
     <div className="animate-fade-in">
-      <h2 className="font-display text-2xl text-primary mb-3">
-        {showArchive ? "✅ Выполненные" : "📋 Все задачи"}
+      <h2 className="font-display text-2xl text-primary mb-3 flex items-center gap-2">
+        {showArchive ? <><CheckCheck size={22} /> Выполненные</> : <><ListTodo size={22} /> Все задачи</>}
       </h2>
 
       {filterLabel && (

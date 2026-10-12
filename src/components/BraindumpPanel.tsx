@@ -255,7 +255,7 @@ export function BraindumpPanel() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="font-display text-2xl sm:text-3xl text-foreground">Разбор</h2>
+        <h2 className="font-display text-2xl text-primary flex items-center gap-2"><Wand2 size={22} /> Разбор</h2>
         <p className="text-xs sm:text-sm text-muted-foreground mt-1">
           Напишите всё как есть — помощник разложит это на задачи, проекты и повторяющиеся дела.
           Можно надиктовать, прикрепить текстовый файл (.txt, .md) или вставить ссылку на страницу.

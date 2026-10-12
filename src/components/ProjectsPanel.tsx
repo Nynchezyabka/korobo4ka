@@ -226,7 +226,7 @@ export function ProjectsPanel() {
 
   return (
     <div className="animate-fade-in">
-      <h2 className="font-display text-2xl text-primary mb-1">🎯 Проекты</h2>
+      <h2 className="font-display text-2xl text-primary mb-1 flex items-center gap-2"><Target size={22} /> Проекты</h2>
       <div className="mb-3 p-2.5 rounded-lg bg-muted/40 border border-border/60 text-xs sm:text-sm text-muted-foreground">
         Список шагов к одной цели: дела, которые нельзя сделать за один раз, разложите на маленькие шаги.
         Если нужно повторение по расписанию — это{" "}

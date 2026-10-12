@@ -173,7 +173,7 @@ export function HistoryModal() {
 
   return (
     <div className="animate-fade-in">
-      <h2 className="font-display text-2xl sm:text-3xl text-primary mb-4">📅 Календарь</h2>
+      <h2 className="font-display text-2xl text-primary mb-4 flex items-center gap-2"><CalendarDays size={22} /> Календарь</h2>
 
       {/* Calendar */}
       <div className="mb-4 sm:max-w-md">
