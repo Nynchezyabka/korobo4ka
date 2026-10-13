@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   X, Bell, BellOff, BellRing, Type, RefreshCw, Download, Upload,
-  Archive, Info, Palette, Sparkles, KeyRound, Loader2, Trash2, Play,
+  Archive, Info, Palette, Sparkles, KeyRound, Loader2, Trash2, Play, RotateCcw,
 } from "lucide-react";
 import { HowItWorksModal } from "@/components/HowItWorksModal";
 
@@ -25,6 +25,7 @@ import {
   checkForUpdates,
   applyUpdate,
   subscribeUpdates,
+  hardReload,
 } from "@/lib/pwaUpdate";
 
 const REMINDERS_KEY = "daily_reminders";
@@ -308,6 +309,14 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
             >
               <RefreshCw size={16} className={checking ? "animate-spin" : ""} />
               {checking ? "Проверка…" : needRefresh ? "Обновить сейчас" : "Проверить обновления"}
+            </button>
+            <button
+              onClick={() => {
+                if (confirm("Перезагрузить приложение начисто? Задачи, заметки и настройки сохранятся.")) hardReload();
+              }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-muted/60 text-left"
+            >
+              <RotateCcw size={16} /> Перезагрузить начисто
             </button>
             <button
               onClick={() => setHowOpen(true)}
