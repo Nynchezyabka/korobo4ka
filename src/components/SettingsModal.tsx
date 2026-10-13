@@ -156,7 +156,7 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
       return;
     }
     const res = await checkForUpdates();
-    if (res === "available") toast.success("Доступна новая версия — нажмите ещё раз, чтобы обновить");
+    if (res === "available") toast.success("Нашлась новая версия — приложение сейчас перезагрузится");
     else if (res === "current") toast.success("У вас актуальная версия");
     else toast.info("Проверка обновлений недоступна в этом режиме");
   };
