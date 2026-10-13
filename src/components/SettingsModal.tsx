@@ -3,7 +3,6 @@ import {
   X, Bell, BellOff, BellRing, Type, RefreshCw, Download, Upload,
   Archive, Info, Palette, Sparkles, KeyRound, Loader2, Trash2, Play, RotateCcw,
 } from "lucide-react";
-import { HowItWorksModal } from "@/components/HowItWorksModal";
 
 import {
   detectProvider, loadAiStore, addAiConnection, removeAiConnection,
@@ -106,7 +105,6 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
 
   // Updates
   const [needRefresh, setNeedRefresh] = useState(false);
-  const [howOpen, setHowOpen] = useState(false);
 
 
   const [checking, setChecking] = useState(false);
@@ -298,7 +296,7 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
               onClick={() => { onOpenInfo(); onClose(); }}
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-muted/60 text-left"
             >
-              <Info size={16} /> Как работает Коробочка
+              <Info size={16} /> О приложении и методика
             </button>
             <button
               onClick={handleUpdateClick}
@@ -319,12 +317,6 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
               <RotateCcw size={16} /> Перезагрузить начисто
             </button>
             <button
-              onClick={() => setHowOpen(true)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-muted/60 text-left"
-            >
-              <Play size={16} /> Как устроена Коробочка
-            </button>
-            <button
               onClick={() => { onOpenWhatsNew(); onClose(); }}
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-muted/60 text-left"
             >
@@ -335,7 +327,6 @@ export function SettingsModal({ onClose, onExport, onImport, onOpenArchive, onOp
           </div>
         </Section>
       </div>
-      {howOpen && <HowItWorksModal onClose={() => setHowOpen(false)} />}
     </div>
   );
 

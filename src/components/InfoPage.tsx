@@ -1,3 +1,5 @@
+import { Play } from "lucide-react";
+
 export function InfoPage() {
   return (
     <div className="animate-fade-in space-y-6 pb-8">
@@ -17,6 +19,14 @@ export function InfoPage() {
             Вы ссыпаете дела в цветные отделения, вытягиваете одно наугад и работаете по таймеру.
             Это «лайтовая» самодисциплина: содержание определяете вы, а паузу можно сделать в любой момент.
           </p>
+          <div className="mt-4 rounded-xl border border-dashed border-border overflow-hidden">
+            <div className="aspect-video flex flex-col items-center justify-center gap-2 bg-muted/30 text-muted-foreground">
+              <span className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                <Play size={20} className="ml-0.5" />
+              </span>
+              <span className="text-xs">Видео-инструкция скоро появится</span>
+            </div>
+          </div>
         </section>
 
         <hr className="border-border" />
