@@ -7,8 +7,11 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "prompt",
-      includeAssets: ["Assets/**/*", "favicon.png", "favicon.jpg", "icon-192.svg", "icon-512.svg", "icon-maskable-192.svg", "icon-maskable-512.svg"],
+      registerType: "autoUpdate",
+      injectRegister: null,
+      devOptions: { enabled: false },
+      // Картинки отделений НЕ предкэшируем: иначе обновление тянет 5+ МБ и на iOS обрывается.
+      includeAssets: ["favicon.png", "icon-192.svg", "icon-512.svg", "icon-maskable-192.svg", "icon-maskable-512.svg"],
       manifest: {
         name: "🎁 КОРОБОЧКА",
         short_name: "КОРОБОЧКА",
@@ -49,8 +52,10 @@ export default defineConfig({
       workbox: {
         // HTML не предкэшируем: навигацию обслуживает NetworkFirst (см. ниже),
         // иначе старая index.html отдаётся из кэша и приложение «не обновляется».
-        globPatterns: ["**/*.{js,css,ico,png,jpg,svg,woff2}"],
+        globPatterns: ["**/*.{js,css,ico,png,svg,woff2}"],
+        globIgnores: ["**/Assets/**", "**/*.glb"],
         navigateFallback: null,
+        skipWaiting: true,
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         runtimeCaching: [

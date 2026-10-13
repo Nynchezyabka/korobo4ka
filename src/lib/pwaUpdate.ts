@@ -1,4 +1,4 @@
-// PWA update manager: registers SW, exposes manual check + apply.
+// PWA update manager: guarded registration, auto-update, manual check, hard reset.
 import { registerSW } from "virtual:pwa-register";
 
 type Listener = (state: { needRefresh: boolean; checking: boolean }) => void;
@@ -6,76 +6,60 @@ type Listener = (state: { needRefresh: boolean; checking: boolean }) => void;
 let needRefresh = false;
 let checking = false;
 const listeners = new Set<Listener>();
-
-let updateSWFn: ((reload?: boolean) => Promise<void>) | null = null;
 let registration: ServiceWorkerRegistration | null = null;
 
 function emit() {
   listeners.forEach((l) => l({ needRefresh, checking }));
 }
 
-function setNeedRefresh(v: boolean) {
-  if (needRefresh === v) return;
-  needRefresh = v;
-  emit();
-}
-
-function isPreviewOrIframe(): boolean {
+function isRefusedContext(): boolean {
+  if (!import.meta.env.PROD) return true;
   try {
     if (window.self !== window.top) return true;
   } catch {
     return true;
   }
   const h = window.location.hostname;
-  return h.includes("id-preview--") || h.includes("lovableproject.com");
-}
-
-/** Есть ли уже готовая (ожидающая) новая версия */
-function hasWaiting(reg: ServiceWorkerRegistration | null): boolean {
-  if (!reg) return false;
-  if (reg.waiting) return true;
-  if (reg.installing && reg.installing.state === "installed") return true;
+  if (h.startsWith("id-preview--") || h.startsWith("preview--")) return true;
+  if (h === "lovableproject.com" || h.endsWith(".lovableproject.com")) return true;
+  if (h === "lovableproject-dev.com" || h.endsWith(".lovableproject-dev.com")) return true;
+  if (h === "beta.lovable.dev" || h.endsWith(".beta.lovable.dev")) return true;
+  if (new URLSearchParams(window.location.search).get("sw") === "off") return true;
   return false;
 }
 
-function watchRegistration(reg: ServiceWorkerRegistration) {
-  registration = reg;
-  if (hasWaiting(reg)) setNeedRefresh(true);
-
-  reg.addEventListener("updatefound", () => {
-    const sw = reg.installing;
-    if (!sw) return;
-    sw.addEventListener("statechange", () => {
-      // Новая версия установлена и ждёт активации (контроллер уже есть = это обновление, а не первая установка)
-      if (sw.state === "installed" && navigator.serviceWorker.controller) {
-        setNeedRefresh(true);
-      }
-    });
-  });
+async function unregisterAppSw() {
+  if (!("serviceWorker" in navigator)) return;
+  const regs = await navigator.serviceWorker.getRegistrations();
+  await Promise.allSettled(
+    regs
+      .filter((r) => (r.active || r.waiting || r.installing)?.scriptURL.endsWith("/sw.js"))
+      .map((r) => r.unregister())
+  );
 }
 
 export function initPwaUpdates() {
-  if (typeof window === "undefined") return;
-  if (isPreviewOrIframe()) return; // не регистрируем SW внутри редактора Lovable
-  if (!("serviceWorker" in navigator)) return;
+  if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
+  if (isRefusedContext()) {
+    unregisterAppSw().catch(() => {});
+    return;
+  }
 
-  updateSWFn = registerSW({
+  // Новая версия активируется сама и страница перезагружается
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (sessionStorage.getItem("sw_reloaded")) return;
+    sessionStorage.setItem("sw_reloaded", "1");
+    window.location.reload();
+  });
+
+  registerSW({
     immediate: true,
-    onNeedRefresh() {
-      setNeedRefresh(true);
-    },
-    onOfflineReady() {
-      // no-op
-    },
     onRegisteredSW(_url, reg) {
-      if (reg) watchRegistration(reg);
+      if (reg) registration = reg;
     },
   });
 
-  // Тихая периодическая проверка
-  const silentCheck = () => {
-    (registration ?? null)?.update().catch(() => {});
-  };
+  const silentCheck = () => registration?.update().catch(() => {});
   setInterval(silentCheck, 30 * 60 * 1000);
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") silentCheck();
@@ -89,7 +73,7 @@ export function subscribeUpdates(l: Listener) {
 }
 
 export async function checkForUpdates(): Promise<"unavailable" | "current" | "available"> {
-  if (isPreviewOrIframe() || !("serviceWorker" in navigator)) return "unavailable";
+  if (isRefusedContext() || !("serviceWorker" in navigator)) return "unavailable";
   checking = true;
   emit();
   try {
@@ -97,14 +81,15 @@ export async function checkForUpdates(): Promise<"unavailable" | "current" | "av
     if (!reg) return "unavailable";
     registration = reg;
     await reg.update();
-    // Дать новой версии время установиться
-    // Новая версия качает все файлы (включая 3D-модели) — ждём до ~20 с, пока идёт установка
-    for (let i = 0; i < 80; i++) {
-      if (hasWaiting(reg) || needRefresh) break;
-      if (i >= 12 && !reg.installing) break;
+    // Ждём до 15 с: если новая версия скачивается — она сама применится и перезагрузит страницу
+    for (let i = 0; i < 60; i++) {
+      if (reg.installing || reg.waiting) {
+        needRefresh = true;
+        emit();
+      }
+      if (i >= 8 && !reg.installing && !reg.waiting) break;
       await new Promise((r) => setTimeout(r, 250));
     }
-    if (hasWaiting(reg)) setNeedRefresh(true);
     return needRefresh ? "available" : "current";
   } catch {
     return "unavailable";
@@ -115,28 +100,26 @@ export async function checkForUpdates(): Promise<"unavailable" | "current" | "av
 }
 
 export async function applyUpdate() {
-  const reg = registration;
-  if (reg?.waiting) {
-    // Перезагрузить страницу, когда новый SW возьмёт управление
-    navigator.serviceWorker.addEventListener(
-      "controllerchange",
-      () => window.location.reload(),
-      { once: true }
-    );
+  registration?.waiting?.postMessage({ type: "SKIP_WAITING" });
+  setTimeout(() => window.location.reload(), 1500);
+}
+
+/** Начисто: удалить кэш файлов и служебный обработчик. Задачи (IndexedDB) и настройки не трогаются. */
+export async function hardReload() {
+  try {
+    await unregisterAppSw();
+    if ("caches" in window) {
+      const names = await caches.keys();
+      await Promise.allSettled(names.map((n) => caches.delete(n)));
+    }
+  } finally {
+    sessionStorage.removeItem("sw_reloaded");
+    const url = new URL(window.location.href);
+    url.searchParams.set("v", String(Date.now()));
+    window.location.replace(url.toString());
   }
-  // Страховка: если новая версия не взяла управление за 4 с — просто перезагружаем
-  setTimeout(() => window.location.reload(), 4000);
-  if (updateSWFn) {
-    await updateSWFn(true); // skipWaiting + перезагрузка
-    return;
-  }
-  if (reg?.waiting) {
-    reg.waiting.postMessage({ type: "SKIP_WAITING" });
-    return;
-  }
-  window.location.reload();
 }
 
 export function isUpdateSupported() {
-  return !isPreviewOrIframe() && typeof navigator !== "undefined" && "serviceWorker" in navigator;
+  return typeof navigator !== "undefined" && "serviceWorker" in navigator && !isRefusedContext();
 }
